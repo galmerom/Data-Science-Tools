@@ -32,6 +32,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 import datetime
 import time
+import charts
 
 
 class MegaClassifier:
@@ -468,6 +469,9 @@ class MegaClassifier:
                                                                         xlabel='\nModels\n', rot=0, sort_columns=True,
                                                                         title=NewTitle)
         return SlicedDf
+    def ShowConfusionMatrix(self):
+        yPredDF = self.OutputDF
+
 
     # Save the results dictionary of a specific model to a file
     def __Save2File(self, cls):

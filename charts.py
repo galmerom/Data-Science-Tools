@@ -22,7 +22,7 @@ import warnings
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_bool_dtype
-
+from sklearn.metrics import confusion_matrix, classification_report
 
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
               WithPerc=0, XtickFontSize=15, Colorcmap='plasma', Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
@@ -129,13 +129,15 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
 
 
 def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3):
-    """Add labels to the end of each bar in a bar chart.
+    """
+    Add labels to the end of each bar in a bar chart.
 
     Arguments:
         ax (matplotlib.axes.Axes): The matplotlib object containing the axes
             of the plot to annotate.
         spacing (int): The distance between the labels and the bars.
         PadValue (float): The amount of space around the text
+
     """
     totals = []
     for i in ax.patches:
@@ -646,16 +648,15 @@ def plotCM(X, y_true, modelName,
       modelName:    The model used to predict AFTER FIT
       normalize:    If True then normalize the by row
       title:        Chart title
-      cmap:         color map  
+      cmap:         color map
       precisionVal: Precision values (0.00 = 2)
       titleSize:    Title font size
       fig_size:     Figure size
       InFontSize:   The font of the values inside the table
       LabelSize:    Label font size
       ClassReport:  If true add a classification report at the bottom
-    """
 
-    from sklearn.metrics import confusion_matrix, classification_report
+    """
 
     if not title:
         if normalize:
@@ -712,4 +713,90 @@ def plotCM(X, y_true, modelName,
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
 
-# plotCM(X,y, modelName=Aus_dt1,normalize=True)
+def ClassGraphicCM(y_Pred, y_true,
+           normalize=False,
+           title=None,
+           cmap=plt.cm.Blues,
+           precisionVal=2,
+           titleSize=15,
+           fig_size=(7, 5),
+           InFontSize=15,
+           LabelSize=15,
+           ClassReport=True,
+           ):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    Input:
+      y_Pred:       Prediction array
+      y_true:       Target array
+
+      normalize:    If True then normalize the by row
+      title:        Chart title
+      cmap:         color map
+      precisionVal: Precision values (0.00 = 2)
+      titleSize:    Title font size
+      fig_size:     Figure size
+      InFontSize:   The font of the values inside the table
+      LabelSize:    Label font size
+      ClassReport:  If true add a classification report at the bottom
+
+    """
+
+    if not title:
+        if normalize:
+            title = 'Normalized confusion matrix'
+        else:
+            title = 'Confusion matrix'
+    y_pred = modelName.predict(X)
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    # Only use the labels that appear in the data
+    classes = modelName.classes_
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    #     print("Normalized confusion matrix")
+    # else:
+    #     print('Confusion matrix, without normalization')
+
+    fig, ax = plt.subplots(figsize=fig_size)
+
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.figure.colorbar(im, ax=ax)
+
+    # We want to show all ticks...
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title
+           )
+    ax.xaxis.set_tick_params(labelsize=LabelSize)
+    ax.yaxis.set_tick_params(labelsize=LabelSize)
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    fmt = '.' + str(precisionVal) + 'f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black", fontdict={'fontsize': InFontSize})
+    fig.tight_layout()
+    plt.xlim(-0.5, len(np.unique(y_true)) - 0.5)
+    plt.ylim(len(np.unique(y_true)) - 0.5, -0.5)
+    plt.xlabel(xlabel='Predicted label', fontdict={'fontsize': 15, 'color': '#411a20'})
+    plt.ylabel(ylabel='True label', fontdict={'fontsize': 15, 'color': '#411a20'})
+    plt.title(title + '\n', fontdict={'fontsize': titleSize, 'color': '#411a20'})
+    plt.show()
+    if ClassReport:
+        print('\n\nClassification_report\n*********************\n')
+        print(classification_report(y_true=y_true,
+                                    y_pred=y_pred))
+
+
+

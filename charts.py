@@ -24,6 +24,7 @@ from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_bool_dtype
 from sklearn.metrics import confusion_matrix, classification_report
 
+
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
               WithPerc=0, XtickFontSize=15, Colorcmap='plasma', Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
               txt2show=[("", 10)], RotAngle=45, SaveCharts=False):
@@ -76,7 +77,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
         if ChartType == 'barh':
-            MaxVal = __add_Horiz_value_labels(ax, Fsize, WithPerc, PadValue=adValue)
+            MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=adValue)
         else:
             MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
 
@@ -92,7 +93,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             # ax.set_xticklabels(labels)
             # ax.set_xticklabels(labels)
             if ChartType == 'barh':
-                MaxVal = __add_Horiz_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
+                MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
             else:
                 MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
             if RemarkAvail:
@@ -107,7 +108,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
             # ax.set_xticklabels(labels)
             if ChartType == 'barh':
-                MaxVal = __add_Horiz_value_labels(ax, Fsize, WithPerc, PadValue)
+                MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue)
             else:
                 MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue)
 
@@ -174,7 +175,7 @@ def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3):
     return Max
 
 
-def __add_Horiz_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3):
+def __add_Horizontal_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3):
     """
     Add labels to the end of each bar in a bar chart. For horizontal bars
 
@@ -259,10 +260,19 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
                         2= Only values
       :param XtickFontSize = The size of the fonts of the x ticks labels
       :param ColorInt =Currently there are 5 color pallets use (0,1,2,3,4) to run them
-      :param Xlabelstr = Gets a list. First element is the X axis label and the second element is the font size
+      :param Xlabelstr = Gets a list. First element is the X axis label and the second
+                         element is the font size
       :param Ylabelstr = Gets a list. First element is the Y axis label and the second element is the font size
       :param PadValue = The padding of the data labels bbox
-      :param StackBarPer = If true then the stack bar is showing 100% stack bar. If false then it is a regular values stack bar
+      :param StackBarPer =  If true then the stack bar is showing 100% stack bar.
+                            If false then it is a regular values stack bar
+      :param txt2show = List of tuples. Each tuple contains (string,integer,integer,integer).
+                        The text will show on the chart in a box. The second parameter (integer)
+                         is the font size. The third parameter is the correction in the location
+                          of the box in the X-axis. The last integer is the correction on the y-axis.
+
+      :param SaveCharts = Bool. If True then it will save the chart as a jpeg file (use for presentations)
+
     """
 
     if ColorInt > 4:
@@ -452,7 +462,7 @@ def __SaveCharts(pltObject, FileName):
         return
 
 
-def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15, TitleSize=30, WithPerc=0, binsize=50,
+def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15, TitleSize=30, WithPerc=0, binSize=50,
                SaveCharts=False):
     """
     Parameters:
@@ -481,13 +491,13 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
     if NumRows == 1 and NumCol == 1:
         if type(InpList[0]) != type(empty):
             InpList[0] = pd.DataFrame(InpList[0])
-        ax = InpList[0].plot(kind='hist', title=TitleList[0], cmap='plasma', bins=binsize, figsize=ChartSize)
+        ax = InpList[0].plot(kind='hist', title=TitleList[0], cmap='plasma', bins=binSize, figsize=ChartSize)
         ax.title.set_size(TitleSize)
         ax.xaxis.set_tick_params(labelsize=10, rotation=45)
         # __add_value_labels(ax,Fsize,WithPerc)
     elif NumRows == 1:
         for i in range(len(InpList)):
-            ax = InpList[i].plot(kind='hist', ax=axes[i], title=TitleList[i], cmap='plasma', bins=binsize,
+            ax = InpList[i].plot(kind='hist', ax=axes[i], title=TitleList[i], cmap='plasma', bins=binSize,
                                  figsize=ChartSize)
             ax.title.set_size(TitleSize)
             ax.xaxis.set_tick_params(labelsize=10, rotation=45)
@@ -495,7 +505,7 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
     else:
         for counter in range(len(InpList)):
             ax = InpList[counter].plot(kind='hist', ax=axes[i][j], title=TitleList[counter], cmap='plasma',
-                                       bins=binsize)
+                                       bins=binSize)
             ax.title.set_size(TitleSize)
             ax.xaxis.set_tick_params(labelsize=10, rotation=45)
             # __add_value_labels(ax,Fsize,WithPerc)
@@ -713,17 +723,18 @@ def plotCM(X, y_true, modelName,
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
 
+
 def ClassGraphicCM(y_Pred, y_true,
-           normalize=False,
-           title=None,
-           cmap=plt.cm.Blues,
-           precisionVal=2,
-           titleSize=15,
-           fig_size=(7, 5),
-           InFontSize=15,
-           LabelSize=15,
-           ClassReport=True,
-           ):
+                   normalize=False,
+                   title=None,
+                   cmap=plt.cm.Blues,
+                   precisionVal=2,
+                   titleSize=15,
+                   fig_size=(7, 5),
+                   InFontSize=15,
+                   LabelSize=15,
+                   ClassReport=True,
+                   ):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -797,6 +808,3 @@ def ClassGraphicCM(y_Pred, y_true,
         print('\n\nClassification_report\n*********************\n')
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
-
-
-

@@ -807,7 +807,7 @@ def ClassGraphicCM(y_pred, y_true,
     plt.ylabel(ylabel='True label', fontdict={'fontsize': 15, 'color': '#411a20'})
     plt.title(title + '\n', fontdict={'fontsize': titleSize, 'color': '#411a20'})
     if ReturnAx:
-        return plt
+        return ax
     else:
         plt.show()
     if ClassReport:

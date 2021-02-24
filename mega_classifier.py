@@ -472,7 +472,7 @@ class MegaClassifier:
     
     def ShowConfusionMatrix(self):
         for clf in self.RelevantModel:
-            classes = self.GridClassifiers[clf].classes_
+            classes = self.Label2Num.inverse_transform(self.GridClassifiers[clf].classes_)
             charts.ClassGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='Model: ' + clf,
                                   ClassReport=False, ReturnAx=True)
 

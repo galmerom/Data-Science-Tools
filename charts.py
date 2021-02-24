@@ -734,23 +734,24 @@ def ClassGraphicCM(y_Pred, y_true,
                    InFontSize=15,
                    LabelSize=15,
                    ClassReport=True,
-                   ):
+                   ReturnAx=False):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     Input:
-      y_Pred:       Prediction array
-      y_true:       Target array
+        y_Pred:       Prediction array
+        y_true:       Target array
 
-      normalize:    If True then normalize the by row
-      title:        Chart title
-      cmap:         color map
-      precisionVal: Precision values (0.00 = 2)
-      titleSize:    Title font size
-      fig_size:     Figure size
-      InFontSize:   The font of the values inside the table
-      LabelSize:    Label font size
-      ClassReport:  If true add a classification report at the bottom
+        normalize:    If True then normalize the by row
+        title:        Chart title
+        cmap:         color map
+        precisionVal: Precision values (0.00 = 2)
+        titleSize:    Title font size
+        fig_size:     Figure size
+        InFontSize:   The font of the values inside the table
+        LabelSize:    Label font size
+        ClassReport:  If true add a classification report at the bottom
+        ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
 
     """
 
@@ -803,7 +804,10 @@ def ClassGraphicCM(y_Pred, y_true,
     plt.xlabel(xlabel='Predicted label', fontdict={'fontsize': 15, 'color': '#411a20'})
     plt.ylabel(ylabel='True label', fontdict={'fontsize': 15, 'color': '#411a20'})
     plt.title(title + '\n', fontdict={'fontsize': titleSize, 'color': '#411a20'})
-    plt.show()
+    if ReturnAx:
+        return plt
+    else:
+        plt.show()
     if ClassReport:
         print('\n\nClassification_report\n*********************\n')
         print(classification_report(y_true=y_true,

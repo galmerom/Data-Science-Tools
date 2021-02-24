@@ -725,7 +725,7 @@ def plotCM(X, y_true, modelName,
                                     y_pred=y_pred))
 
 
-def ClassGraphicCM(y_Pred, y_true,
+def ClassGraphicCM(y_pred, y_true,
                    normalize=False,
                    title=None,
                    cmap=plt.cm.Blues,

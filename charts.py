@@ -673,6 +673,7 @@ def plotCM(X, y_true, modelName,
             title = 'Normalized confusion matrix'
         else:
             title = 'Confusion matrix'
+            
     y_pred = modelName.predict(X)
     # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)
@@ -760,7 +761,7 @@ def ClassGraphicCM(y_Pred, y_true,
             title = 'Normalized confusion matrix'
         else:
             title = 'Confusion matrix'
-    y_pred = modelName.predict(X)
+
     # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     # Only use the labels that appear in the data

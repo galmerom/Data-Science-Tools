@@ -766,7 +766,7 @@ def ClassGraphicCM(y_pred, y_true,
     # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     # Only use the labels that appear in the data
-    classes = modelName.classes_
+    classes = ModelClasses
 
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]

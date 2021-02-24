@@ -726,6 +726,7 @@ def plotCM(X, y_true, modelName,
 
 
 def ClassGraphicCM(y_pred, y_true,
+                   ModelClasses,
                    normalize=False,
                    title=None,
                    cmap=plt.cm.Blues,
@@ -740,18 +741,18 @@ def ClassGraphicCM(y_pred, y_true,
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     Input:
-        y_Pred:       Prediction array
-        y_true:       Target array
-
-        normalize:    If True then normalize the by row
-        title:        Chart title
-        cmap:         color map
-        precisionVal: Precision values (0.00 = 2)
-        titleSize:    Title font size
-        fig_size:     Figure size
-        InFontSize:   The font of the values inside the table
-        LabelSize:    Label font size
-        ClassReport:  If true add a classification report at the bottom
+        y_Pred:         Prediction array
+        y_true:         Target array
+        ModelClasses:   A list of classes as they appear in model.classes_
+        normalize:      If True then normalize the by row
+        title:          Chart title
+        cmap:           color map
+        precisionVal:   Precision values (0.00 = 2)
+        titleSize:      Title font size
+        fig_size:       Figure size
+        InFontSize:     The font of the values inside the table
+        LabelSize:      Label font size
+        ClassReport:    If true add a classification report at the bottom
         ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
 
     """

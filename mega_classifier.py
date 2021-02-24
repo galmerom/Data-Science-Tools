@@ -1,6 +1,22 @@
 # -*- coding: utf-8 -*-
 
-
+"""
+This module is used for creating a class that can run 5 classifiers using grid search with
+many defaults hyper parameters. Then the results can be analyzed in 5 different levels in order for finding
+the best model and best hyper parameters or combine all/some models to ensemble prediction.
+Available levels:
+1. Score for each model (according to the input scoring)
+2. Detailed results: a dictionary with the following: model name, the y_pred (prediction),
+                     best parameters found in grid search, the full cv_results from the grid search of the model
+3. Hyper parameters results: Analyze the change in hyper parameters per model. Shows a chart for every
+                             hyper parameter that the x-axis is the changing value of the hyper parameter and
+                             the y-axis is the average change in scoring.
+4. A full classification report dataframe. Contains the precision, recall, f1-score and more of every model best
+                                           parameters and for the combined models.
+5. Sliced classification report: Suppose we want to look on the precision of a specific label (or few labels) only.
+                                 This tool can extract only the relevant data from the classification dataframe and
+                                 return the data as a dataframe  even show it on a chart
+"""
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

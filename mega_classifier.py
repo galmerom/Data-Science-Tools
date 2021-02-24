@@ -469,12 +469,12 @@ class MegaClassifier:
                                                                         xlabel='\nModels\n', rot=0, sort_columns=True,
                                                                         title=NewTitle)
         return SlicedDf
-    
-    def ShowConfusionMatrix(self):
+
+    def ShowConfusionMatrix(self, FigSize=(7, 5)):
         for clf in self.RelevantModel:
             classes = self.Label2Num.inverse_transform(self.GridClassifiers[clf].classes_)
             charts.ClassGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
-                                  ClassReport=False, ReturnAx=True)
+                                  fig_size=FigSize, ClassReport=False, ReturnAx=True)
 
     # Save the results dictionary of a specific model to a file
     def __Save2File(self, cls):

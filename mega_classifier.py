@@ -470,7 +470,9 @@ class MegaClassifier:
                                                                         title=NewTitle)
         return SlicedDf
     def ShowConfusionMatrix(self):
-        yPredDF = self.OutputDF
+        for clf in self.RelevantModel:
+            classes = MModel.GridClassifiers[clf].classes_
+            charts.ClassGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='Model: ' + clf, ClassReport=False, ReturnAx=True)
 
 
     # Save the results dictionary of a specific model to a file

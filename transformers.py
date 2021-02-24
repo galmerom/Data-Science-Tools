@@ -2,7 +2,7 @@
 
 """
 This modules contains mainly Pandas transformers. Get dataframe as input and returns dataframe
-Classes:
+Pandas transformers classes:
     PandasTransformer - General purpose transformer. Get as an input a regular sklearn transformer and returns
                         a dataframe.
     P_StandardScaler -  StandardScaler that returns a dataframe.

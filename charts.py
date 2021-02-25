@@ -27,7 +27,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
               WithPerc=0, XtickFontSize=15, Colorcmap='plasma', Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
-              txt2show=[("", 10)], RotAngle=45, SaveCharts=False):
+              LabelPrecision=0,txt2show=[("", 10)], RotAngle=45, SaveCharts=False):
     """
     Builds a one or more bar charts (use the NumRows and NumCol to determine the grid)
     The charts can be customized using the following parameters:
@@ -51,6 +51,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
     :param Xlabelstr: Gets a list. First element is the X axis label and the second element is the font size
     :param Ylabelstr: Gets a list. First element is the Y axis label and the second element is the font size
     :param PadValue: Float. the amount of empty space to put around the value label
+    :param LabelPrecision: integer. The number of digits after the period in the label value
     :param txt2show: Gets a list of tuples. Each tuple is for each chart. Every tuple must have 4 values:
                      (string to show, font size,position correction of x,position correction of y) for example:
                      txt2show=[('50% of people are men',10,0.1,-0.1)]
@@ -79,7 +80,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
         if ChartType == 'barh':
             MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=adValue)
         else:
-            MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
+            MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue,precision=LabelPrecision)
 
         if RemarkAvail:
             __AddTextOnTheCorner(ax, txt2show[0])
@@ -95,7 +96,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             if ChartType == 'barh':
                 MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
             else:
-                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
+                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue,precision=LabelPrecision)
             if RemarkAvail:
                 __AddTextOnTheCorner(ax, txt2show[i])
     else:
@@ -110,7 +111,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             if ChartType == 'barh':
                 MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue)
             else:
-                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue)
+                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue,precision=LabelPrecision)
 
             if RemarkAvail:
                 __AddTextOnTheCorner(ax, txt2show[counter])
@@ -129,7 +130,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
 """Add data labels. Values and percentages"""
 
 
-def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3):
+def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3, precision=0):
     """
     Add labels to the end of each bar in a bar chart.
 
@@ -162,11 +163,11 @@ def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3):
 
         # Use Y value as label and format number with one decimal place
 
-        label = "{:,.0f}\n{:.0%}".format(y_value, y_value / total)
+        label = "{:,."+precision+"f}\n{:.0%}".format(y_value, y_value / total)
         if WithPerc == 2:
-            label = "{:,.0f}".format(y_value)
+            label = "{:,."+precision+"f}".format(y_value)
         elif WithPerc == 1:
-            label = "{:.0%}".format(y_value / total)
+            label = "{:."+precision+"%}".format(y_value / total)
 
         x_value = rect.get_x() + rect.get_width() / 4
         y_value = rect.get_height() / 2

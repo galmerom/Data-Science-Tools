@@ -27,7 +27,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
               WithPerc=0, XtickFontSize=15, Colorcmap='plasma', Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
-              LabelPrecision=0,txt2show=[("", 10)], RotAngle=45, SaveCharts=False):
+              LabelPrecision=0, txt2show=[("", 10)], RotAngle=45, SaveCharts=False):
     """
     Builds a one or more bar charts (use the NumRows and NumCol to determine the grid)
     The charts can be customized using the following parameters:
@@ -42,9 +42,11 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
     :param Fsize:  Font size of the data labels
     :param TitleSize: Font size of the title
     :param WithPerc:
-                0 or default = data labels + Percentage
-                1 = Only percentage
-                2= Only values
+                0 or default = data labels + Normalized Percentage
+                1 = Only Normalized Percentage
+                2 = Only values
+                3 = Only Percentage
+                Normalized Percentage = The value of column/ sum of all columns
     :param XtickFontSize: The size of the fonts of the x ticks labels
     :param Colorcmap: The color scheme used. Schemas can be found here:
                       https://matplotlib.org/examples/color/named_colors.html
@@ -80,7 +82,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
         if ChartType == 'barh':
             MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=adValue)
         else:
-            MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue,precision=LabelPrecision)
+            MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue, precision=LabelPrecision)
 
         if RemarkAvail:
             __AddTextOnTheCorner(ax, txt2show[0])
@@ -96,7 +98,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             if ChartType == 'barh':
                 MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
             else:
-                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue,precision=LabelPrecision)
+                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue, precision=LabelPrecision)
             if RemarkAvail:
                 __AddTextOnTheCorner(ax, txt2show[i])
     else:
@@ -111,7 +113,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             if ChartType == 'barh':
                 MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue)
             else:
-                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue,precision=LabelPrecision)
+                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue, precision=LabelPrecision)
 
             if RemarkAvail:
                 __AddTextOnTheCorner(ax, txt2show[counter])
@@ -133,14 +135,20 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
 def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3, precision=0):
     """
     Add labels to the end of each bar in a bar chart.
-
-    Arguments:
-        ax (matplotlib.axes.Axes): The matplotlib object containing the axes
-            of the plot to annotate.
-        spacing (int): The distance between the labels and the bars.
-        PadValue (float): The amount of space around the text
-
+    :param ax: (matplotlib.axes.Axes): The matplotlib object containing the axes of the plot to annotate.
+    :param Fsize: int. The font size
+    :param WithPerc: int.
+                0 or default = data labels + Normalized Percentage
+                1 = Only Normalized Percentage
+                2 = Only values
+                3 = Only Percentage
+                Normalized Percentage = The value of column/ sum of all columns
+    :param spacing: int. The distance between the labels and the bars.
+    :param PadValue: float The amount of space around the text
+    :param precision: int. Number of digits after the dot to show in the label
+    :return: The maximum value
     """
+
     totals = []
     for i in ax.patches:
         totals.append(i.get_height())
@@ -163,13 +171,15 @@ def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3, precis
 
         # Use Y value as label and format number with one decimal place
         strValFormat = "{:,." + str(precision) + "f}"
-        strPercFormat = "{:."+str(precision)+"%}"
-        CompleteLabel = strValFormat+'\n'+strPercFormat
+        strPercFormat = "{:." + str(precision) + "%}"
+        CompleteLabel = strValFormat + '\n' + strPercFormat
         label = CompleteLabel.format(y_value, y_value / total)
         if WithPerc == 2:
             label = strValFormat.format(y_value)
         elif WithPerc == 1:
             label = strPercFormat.format(y_value / total)
+        elif WithPerc == 3:
+            label = strPercFormat.format(y_value)
 
         x_value = rect.get_x() + rect.get_width() / 4
         y_value = rect.get_height() / 2
@@ -676,7 +686,7 @@ def plotCM(X, y_true, modelName,
             title = 'Normalized confusion matrix'
         else:
             title = 'Confusion matrix'
-            
+
     y_pred = modelName.predict(X)
     # Compute confusion matrix
     cm = confusion_matrix(y_true, y_pred)

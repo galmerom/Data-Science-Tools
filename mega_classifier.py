@@ -123,14 +123,18 @@ class MegaClassifier:
 
         # Result will be in the following format:
         # {'Classifier':{'Score':,'y_pred':,'Best_param':,'cv_results':},,,,}
+        # Updated when using predict or predict_proba
         self.results = {}
 
         # OutputDF Fill up after predict or predict_proba.
         # Contains all the y_pred from all models + y_true + PredAllModelsByProba
         # PredAllModelsByProba - sums the probability squared for each class and return the class with the highest score
+        # Updated when using predict or predict_proba
         self.OutputDF = pd.DataFrame()
-
+        # Holds the  feature important summery in a dataframe. Updated when using predict
+        self.featuresImport = pd.DataFrame()
         # Dataframe that contains: precision,recall,f1-score and more per each label+model
+        # Updated when using predict
         self.ClassReportDF = pd.DataFrame()
         # Initiate the models by running the following methods
         self.__DefaultsGridParameters()
@@ -287,6 +291,7 @@ class MegaClassifier:
                                'y_pred': y_predictLabels}
         # Update the classification report dataframe
         self.__UpdateClassificationReport()
+        self.__UpdateFeatureImportance(X_new)
 
         return self.OutputDF
 
@@ -476,6 +481,53 @@ class MegaClassifier:
             charts.ClassGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
                                   fig_size=FigSize, ClassReport=False, ReturnAx=True)
 
+    def __UpdateFeatureImportance(self, X):
+        """
+        Calculate a dataframe of feature importance per model.
+        +Add a summery column + Add a normalize summery column (also sort by this column, Descending)
+        The result dataframe is saved at: self.featuresImport
+
+        :param X: X train array
+        :return: Nothing
+        """
+        flag = True
+        for clf in self.RelevantModel:
+            CurrClf = self.GridClassifiers[clf].best_estimator_
+            try:
+                FI = CurrClf.feature_importances_
+                featuresDic = {}  # a dict to hold feature_name: feature_importance
+                for feature, importance in zip(X.columns, FI):
+                    featuresDic[feature] = importance  # add the name/value pair
+                if flag:  # In case this is the first loop then initialize the dataframe
+                    self.featuresImport = pd.DataFrame(FI, index=X.columns, columns=[clf])
+                    flag = False
+                else:
+                    self.featuresImport[clf] = pd.Series(FI, index=X.columns)
+            except AttributeError:
+                pass
+        # Sum all columns
+        self.featuresImport['SumOfCol'] = self.featuresImport.sum(axis=1)
+        # Add a normalized column (value/sum of all values)
+        self.featuresImport['SumOfColNormalize'] = self.featuresImport['SumOfCol'] / self.featuresImport[
+            'SumOfCol'].sum()
+        self.featuresImport.sort_values(by='SumOfColNormalize', ascending=False, inplace=True)
+
+    def UpdateFeatureImportance(self, TopFeatures=10, ShowChart=True):
+        """
+        Return a dataframe with the feature importance for all models that have that feature.
+        Also includes a summery column for all the models importance.
+        + a Normalized summery column (the value divided by the sum of the column values)
+        If ShowChart=True then it also shows a chart of the normalized summery column, sorted
+
+        :param TopFeatures: int. How many features should be in the chart
+        :param ShowChart: bool. True means show the chart
+        :return: Dataframe
+        """
+        if ShowChart:
+            pltDf = self.featuresImport.head(TopFeatures)['SumOfColNormalize']
+            charts.BarCharts([pltDf], ['Feature importance - sum of models'], WithPerc=3, LabelPrecision=2)
+        return self.featuresImport
+    
     # Save the results dictionary of a specific model to a file
     def __Save2File(self, cls):
         df = pd.DataFrame(self.GridClassifiers[cls].cv_results_)

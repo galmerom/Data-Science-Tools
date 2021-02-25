@@ -2,7 +2,7 @@
 
 """
 This module is used for creating a class that can run 5 classifiers using grid search with
-many defaults hyper parameters. Then the results can be analyzed in 5 different levels in order for finding
+many defaults hyper parameters. Then the results can be analyzed in 6 different levels in order for finding
 the best model and best hyper parameters or combine all/some models to ensemble prediction.
 Available levels:
 1. Score for each model (according to the input scoring)
@@ -16,6 +16,7 @@ Available levels:
 5. Sliced classification report: Suppose we want to look on the precision of a specific label (or few labels) only.
                                  This tool can extract only the relevant data from the classification dataframe and
                                  return the data as a dataframe  even show it on a chart
+6. Feature Importance: Dataframe and a chart to explain the feature importance for models that support it
 """
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -40,7 +41,7 @@ class MegaClassifier:
     This MegaClassifier run the data on 5 models with grid search on default hyper parameters (that can be changed) .
     Available classifiers: DecisionTree, LogisticRegression, RandomForest, SVC, XGBOOST
     The grid search also contains cross validation.
-    The results can be seen in 5 different levels, see below for details
+    The results can be seen in 6 different levels, see below for details
 
     Available methods:
 
@@ -79,6 +80,8 @@ class MegaClassifier:
     GetClassificationReport: Return a multi model classification report in the form of a dataframe
     GetSpecificLabelScore: Slice the classification dataframe (get it by GetClassificationReport methods) by
       specific labels only and  specific score types only
+    GetFeatureImportance: return a dataframe with the feature importance for every model that support this attribute
+                          As a default it also shows a chart with the combined results (normalized)  
     """
 
     def __init__(self, scoring=accuracy_score, ShortCrossValidParts=5, LongCrossValidParts=3, Class_weight='balanced',

@@ -512,7 +512,7 @@ class MegaClassifier:
             'SumOfCol'].sum()
         self.featuresImport.sort_values(by='SumOfColNormalize', ascending=False, inplace=True)
 
-    def UpdateFeatureImportance(self, TopFeatures=10, ShowChart=True):
+    def GetFeatureImportance(self, TopFeatures=10, ShowChart=True):
         """
         Return a dataframe with the feature importance for all models that have that feature.
         Also includes a summery column for all the models importance.

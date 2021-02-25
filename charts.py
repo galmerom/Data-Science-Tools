@@ -163,7 +163,7 @@ def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3, precis
 
         # Use Y value as label and format number with one decimal place
         strValFormat = "{:,." + str(precision) + "f}"
-        strPercFormat = "{:."+strprecision+"%}"
+        strPercFormat = "{:."+str(precision)+"%}"
         CompleteLabel = strValFormat+'\n'+strPercFormat
         label = CompleteLabel.format(y_value, y_value / total)
         if WithPerc == 2:

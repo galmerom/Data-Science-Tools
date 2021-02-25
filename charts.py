@@ -162,12 +162,12 @@ def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3, precis
             # Vertically align label at top
 
         # Use Y value as label and format number with one decimal place
-
-        label = "{:,."+precision+"f}\n{:.0%}".format(y_value, y_value / total)
+        strprecision=str(precision)
+        label = "{:,."+strprecision+"f}\n{:.0%}".format(y_value, y_value / total)
         if WithPerc == 2:
-            label = "{:,."+precision+"f}".format(y_value)
+            label = "{:,."+strprecision+"f}".format(y_value)
         elif WithPerc == 1:
-            label = "{:."+precision+"%}".format(y_value / total)
+            label = "{:."+strprecision+"%}".format(y_value / total)
 
         x_value = rect.get_x() + rect.get_width() / 4
         y_value = rect.get_height() / 2

@@ -473,7 +473,10 @@ class MegaClassifier:
         :return: dataframe with the desired slice
         """
         colList = ['Classifier', 'Score_type']
-        colList.extend(ListOfLabels)
+        for lbl in ListOfLabels:
+            if lbl in self.ClassReportDF.columns:
+                colList.append(lbl)
+ 
         SlicedDf = self.ClassReportDF[self.ClassReportDF['Score_type'].isin(ListOfScoreTypes)][colList]
         if ShowChart:
             NumOfLabels = len(ListOfLabels)

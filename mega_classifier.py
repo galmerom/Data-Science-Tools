@@ -287,7 +287,7 @@ class MegaClassifier:
             y_pred = self.GridClassifiers[mdl].predict_proba(X_new)
             AccumSumProba += (y_pred ** 2)  # We use **2 to give more weight to the highest probabilities
 
-        y_predictAccum = np.argmax(AccumSum, axis=1)  # Y in numbers
+        y_predictAccum = np.argmax(AccumSumProba, axis=1)  # Y in numbers
         y_predictLabels = self.Label2Num.inverse_transform(y_predictAccum)  # Y in labels
         self.OutputDF['PredAllModelsByProba'] = y_predictLabels
 

@@ -5,7 +5,7 @@ This module is used for creating a class that can run 5 classifiers using grid s
 many defaults hyper parameters. Then the results can be analyzed in 6 different levels in order for finding
 the best model and best hyper parameters or combine all/some models to ensemble prediction.
 Available levels:
-1. Score for each model (according to the input scoring)
+1. Score for each model (according to the input function scoring) - method:ScoreSummery
 2. Detailed results: a dictionary with the following: model name, the y_pred (prediction),
                      best parameters found in grid search, the full cv_results from the grid search of the model
 3. Hyper parameters results: Analyze the change in hyper parameters per model. Shows a chart for every
@@ -13,9 +13,11 @@ Available levels:
                              the y-axis is the average change in scoring.
 4. A full classification report dataframe. Contains the precision, recall, f1-score and more of every model best
                                            parameters and for the combined models.
+                                            method:GetClassificationReport
 5. Sliced classification report: Suppose we want to look on the precision of a specific label (or few labels) only.
                                  This tool can extract only the relevant data from the classification dataframe and
                                  return the data as a dataframe  even show it on a chart
+                                 method:GetSpecificLabelScore
 6. Feature Importance: Dataframe and a chart to explain the feature importance for models that support it
 """
 import pandas as pd
@@ -205,7 +207,8 @@ class MegaClassifier:
 
     # Creates an instance of each classifier
     def __InitClassifier(self):
-        self.classifiers['XGBOOST'] = XGBClassifier(n_estimators=500, random_state=self.Random, seed=self.Random)
+        self.classifiers['XGBOOST'] = XGBClassifier(n_estimators=500, random_state=self.Random, seed=self.Random,
+                                                    use_label_encoder=False)
         self.classifiers['RandomForest'] = RandomForestClassifier(max_depth=2, random_state=self.Random)
         self.classifiers['DecisionTree'] = DecisionTreeClassifier(random_state=self.Random)
         self.classifiers['SVC'] = SVC(gamma='auto', random_state=self.Random, probability=True)
@@ -265,7 +268,6 @@ class MegaClassifier:
         y_new_label = y.copy()  # Array of y with labels
         y_newNum = self.Label2Num.transform(y_new_label)  # Array of y after label encoder
         self.OutputDF = pd.DataFrame()  # Restart OutputDF
-        AccumSum = pd.Series(np.zeros(len(y_newNum)))
         self.OutputDF['y_true'] = y_new_label
         for mdl in self.RelevantModel:
             y_pred = self.GridClassifiers[mdl].predict(X_new)
@@ -280,10 +282,10 @@ class MegaClassifier:
 
         # Add prediction by predict proba
         NumOfClasses = len(np.unique(y_newNum))
-        AccumSum = np.zeros((len(y_newNum), NumOfClasses))
+        AccumSumProba = np.zeros((len(y_newNum), NumOfClasses))
         for mdl in self.RelevantModel:
             y_pred = self.GridClassifiers[mdl].predict_proba(X_new)
-            AccumSum += y_pred ** 2  # We use **2 to give more weight to the highest probabilities
+            AccumSumProba += (y_pred ** 2)  # We use **2 to give more weight to the highest probabilities
 
         y_predictAccum = np.argmax(AccumSum, axis=1)  # Y in numbers
         y_predictLabels = self.Label2Num.inverse_transform(y_predictAccum)  # Y in labels

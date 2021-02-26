@@ -282,10 +282,14 @@ class MegaClassifier:
 
         # Add prediction by predict proba
         NumOfClasses = len(np.unique(y_newNum))
-        AccumSumProba = np.zeros((len(y_newNum), NumOfClasses))
+        # AccumSumProba = np.zeros((len(y_newNum), NumOfClasses))
+        flag=True
         for mdl in self.RelevantModel:
             y_pred = self.GridClassifiers[mdl].predict_proba(X_new)
-            AccumSumProba += (y_pred ** 2)  # We use **2 to give more weight to the highest probabilities
+            if Flag:
+                AccumSumProba = (y_pred ** 2)  # We use **2 to give more weight to the highest probabilities
+            else:
+                AccumSumProba += (y_pred ** 2)  # We use **2 to give more weight to the highest probabilities
 
         y_predictAccum = np.argmax(AccumSumProba, axis=1)  # Y in numbers
         y_predictLabels = self.Label2Num.inverse_transform(y_predictAccum)  # Y in labels

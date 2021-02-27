@@ -242,7 +242,7 @@ class MegaClassifier:
         X_new = X.copy()
         y_new = self.Label2Num.fit_transform(y)  # Update the y labels to an array of numbers. Avoid strings in labels
         # If there are less then 2 classes then don't do fit and stop attempts to do predict
-        if len(y_new.unique()) < 2:
+        if len(len(np.unique(y_train))) < 2:
             self.NumOfClassesLessThen2 = True
             return
         else:

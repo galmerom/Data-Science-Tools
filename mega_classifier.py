@@ -273,7 +273,7 @@ class MegaClassifier:
                                  PredAllModelsByProba = sums the probability squared for each class and return
                                  the class with the highest score.
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
         X_new = X.copy()
@@ -324,7 +324,7 @@ class MegaClassifier:
                                  PredAllModelsByProba = column that sums the probability squared for each class and
                                  return the class with the highest score.
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
 
@@ -362,7 +362,7 @@ class MegaClassifier:
         """
         Return a data frame that contains the score for each model
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
 
@@ -383,7 +383,7 @@ class MegaClassifier:
         the standard deviation of the cross validation
         ModelName - string of the model needed
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
 
@@ -461,7 +461,7 @@ class MegaClassifier:
             'cv_results':Read the cv_results in the grid search documentation.
                             ItGets the result of every run in the grid search and the cross validation}
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
         if modelName == 'All':
@@ -500,7 +500,7 @@ class MegaClassifier:
         :param ShowChart: Bool. If True then show a barchart of the result
         :return: dataframe with the desired slice
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
         colList = ['Classifier', 'Score_type']
@@ -525,7 +525,7 @@ class MegaClassifier:
         :param FigSize: tuple of 2 integers. Changing the figsize.
         :return: Nothing
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
         for clf in self.RelevantModel:
@@ -575,7 +575,7 @@ class MegaClassifier:
         :param ShowChart: bool. True means show the chart
         :return: Dataframe
         """
-        if NumOfClassesLessThen2:
+        if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
         if ShowChart:

@@ -141,6 +141,9 @@ class MegaClassifier:
         # Dataframe that contains: precision,recall,f1-score and more per each label+model
         # Updated when using predict
         self.ClassReportDF = pd.DataFrame()
+        # True if there are less then 2 classes. Then don't allow: fir, predict and the rest
+        self.NumOfClassesLessThen2 = False
+
         # Initiate the models by running the following methods
         self.__DefaultsGridParameters()
         self.__InitClassifier()
@@ -238,6 +241,12 @@ class MegaClassifier:
         """
         X_new = X.copy()
         y_new = self.Label2Num.fit_transform(y)  # Update the y labels to an array of numbers. Avoid strings in labels
+        # If there are less then 2 classes then don't do fit and stop attempts to do predict
+        if len(y_new.unique()) < 2:
+            self.NumOfClassesLessThen2 = True
+            return
+        else:
+            self.NumOfClassesLessThen2 = False
 
         # Update the models that are relevant. 'all' means all models. Else use a list of models
         self.__RelevantModels(RelevantModels)
@@ -264,6 +273,9 @@ class MegaClassifier:
                                  PredAllModelsByProba = sums the probability squared for each class and return
                                  the class with the highest score.
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
         X_new = X.copy()
         y_new_label = y.copy()  # Array of y with labels
         y_newNum = self.Label2Num.transform(y_new_label)  # Array of y after label encoder
@@ -312,6 +324,10 @@ class MegaClassifier:
                                  PredAllModelsByProba = column that sums the probability squared for each class and
                                  return the class with the highest score.
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
+
         X_new = X.copy()
         y_new_label = y.copy()  # Array of y with labels
         y_newNum = self.Label2Num.transform(y_new_label)  # Array of y after label encoder
@@ -346,6 +362,10 @@ class MegaClassifier:
         """
         Return a data frame that contains the score for each model
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
+
         OutDF = pd.DataFrame()
         for mdl in self.RelevantModel:
             OutDF[mdl] = pd.Series(self.results[mdl]['Score'])
@@ -363,6 +383,10 @@ class MegaClassifier:
         the standard deviation of the cross validation
         ModelName - string of the model needed
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
+
         # Get the parameters dictionary out of the results for a specific model
         CurrParam = self.results[ModelName]['cv_results']['params'][0]
         if 'class_weight' in CurrParam:
@@ -437,6 +461,9 @@ class MegaClassifier:
             'cv_results':Read the cv_results in the grid search documentation.
                             ItGets the result of every run in the grid search and the cross validation}
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
         if modelName == 'All':
             return self.results
         else:
@@ -473,6 +500,9 @@ class MegaClassifier:
         :param ShowChart: Bool. If True then show a barchart of the result
         :return: dataframe with the desired slice
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
         colList = ['Classifier', 'Score_type']
         for lbl in ListOfLabels:
             if lbl in self.ClassReportDF.columns:
@@ -489,6 +519,15 @@ class MegaClassifier:
         return SlicedDf
 
     def ShowConfusionMatrix(self, FigSize=(7, 5)):
+        """
+        Show the confusion matrix of all models.
+
+        :param FigSize: tuple of 2 integers. Changing the figsize.
+        :return: Nothing
+        """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
         for clf in self.RelevantModel:
             classes = self.Label2Num.inverse_transform(self.GridClassifiers[clf].classes_)
             charts.ClassGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
@@ -536,6 +575,9 @@ class MegaClassifier:
         :param ShowChart: bool. True means show the chart
         :return: Dataframe
         """
+        if NumOfClassesLessThen2:
+            print('Less then 2 classes in fitting. Method stop.')
+            return
         if ShowChart:
             pltDf = self.featuresImport.head(TopFeatures)['SumOfColNormalize']
             charts.BarCharts([pltDf], ['Feature importance - sum of models'], WithPerc=3, LabelPrecision=2)

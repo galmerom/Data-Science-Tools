@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import warnings
+# import warnings
 
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
@@ -80,7 +80,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
         if ChartType == 'barh':
-            MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=adValue)
+            MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
         else:
             MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue, precision=LabelPrecision)
 
@@ -305,31 +305,31 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
         __AddTextOnTheCorner(ax, txt2show[0])
-    elif NumRows == 1:
-        for i in range(len(InpList)):
-            ax = InpList[i].plot(kind=ChartType, ax=axes[i], title=TitleList[i], stacked=True)
-            ax.title.set_size(TitleSize)
-            ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
-            ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
-            ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
-            # ax.set_xticklabels(labels)
-            __add_value_labels(ax, Fsize, WithPerc)
-    else:
-        for counter in range(len(InpList)):
-            ax = InpList[counter].plot(kind=ChartType, ax=axes[i][j], title=TitleList[counter], cmap=Colorcmap,
-                                       figsize=ChartSize, stacked=True)
-            ax.title.set_size(TitleSize)
-            ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
-            ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
-            ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
-            # ax.set_xticklabels(labels)
-            __add_value_labels(ax, Fsize, WithPerc)
-            counter += 1
-            if j < (NumCol - 1):
-                j += 1
-            else:
-                j = 0
-                i += 1
+    # elif NumRows == 1:
+    #     for i in range(len(InpList)):
+    #         ax = InpList[i].plot(kind=ChartType, ax=axes[i], title=TitleList[i], stacked=True)
+    #         ax.title.set_size(TitleSize)
+    #         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
+    #         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
+    #         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
+    #         # ax.set_xticklabels(labels)
+    #         __add_value_labels(ax, Fsize, WithPerc)
+    # else:
+    #     for counter in range(len(InpList)):
+    #         ax = InpList[counter].plot(kind=ChartType, ax=axes[i][j], title=TitleList[counter], cmap=Colorcmap,
+    #                                    figsize=ChartSize, stacked=True)
+    #         ax.title.set_size(TitleSize)
+    #         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
+    #         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
+    #         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
+    #         # ax.set_xticklabels(labels)
+    #         __add_value_labels(ax, Fsize, WithPerc)
+    #         counter += 1
+    #         if j < (NumCol - 1):
+    #             j += 1
+    #         else:
+    #             j = 0
+    #             i += 1
 
     if SaveCharts:
         __SaveCharts(plt, TitleList[0])
@@ -347,7 +347,18 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
     ValueCol  = The column that we want to be the values
   """
     DataLabelLocation = []
-    df, xCol, LegendCol, ValueCol = tupleParam
+    dfOriginal, xCol, LegendCol, ValueCol = tupleParam
+
+    # Copy the original dataframe so if we add records it will not have an effect on the original
+    df = dfOriginal.copy()
+
+    # Add records with zero values to a combination of xCol and LegendCol that is not exist in the original dataframe
+    for xColVal in df[xCol].unique():
+        for LegendValue in df[LegendCol].unique():
+            if len(df[(df[xCol] == xColVal) & (df[LegendCol] == LegendValue)]) == 0:
+                tempDic = {xCol: [xColVal], LegendCol: [LegendValue], ValueCol: [0]}
+                tmpDF = pd.DataFrame.from_dict(tempDic)
+                df = df.append(tmpDF)
 
     fig, ax = plt.subplots(figsize=ChartSizeVal)
 
@@ -372,7 +383,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
         __ReArrangeStackBar2percent(ax)
 
     if StackBarPer:
-        __add_value_labels2Stackbar(x, PadValue=PadVal, WithPerc=3, Fsize=FsizeVal)
+        __add_value_labels2StackBar(x, PadValue=PadVal, WithPerc=3, Fsize=FsizeVal)
         ax.set_ylim(0, 1)
     else:
         __add_value_labels2StackBar(x, PadValue=PadVal, Fsize=FsizeVal, WithPerc=WithPerc)
@@ -468,9 +479,7 @@ def __add_value_labels2StackBar(ax, Fsize=12, WithPerc=0, spacing=2, PadValue=0.
 def __SaveCharts(pltObject, FileName):
     # noinspection PyBroadException
     try:
-        if GlobalParamSaveFigure:
-            pltObject.savefig(FileName + '.jpg', dpi=300)
-            files.download(FileName + '.jpg')
+        pltObject.savefig(FileName + '.jpg', dpi=300)
     except:
         return
 
@@ -483,7 +492,6 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
       TitleList = List of titles to appear on the top of the charts
       NumRows = Number of rows of charts
       NumCol = Number of columns of charts
-      ChartType = chart type to show default = bar
       ChartSize = The size of each chart
       Fsize =  Font size of the data labels
       TitleSize = Font size of the title
@@ -491,6 +499,8 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
                 0 or default = data labels + Percentage
                 1 = Only percentage
                 2= Only values
+      binSize = int. How many bins to use for the histogram
+      SaveCharts = Bool. If True then it will save the chart as a jpeg file (use for presentations)
   """
 
     i = 0

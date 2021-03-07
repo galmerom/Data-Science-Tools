@@ -358,7 +358,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
             if len(df[(df[xCol] == xColVal) & (df[LegendCol] == LegendValue)]) == 0:
                 tempDic = {xCol: [xColVal], LegendCol: [LegendValue], ValueCol: [0]}
                 tmpDF = pd.DataFrame.from_dict(tempDic)
-                tmpDF.index =[df.index.max() + 1]
+                tmpDF.index = [df.index.max() + 1]
                 df = df.append(tmpDF)
     print(df)
     fig, ax = plt.subplots(figsize=ChartSizeVal)
@@ -376,10 +376,10 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
 
     for num, Leg in enumerate(LegendVal):
         values = list(df[df[LegendCol] == Leg].loc[:, ValueCol])
-        print(values)
-        x = df[df[LegendCol] == Leg].plot.bar(x=xCol, y=ValueCol, ax=ax, stacked=True, bottom=margin_bottom,
-                                              color=ColorList[ColorInt][num], label=Leg, title=titleVal)
-        print(df[df[LegendCol] == Leg])
+        x = df[df[LegendCol] == Leg].sort_values(by=xCol).plot.bar(x=xCol, y=ValueCol, ax=ax, stacked=True,
+                                                                   bottom=margin_bottom,
+                                                                   color=ColorList[ColorInt][num], label=Leg,
+                                                                   title=titleVal)
         margin_bottom += values
 
     if StackBarPer:

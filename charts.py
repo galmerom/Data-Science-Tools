@@ -361,7 +361,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
                 tmpDF.index = [df.index.max() + 1]
                 df = df.append(tmpDF)
     df = df.sort_values(by=xCol)
-    print(df)
+
     fig, ax = plt.subplots(figsize=ChartSizeVal)
 
     LegendVal = df[LegendCol].drop_duplicates()

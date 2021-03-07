@@ -376,8 +376,10 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
 
     for num, Leg in enumerate(LegendVal):
         values = list(df[df[LegendCol] == Leg].loc[:, ValueCol])
+        print(values)
         x = df[df[LegendCol] == Leg].plot.bar(x=xCol, y=ValueCol, ax=ax, stacked=True, bottom=margin_bottom,
                                               color=ColorList[ColorInt][num], label=Leg, title=titleVal)
+        print(df[df[LegendCol] == Leg])
         margin_bottom += values
 
     if StackBarPer:

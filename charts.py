@@ -358,6 +358,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
             if len(df[(df[xCol] == xColVal) & (df[LegendCol] == LegendValue)]) == 0:
                 tempDic = {xCol: [xColVal], LegendCol: [LegendValue], ValueCol: [0]}
                 tmpDF = pd.DataFrame.from_dict(tempDic)
+                tmpDF.index = df.loc[df.index.max() + 1]
                 df = df.append(tmpDF)
     print(df)
     fig, ax = plt.subplots(figsize=ChartSizeVal)

@@ -11,7 +11,7 @@ Pandas transformers classes:
     P_SimpleImputer -   SimpleImputer that returns a dataframe.
 
 Other transformers:
-    DownSizeTransformer - Use when a data downsize is needed.
+    BinaryDownSizeTransformer - Use when a data downsize is needed.
 """
 
 import pandas as pd
@@ -123,7 +123,7 @@ class P_SimpleImputer(PandasTransformer):
         self.Transformer_model = SimpleImputer(**kwargs)
 
 
-class DownSizeTransformer(BaseEstimator, TransformerMixin):
+class BinaryDownSizeTransformer(BaseEstimator, TransformerMixin):
     """
   This transformer reduce a dataframe so we will get a predefined proportional
   between the "positive value" that we seeks and the rest.
@@ -134,10 +134,10 @@ class DownSizeTransformer(BaseEstimator, TransformerMixin):
   PropDesiredOfPos = The proportional of the positive value (number between 0 and 1)
   positiveLabel = What value is considered "positive"
   TargetCol = What is the column to search for the positiveLabel
-  Direction = if value is 1 then the records of the non positive will be taken from the end of
+  Direction = if value is 1 then the records of the non positive will be removed from the end of
               the dataframe records toward the beginning (meaning the last records).
               If the value 2 is given then use random.
-              Other value that is not 1 will take the first records
+              if value is 0 : Remove the first records (good for time series)
   """
 
     def __init__(self, PropDesiredOfPos, positiveLabel, TargetCol, Direction=2):

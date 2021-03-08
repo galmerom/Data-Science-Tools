@@ -250,7 +250,7 @@ def __AddTextOnTheCorner(ax, str2Show):
 
 def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=10, TitleSize=30,
                    WithPerc=0, XtickFontSize=15, ColorInt=0, Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
-                   StackBarPer=False, txt2show=[("", 10)], SaveCharts=False):
+                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False):
     """
   Parameters:
       :param InpList =  List of tuples.Dataframes to show. Each element in the list is a tuple.
@@ -283,7 +283,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
                         The text will show on the chart in a box. The second parameter (integer)
                          is the font size. The third parameter is the correction in the location
                           of the box in the X-axis. The last integer is the correction on the y-axis.
-
+      :param TopValFactor: float. The max value of the y-axis is determined by the max value in the chart * TopValFactor
       :param SaveCharts = Bool. If True then it will save the chart as a jpeg file (use for presentations)
 
     """
@@ -305,7 +305,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
-        ax.set_ylim(top=maxVal * 1.1)
+        ax.set_ylim(top=maxVal * TopValFactor)
         __AddTextOnTheCorner(ax, txt2show[0])
     # elif NumRows == 1:
     #     for i in range(len(InpList)):

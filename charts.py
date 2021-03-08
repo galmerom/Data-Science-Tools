@@ -298,12 +298,14 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         fig, axes = plt.subplots(nrows=NumRows, ncols=NumCol, figsize=ChartSize)
 
     if NumRows == 1 and NumCol == 1:
-        ax = __CreateStackBarDetails(InpList[0], TitleList[0], PadValue, StackBarPer=StackBarPer,
-                                     ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc, ColorInt=ColorInt)
+        ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadValue, StackBarPer=StackBarPer,
+                                             ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc,
+                                             ColorInt=ColorInt)
         ax.title.set_size(TitleSize)
         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
         ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
+        ax.set_ylim(top=maxVal * 1.1)
         __AddTextOnTheCorner(ax, txt2show[0])
     # elif NumRows == 1:
     #     for i in range(len(InpList)):
@@ -392,7 +394,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
     else:
         __add_value_labels2StackBar(x, PadValue=PadVal, Fsize=FsizeVal, WithPerc=WithPerc)
 
-    return ax
+    return ax, max(margin_bottom)
 
 
 """This function change the data to be 100% stack bar"""

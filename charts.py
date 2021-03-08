@@ -551,7 +551,7 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
 
 
 def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45):
-    for col in DF.columns.drop([TargetCol], axis=1):
+    for col in DF.drop([TargetCol], axis=1).columns:
         # noinspection PyBroadException
         try:
             tempDF = DF[[col, TargetCol]]

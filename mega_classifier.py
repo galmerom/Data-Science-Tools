@@ -401,7 +401,7 @@ class MegaClassifier:
         colLst = ['mean_test_score', 'std_test_score']
         colLst.extend(ParmLst)
         # Create a dataframe with only the relevant columns
-        df = pd.DataFrame(model.results[ModelName]['cv_results'])
+        df = pd.DataFrame(self.results[ModelName]['cv_results'])
         df = df[colLst]
         NumberOfParam = len(CurrParam)
 

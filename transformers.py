@@ -59,7 +59,7 @@ class PandasTransformer(BaseEstimator, TransformerMixin):
 
     def fit_transform(self, X, y=None):
         self.fit(X, y=None)
-        return self.transform(self, X)
+        return self.transform(X)
 
 
 class P_StandardScaler(PandasTransformer):

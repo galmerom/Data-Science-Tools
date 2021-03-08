@@ -13,8 +13,9 @@ Pandas transformers classes:
 Other transformers:
     DownSizeTransformer - Use when a data downsize is needed.
 """
+
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
+
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler
 from sklearn.impute import SimpleImputer
 from pandas.api.types import is_numeric_dtype
@@ -57,13 +58,13 @@ class PandasTransformer(BaseEstimator, TransformerMixin):
         X_new.loc[:, self.columns] = scaled_cols
         return X_new
 
-    def fit_transform(self, X, y=None):
+    def fit_transform(self, X, y=None, **fit_params):
         self.fit(X, y=None)
         return self.transform(X)
 
 
 class P_StandardScaler(PandasTransformer):
-    def __init__(self, columns=None):
+    def __init__(self, TransFormerObject, columns=None):
         """
         Like a StandardScaler. returns  a dataframe (not numpy)
 
@@ -72,6 +73,7 @@ class P_StandardScaler(PandasTransformer):
         :return: DataFrame, with the transformed values in the wanted columns.
         """
 
+        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
 
@@ -80,7 +82,7 @@ class P_StandardScaler(PandasTransformer):
 
 
 class P_MaxAbsScaler(PandasTransformer):
-    def __init__(self, columns=None):
+    def __init__(self, TransFormerObject, columns=None):
         """
         Like a MaxAbsScaler. returns  a dataframe (not numpy)
 
@@ -88,6 +90,7 @@ class P_MaxAbsScaler(PandasTransformer):
                   If empty it will work on all numeric columns
         :return: DataFrame, with the transformed values in the wanted columns.
         """
+        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
         self.columns = columns
@@ -95,12 +98,13 @@ class P_MaxAbsScaler(PandasTransformer):
 
 
 class P_MinMaxScaler(PandasTransformer):
-    def __init__(self, columns=None):
+    def __init__(self, TransFormerObject, columns=None):
         """
     Like a MinMaxScaler but it returns  a dataframe
     columns - list, list of columns names to apply the transformation on.If empty it will work on all numeric columns
     :return: DataFrame, with the transformed values in the wanted columns.
     """
+        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
 
@@ -109,15 +113,16 @@ class P_MinMaxScaler(PandasTransformer):
 
 
 class P_SimpleImputer(PandasTransformer):
-    def __init__(self, columns=None, **kwargs):
+    def __init__(self, TransFormerObject, columns=None, **kwargs):
         """
     Like a SimpleImputer but it returns  a dataframe
     columns - list, list of columns names to apply the transformation on.If empty it will work on all numeric columns
     :return: DataFrame, with the transformed values in the wanted columns.
     """
+        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
-        from sklearn.impute import SimpleImputer
+
         self.columns = columns
         self.Transformer_model = SimpleImputer(**kwargs)
 

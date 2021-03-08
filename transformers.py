@@ -64,7 +64,7 @@ class PandasTransformer(BaseEstimator, TransformerMixin):
 
 
 class P_StandardScaler(PandasTransformer):
-    def __init__(self, TransFormerObject, columns=None):
+    def __init__(self, columns=None):
         """
         Like a StandardScaler. returns  a dataframe (not numpy)
 
@@ -73,7 +73,6 @@ class P_StandardScaler(PandasTransformer):
         :return: DataFrame, with the transformed values in the wanted columns.
         """
 
-        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
 
@@ -82,7 +81,7 @@ class P_StandardScaler(PandasTransformer):
 
 
 class P_MaxAbsScaler(PandasTransformer):
-    def __init__(self, TransFormerObject, columns=None):
+    def __init__(self, columns=None):
         """
         Like a MaxAbsScaler. returns  a dataframe (not numpy)
 
@@ -90,7 +89,6 @@ class P_MaxAbsScaler(PandasTransformer):
                   If empty it will work on all numeric columns
         :return: DataFrame, with the transformed values in the wanted columns.
         """
-        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
         self.columns = columns
@@ -98,13 +96,12 @@ class P_MaxAbsScaler(PandasTransformer):
 
 
 class P_MinMaxScaler(PandasTransformer):
-    def __init__(self, TransFormerObject, columns=None):
+    def __init__(self, columns=None):
         """
     Like a MinMaxScaler but it returns  a dataframe
     columns - list, list of columns names to apply the transformation on.If empty it will work on all numeric columns
     :return: DataFrame, with the transformed values in the wanted columns.
     """
-        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
 
@@ -113,13 +110,12 @@ class P_MinMaxScaler(PandasTransformer):
 
 
 class P_SimpleImputer(PandasTransformer):
-    def __init__(self, TransFormerObject, columns=None, **kwargs):
+    def __init__(self, columns=None, **kwargs):
         """
     Like a SimpleImputer but it returns  a dataframe
     columns - list, list of columns names to apply the transformation on.If empty it will work on all numeric columns
     :return: DataFrame, with the transformed values in the wanted columns.
     """
-        super().__init__(TransFormerObject, columns)
         if columns is None:
             columns = []
 

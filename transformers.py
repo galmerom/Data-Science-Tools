@@ -13,6 +13,7 @@ Pandas transformers classes:
 Other transformers:
     DownSizeTransformer - Use when a data downsize is needed.
 """
+import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler
 from sklearn.impute import SimpleImputer
@@ -32,6 +33,7 @@ class PandasTransformer(BaseEstimator, TransformerMixin):
         :return: DataFrame, with the transformed values in the wanted columns.
 
         ### Original code written by Dror geva and general purposes by Gal merom ###
+
         """
 
         if columns is None:
@@ -54,6 +56,10 @@ class PandasTransformer(BaseEstimator, TransformerMixin):
         scaled_cols = self.Transformer_model.transform(X_new[self.columns])
         X_new.loc[:, self.columns] = scaled_cols
         return X_new
+
+    def fit_transform(self, X, y=None):
+        self.fit(X, y=None)
+        return self.transform(self, X)
 
 
 class P_StandardScaler(PandasTransformer):
@@ -97,7 +103,7 @@ class P_MinMaxScaler(PandasTransformer):
     """
         if columns is None:
             columns = []
-        from sklearn.preprocessing import MinMaxScaler
+
         self.columns = columns
         self.Transformer_model = MinMaxScaler()
 

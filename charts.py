@@ -578,9 +578,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
 
 
 def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45):
-    for col in DF.columns:
-        if col == TargetCol:
-            continue
+    for col in DF.drop([TargetCol], axis=1).columns:
         plt.figure(figsize=Figsize)
         plt.title(col + ' ver. ' + TargetCol)
 

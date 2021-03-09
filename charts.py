@@ -550,7 +550,7 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
     plt.show()
 
 
-def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, s=10):
+def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, C='DarkBlue', S=20):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -560,7 +560,9 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
     :param Xlabelstr: string. The label of the x-axis.
     :param Ylabelstr: string. The label of the y-axis.
     :param RotAngle: integer. The rotation of the labels in the x-axis.
-    :param s: In case of a scatter plot how big should be the points.
+    :param  C:  In case of a scatter plot. Color of data points. Can get a name of color, an RGB or even a column name.
+                See scatter matplotlib documentation
+    :param S: In case of a scatter plot how big should be the points. See scatter matplotlib documentation
     :return: nothing
     """
 
@@ -571,7 +573,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
             if is_bool_dtype(DF[col].dtype):
                 ax = tempDF.boxplot(by=col, column=TargetCol, figsize=Figsize)
             elif is_numeric_dtype(DF[col].dtype):
-                ax = tempDF.plot(col, TargetCol, kind='scatter', figsize=Figsize, c=TargetCol, s=s)
+                ax = tempDF.plot(col, TargetCol, kind='scatter', figsize=Figsize, c=C, s=S)
             elif is_string_dtype(DF[col].dtype):
                 ax = tempDF.boxplot(by=col, column=TargetCol, figsize=Figsize)
 
@@ -587,7 +589,8 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 
 
-def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, PointSize=10):
+def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, PointSize=20,
+                      UseTargetAsHue=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -598,6 +601,8 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     :param Ylabelstr: string. The label of the y-axis.
     :param RotAngle: integer. The rotation of the labels in the x-axis.
     :param PointSize: In case of a scatter plot: how big should be the points.
+    :param UseTargetAsHue: bool. If true then use the target column value also as the hue value of the chart.
+                           (determine the colors based on the values)
     :return: nothing
     """
 
@@ -611,7 +616,10 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
             if is_bool_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
             elif is_numeric_dtype(DF[col].dtype):
-                ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, size=PointSize,hue=TargetCol)
+                if UseTargetAsHue:
+                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, size=PointSize, hue=TargetCol)
+                else:
+                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, size=PointSize)
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
 

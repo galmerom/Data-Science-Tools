@@ -621,7 +621,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
                 if UseTargetAsHue:
                     ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=PointSize, hue=TargetCol)
                 else:
-                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, size=PointSize)
+                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=PointSize)
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
 

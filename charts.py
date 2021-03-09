@@ -10,6 +10,7 @@ pairplotVerCol - Used for comparing each 2 features against the target feature. 
 pairplotVerColSNS - The same as pairplotVerCol but charts made with seaborn library
 AnomalyChart - Use this chart for showing inertia when using k - means
 plotCM - Plotting graphical confusion matrix, can also shows classification report
+ClassicGraphicCM - like plotCM except it does not get a model and perform a predict (gets y_pred and classes instead)
 """
 
 # Imports
@@ -723,7 +724,7 @@ def plotCM(X, y_true, modelName,
       titleSize:    Title font size
       fig_size:     Figure size
       InFontSize:   The font of the values inside the table
-      LabelSize:    Label font size
+      LabelSize:    Label font size (the classes names on the axes)
       ClassReport:  If true add a classification report at the bottom
 
     """
@@ -785,20 +786,10 @@ def plotCM(X, y_true, modelName,
                                     y_pred=y_pred))
 
 
-def ClassGraphicCM(y_pred, y_true,
-                   ModelClasses,
-                   normalize=False,
-                   title=None,
-                   cmap=plt.cm.Blues,
-                   precisionVal=2,
-                   titleSize=15,
-                   fig_size=(7, 5),
-                   InFontSize=15,
-                   LabelSize=15,
-                   ClassReport=True,
-                   ReturnAx=False):
+def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
+                     titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False):
     """
-    This function prints and plots the confusion matrix.
+    This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
     Normalization can be applied by setting `normalize=True`.
     Input:
         y_Pred:         Prediction array
@@ -811,7 +802,7 @@ def ClassGraphicCM(y_pred, y_true,
         titleSize:      Title font size
         fig_size:       Figure size
         InFontSize:     The font of the values inside the table
-        LabelSize:      Label font size
+        LabelSize:      Label font size (the classes names on the axes)
         ClassReport:    If true add a classification report at the bottom
         ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
 

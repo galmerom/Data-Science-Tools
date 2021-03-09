@@ -590,7 +590,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 
 
-def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=30,
+def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=50,
                       UseTargetAsHue=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.

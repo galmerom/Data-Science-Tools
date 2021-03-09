@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-# import warnings
+import warnings
 
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
@@ -565,6 +565,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
     :param S: In case of a scatter plot how big should be the points. See scatter matplotlib documentation
     :return: nothing
     """
+    warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
 
     for col in DF.drop([TargetCol], axis=1).columns:
         # noinspection PyBroadException
@@ -605,6 +606,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
                            (determine the colors based on the values)
     :return: nothing
     """
+    warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
 
     for col in DF.drop([TargetCol], axis=1).columns:
         plt.figure(figsize=Figsize)

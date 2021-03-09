@@ -550,7 +550,20 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
     plt.show()
 
 
-def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45):
+def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, s=10):
+    """
+    Show a chart for each feature against the target column. Using matplotlib.
+
+    :param DF: Dataframe as an input.
+    :param TargetCol: string. The target column.
+    :param Figsize: tuple, The figure size.
+    :param Xlabelstr: string. The label of the x-axis.
+    :param Ylabelstr: string. The label of the y-axis.
+    :param RotAngle: integer. The rotation of the labels in the x-axis.
+    :param s: In case of a scatter plot how big should be the points.
+    :return: nothing
+    """
+
     for col in DF.drop([TargetCol], axis=1).columns:
         # noinspection PyBroadException
         try:
@@ -558,7 +571,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
             if is_bool_dtype(DF[col].dtype):
                 ax = tempDF.boxplot(by=col, column=TargetCol, figsize=Figsize)
             elif is_numeric_dtype(DF[col].dtype):
-                ax = tempDF.plot(col, TargetCol, kind='scatter', figsize=Figsize)
+                ax = tempDF.plot(col, TargetCol, kind='scatter', figsize=Figsize, c=TargetCol, s=s)
             elif is_string_dtype(DF[col].dtype):
                 ax = tempDF.boxplot(by=col, column=TargetCol, figsize=Figsize)
 
@@ -574,10 +587,20 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 
 
-"""## Pair plot using sns.boxplot"""
+def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, PointSize=10):
+    """
+    Show a chart for each feature against the target column. Using matplotlib.
 
+    :param DF: Dataframe as an input
+    :param TargetCol: string. The target column.
+    :param Figsize: tuple, The figure size.
+    :param Xlabelstr: string. The label of the x-axis.
+    :param Ylabelstr: string. The label of the y-axis.
+    :param RotAngle: integer. The rotation of the labels in the x-axis.
+    :param PointSize: In case of a scatter plot: how big should be the points.
+    :return: nothing
+    """
 
-def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45):
     for col in DF.drop([TargetCol], axis=1).columns:
         plt.figure(figsize=Figsize)
         plt.title(col + ' ver. ' + TargetCol)
@@ -588,7 +611,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
             if is_bool_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
             elif is_numeric_dtype(DF[col].dtype):
-                ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF)
+                ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, size=PointSize,hue=TargetCol)
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
 

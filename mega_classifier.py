@@ -425,7 +425,6 @@ class MegaClassifier:
             CurrDf = df.groupby(param).mean()['mean_test_score']
             iRow, jCol = self.__nextij(iRow, jCol, NumOfCol)
             ax[iRow, jCol].plot(CurrDf, **kwargs)
-            print(param)
             ax[iRow, jCol].set_title(param[6:] + ' score', fontdict={'fontsize': 20, 'color': '#411a20'})
             # Do the same of standard deviation
             CurrDf = df.groupby(param).mean()['std_test_score']

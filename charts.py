@@ -550,7 +550,7 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
     plt.show()
 
 
-def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, C='DarkBlue', S=20):
+def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, C='DarkBlue', S=30):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -590,7 +590,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 
 
-def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, PointSize=20,
+def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, PointSize=30,
                       UseTargetAsHue=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.

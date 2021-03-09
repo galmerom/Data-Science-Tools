@@ -591,7 +591,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
 
 
 def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=30,
-                      C='DarkBlue', UseTargetAsHue=False):
+                      UseTargetAsHue=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -602,8 +602,6 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     :param Ylabelstr: string. The label of the y-axis.
     :param RotAngle: integer. The rotation of the labels in the x-axis.
     :param S: In case of a scatter plot: how big should be the points.
-    :param  C:  In case of a scatter plot. Color of data points. Can get a name of color, an RGB or even a column name.
-            See scatter matplotlib documentation
     :param UseTargetAsHue: bool. If true then use the target column value also as the hue value of the chart.
                            (determine the colors based on the values)
     :return: nothing
@@ -621,9 +619,9 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
             elif is_numeric_dtype(DF[col].dtype):
                 if UseTargetAsHue:
-                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=S, hue=TargetCol, c=C)
+                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=S, hue=TargetCol)
                 else:
-                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=S, c=C)
+                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=S)
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
 

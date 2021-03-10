@@ -630,14 +630,6 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 
 
-"""## Examples calling pairplot"""
-
-# warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
-# pairplotVerColSNS(CityData[CityData['adr']<900],'adr')
-
-# warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
-# pairplotVerCol(CityData,'adr')
-
 """# Anomaly chart"""
 
 

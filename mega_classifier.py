@@ -221,7 +221,7 @@ class MegaClassifier:
         self.classifiers['RandomForest'] = RandomForestClassifier(max_depth=2, random_state=self.Random)
         self.classifiers['DecisionTree'] = DecisionTreeClassifier(random_state=self.Random)
         self.classifiers['SVC'] = SVC(gamma='auto', random_state=self.Random, probability=True)
-        self.classifiers['LogisticRegression'] = LogisticRegression(random_state=self.Random)
+        self.classifiers['LogisticRegression'] = LogisticRegression(random_state=self.Random,max_iter=1000)
 
     # Define the cross validation parts for every model
     def __InitCV(self):

@@ -2,7 +2,7 @@
 
 """
 This module is used for creating a class that can run 5 classifiers using grid search with
-many defaults hyper parameters. Then the results can be analyzed in 6 different levels in order for finding
+many defaults hyper parameters. Then the results can be analyzed in 7 different levels in order for finding
 the best model and best hyper parameters or combine all/some models to ensemble prediction.
 Available levels:
 1. Score for each model (according to the input function scoring) - method:ScoreSummery
@@ -19,10 +19,13 @@ Available levels:
                                  return the data as a dataframe  even show it on a chart
                                  method:GetSpecificLabelScore
 6. Feature Importance: Dataframe and a chart to explain the feature importance for models that support it
+7. Confusion Matrix: Show a graphical confusion matrix for each model
 """
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
@@ -40,51 +43,54 @@ import charts
 
 class MegaClassifier:
     """
-    This MegaClassifier run the data on 5 models with grid search on default hyper parameters (that can be changed) .
+    This MegaClassifier runs the data on 5 models with grid search on default hyperparameters (that can be changed).
     Available classifiers: DecisionTree, LogisticRegression, RandomForest, SVC, XGBOOST
-    The grid search also contains cross validation.
-    The results can be seen in 6 different levels, see below for details
+    The grid search also contains cross-validation.
+    The results can be seen in 6 different levels; see below for details.
 
     Available methods:
 
     Classics methods:
-    fit: get X, y for fit. Fits all models if RelevantModels='all' can get a list of models that will be used instead.
-        if SaveEachRes = True (default=False) then every model will save the grid results to a file.
+    fit: get X, y for fit. It fits all models if RelevantModels='all'.
+         Can get a list of models that will be used instead.
+        If SaveEachRes = True (default=False), then every model will save the grid results to a file.
     predict: Run predict on all models. Returns a dataframe with y_pred on all models + y_true + Average column
-             + a column that sums the probability squared for each class and return the class with the highest score.
+             + a column that sums the probability squared for each class and returns the class with the highest score.
              The predict methods also create the results dictionary (read more in the GetResults method).
     predict_proba: Run predict_proba on all models. Then it updates the result dictionary by the predict_proba data.
-                    Unlike the predict methods the return dataframe contains the y_true and the a column that sums
-                    the probability squared for each class and return the class with the highest score.
+                    Unlike the predict methods, the return dataframe contains the y_true and the  column that sums
+                    the probability squared for each class and returned the class with the highest score.
 
     Get/set methods:
 
-    GetGridHyperParameters: Returns a dictionary contains hyper parameters used for grid search in a specific model.
-    SetGridHyperParameters: Gets a dictionary. Update the hyper parameters dic. and then update the relevant grid search
+    GetGridHyperParameters: Returns a dictionary contains hyperparameters used for grid search in a specific model.
+    SetGridHyperParameters: Gets a dictionary. Update the hyperparameters dictionary. and then update the relevant
+                            grid search
 
     Explore Outputs methods:
 
     ScoreSummery: Return a dataframe with the best score for every model add PredAllModelsByProba column that sums
-                 the probability squared for each class and return the class with the highest score.
-    GetResults: Return a dictionary of the results of all the models (the default is all models) or a specific model.
+                 the probability squared for each class and returned the class with the highest score.
+    GetResults: Return a dictionary of all the models' results (the default is all models) or a specific model.
                 Each dictionary contains the following:
                              {'Classifier':name of the classifier,
                                 'Score':The scoring after fitting and predict,
                                 'y_pred':An array with the predicted classes,
                                 'Best_param':Best parameters for the model (decided during the fit phase),
                                 'cv_results':Read the cv_results in the grid search documentation.
-                                             ItGets the result of every run in the grid search and the cross validation}
-    ParamInsight: Works on a specific model. Takes every hyper parameter and every value it gets and shows the score
-            it gets when we group by the parameter and value. That allow us to understand the effect this
-            hyper parameter has on the scoring.
-            It returns a grid of charts for each parameters that shows the mean score (after cross validation) and
-            the standard deviation of the cross validation
-    GetClassificationReport: Return a multi model classification report in the form of a dataframe
+                                             gets the result of every run in the grid search and the cross validation}
+    ParamInsight: Works on a specific model. It takes every hyperparameter and every value it gets and shows the score
+            it gets when we group by the parameter and value. That allows us to understand the effect this
+            hyperparameter has on the scoring.
+            It returns a grid of charts for each parameter that shows the mean score (after cross-validation) and
+            the standard deviation of the cross-validation
+    GetClassificationReport: Return a multi-model classification report in the form of a dataframe
     GetSpecificLabelScore: Slice the classification dataframe (get it by GetClassificationReport methods) by
-      specific labels only and  specific score types only
-    GetFeatureImportance: return a dataframe with the feature importance for every model that support this attribute
-                          As a default it also shows a chart with the combined results (normalized)  
-    """
+                           specific labels only and  specific score types only
+    GetFeatureImportance: return a dataframe with the feature importance for every model that supports this attribute
+                          As a default, it also shows a chart with the combined results (normalized)
+    ShowConfusionMatrix - Show a confusion matrix for each model
+"""
 
     def __init__(self, scoring=accuracy_score, ShortCrossValidParts=5, LongCrossValidParts=3, Class_weight='balanced',
                  MultiClass=False, BigDataSet=False, PathForOutFile='', verbose=0, RandomSeed=1234):
@@ -320,7 +326,7 @@ class MegaClassifier:
     def predict_proba(self, X, y):
         """
         Run predict_proba on every model that was fitted. Fills the results dictionary that includes the y_pred columns
-        Return a dataframe with: y_true,y_pred for every model, y_average (avg. for all y_pred), PredAllModelsByProba
+        Return a dataframe with: y_true,y_pred for every model, y_average (avg. of all y_pred), PredAllModelsByProba
                                  PredAllModelsByProba = column that sums the probability squared for each class and
                                  return the class with the highest score.
         """
@@ -506,7 +512,7 @@ class MegaClassifier:
         for lbl in ListOfLabels:
             if lbl in self.ClassReportDF.columns:
                 colList.append(lbl)
- 
+
         SlicedDf = self.ClassReportDF[self.ClassReportDF['Score_type'].isin(ListOfScoreTypes)][colList]
         if ShowChart:
             NumOfLabels = len(ListOfLabels)
@@ -529,8 +535,8 @@ class MegaClassifier:
             return
         for clf in self.RelevantModel:
             classes = self.Label2Num.inverse_transform(self.GridClassifiers[clf].classes_)
-            charts.ClassGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
-                                  fig_size=FigSize, ClassReport=False, ReturnAx=True)
+            charts.ClassicGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
+                                    fig_size=FigSize, ClassReport=False, ReturnAx=True)
 
     def __UpdateFeatureImportance(self, X):
         """
@@ -581,7 +587,7 @@ class MegaClassifier:
             pltDf = self.featuresImport.head(TopFeatures)['SumOfColNormalize']
             charts.BarCharts([pltDf], ['Feature importance - sum of models'], WithPerc=3, LabelPrecision=2)
         return self.featuresImport
-    
+
     # Save the results dictionary of a specific model to a file
     def __Save2File(self, cls):
         df = pd.DataFrame(self.GridClassifiers[cls].cv_results_)
@@ -620,3 +626,42 @@ class MegaClassifier:
     @staticmethod
     def __GetLocalTime():
         return str(time.localtime().tm_hour) + ':' + str(time.localtime().tm_min) + ':' + str(time.localtime().tm_sec)
+
+
+class MultiMegaClassifiers:
+    def __init__(self, SavePath=''):
+        self.MultiMC = {}
+        self.path = SavePath
+        self.FirstModel = True
+        self.AllResult = None
+        self.ScoreDf4All = None
+        self.ClassReportAll = None
+
+    def insertModel(self, MC_model, strName):
+        self.MultiMC[strName] = MC_model
+        # Save the model dictionary
+        with open(self.path + '/MultiMC.MC', 'wb') as MultiMCFile:
+            pickle.dump(self.MultiMC, MultiMCFile)
+
+    def ReadMultiMCFromFile(self):
+        with open(self.path + '/MultiMC.MC', 'rb') as MultiMCFile:
+            self.MultiMC = pickle.load(MultiMCFile)
+            print('Read completed')
+
+    def __InsertFirstModel(self, MC_model, strName):
+        self.AllResult[strName] = MC_model.GetResults()
+        self.ScoreDf4All = MC_model.ScoreSummery()
+        if type(self.ScoreDf4All) != type(pd.DataFrame()):
+            return
+        self.ScoreDf4All[strName] = strName
+        # Classification report
+        self.ClassReportAll = MC_model.GetClassificationReport()
+        self.ClassRprtAll[strName] = strName
+        # Find specific label and score
+
+        self.SpecificLS_All[strName] = strName
+        # Feature importance
+        Feature_all = MC_model.GetFeatureImportance(ShowChart=False)
+        Feature_all[strName] = strName
+
+        self.FirstModel = False

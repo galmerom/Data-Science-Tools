@@ -656,13 +656,19 @@ class MultiMegaClassifiers:
                 print('Read completed')
 
     def CreateCombinedData(self):
+        mdl = ''
         for mdl in self.MultiMC.keys():
             if self.FirstModel:
                 self.__InsertFirstModel(self.MultiMC[mdl], mdl)
             else:
                 self.__InsertNoneFirstModel(self.MultiMC[mdl], mdl)
+
+        NumOfModels = len(self.MultiMC[mdl].RelevantModel)
+        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:NumOfModels].max(axis=1)
+        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:NumOfModels].idxmax(axis=1, skipna=True)
         self.FirstModel = True
         print("Done")
+
     # def GetBestModelAndParameters(self):
 
     def SaveModel(self):

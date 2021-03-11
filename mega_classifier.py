@@ -635,6 +635,8 @@ class MultiMegaClassifiers:
         self.path = SavePath
         self.FirstModel = True
 
+        self.NumOfModels = 0
+
         self.AllResult = {}
         self.ScoreDf4All = pd.DataFrame()
         self.ClassReportAll = pd.DataFrame()
@@ -663,9 +665,9 @@ class MultiMegaClassifiers:
             else:
                 self.__InsertNoneFirstModel(self.MultiMC[mdl], mdl)
 
-        NumOfModels = len(self.MultiMC[mdl].RelevantModel)
-        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:NumOfModels].max(axis=1)
-        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:NumOfModels].idxmax(axis=1, skipna=True)
+        self.NumOfModels = len(self.MultiMC[mdl].RelevantModel)
+        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels-1].max(axis=1)
+        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels-1].idxmax(axis=1, skipna=True)
         self.FirstModel = True
         print("Done")
 

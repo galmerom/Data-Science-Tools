@@ -688,7 +688,7 @@ class MultiMegaClassifiers:
         self.AllResult['Model'] = MC_model.GetResults()
         # Score
         CurrScore = MC_model.ScoreSummery()
-        if not isinstance(self.ScoreDf4All, pd.DataFrame):
+        if not isinstance(CurrScore, pd.DataFrame):
             return
         CurrScore['Model'] = strName
         self.ScoreDf4All = self.ScoreDf4All.append(CurrScore)

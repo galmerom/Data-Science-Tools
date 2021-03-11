@@ -642,16 +642,14 @@ class MultiMegaClassifiers:
 
     def insertModel(self, MC_model, strName):
         self.MultiMC[strName] = MC_model
-        # Save the model dictionary
-        with open(self.path + '/MultiMC.MC', 'wb') as MultiMCFile:
-            pickle.dump(self.MultiMC, MultiMCFile)
+        self.SaveModel()
         print('\nModel: ' + strName + ' Inserted and saved.\n')
 
     def ReadMultiMCFromFile(self, path=''):
         if path == '':
             with open(self.path + '/MultiMC.MC', 'rb') as MultiMCFile:
                 self.MultiMC = pickle.load(MultiMCFile)
-                print('Read completed')
+                print('Read completed MultiMC.MC')
         else:
             with open(path, 'rb') as MultiMCFile:
                 self.MultiMC = pickle.load(MultiMCFile)
@@ -666,6 +664,11 @@ class MultiMegaClassifiers:
         self.FirstModel = True
         print("Done")
     # def GetBestModelAndParameters(self):
+
+    def SaveModel(self):
+        # Save the model dictionary
+        with open(self.path + '/MultiMC.MC', 'wb') as MultiMCFile:
+            pickle.dump(self.MultiMC, MultiMCFile)
 
     def __InsertFirstModel(self, MC_model, strName):
         self.AllResult[strName] = MC_model.GetResults()

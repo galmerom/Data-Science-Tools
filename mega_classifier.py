@@ -635,9 +635,9 @@ class MultiMegaClassifiers:
         self.path = SavePath
         self.FirstModel = True
 
-        self.AllResult = None
-        self.ScoreDf4All = None
-        self.ClassReportAll = None
+        self.AllResult = {}
+        self.ScoreDf4All = pd.DataFrame()
+        self.ClassReportAll = pd.DataFrame()
 
     def insertModel(self, MC_model, strName):
         self.MultiMC[strName] = MC_model

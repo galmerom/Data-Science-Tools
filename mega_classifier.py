@@ -638,6 +638,7 @@ class MultiMegaClassifiers:
         self.AllResult = {}
         self.ScoreDf4All = pd.DataFrame()
         self.ClassReportAll = pd.DataFrame()
+        self.Feature_all = pd.DataFrame()
 
     def insertModel(self, MC_model, strName):
         self.MultiMC[strName] = MC_model
@@ -678,8 +679,8 @@ class MultiMegaClassifiers:
         self.ClassReportAll['Model'] = strName
 
         # Feature importance
-        Feature_all = MC_model.GetFeatureImportance(ShowChart=False)
-        Feature_all['Model'] = strName
+        self.Feature_all = MC_model.GetFeatureImportance(ShowChart=False)
+        self.Feature_all['Model'] = strName
 
         self.FirstModel = False
 

@@ -279,6 +279,7 @@ class MegaClassifier:
                                  PredAllModelsByProba = sums the probability squared for each class and return
                                  the class with the highest score.
         """
+        AccumSumProba = None
         if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
             return
@@ -633,6 +634,7 @@ class MultiMegaClassifiers:
         self.MultiMC = {}
         self.path = SavePath
         self.FirstModel = True
+
         self.AllResult = None
         self.ScoreDf4All = None
         self.ClassReportAll = None
@@ -642,26 +644,59 @@ class MultiMegaClassifiers:
         # Save the model dictionary
         with open(self.path + '/MultiMC.MC', 'wb') as MultiMCFile:
             pickle.dump(self.MultiMC, MultiMCFile)
+        print('\nModel: ' + strName + ' Inserted and saved.\n')
 
-    def ReadMultiMCFromFile(self):
-        with open(self.path + '/MultiMC.MC', 'rb') as MultiMCFile:
-            self.MultiMC = pickle.load(MultiMCFile)
-            print('Read completed')
+    def ReadMultiMCFromFile(self, path=''):
+        if path == '':
+            with open(self.path + '/MultiMC.MC', 'rb') as MultiMCFile:
+                self.MultiMC = pickle.load(MultiMCFile)
+                print('Read completed')
+        else:
+            with open(path, 'rb') as MultiMCFile:
+                self.MultiMC = pickle.load(MultiMCFile)
+                print('Read completed')
+
+    def CreateCombinedData(self):
+        for mdl in self.MultiMC.keys():
+            if self.FirstModel:
+                self.__InsertFirstModel(self.MultiMC[mdl], mdl)
+            else:
+                self.__InsertNoneFirstModel(self.MultiMC[mdl], mdl)
+        self.FirstModel = True
+        print("Done")
+    # def GetBestModelAndParameters(self):
 
     def __InsertFirstModel(self, MC_model, strName):
         self.AllResult[strName] = MC_model.GetResults()
         self.ScoreDf4All = MC_model.ScoreSummery()
-        if type(self.ScoreDf4All) != type(pd.DataFrame()):
+        if not isinstance(self.ScoreDf4All, pd.DataFrame):
+            self.ScoreDf4All = pd.DataFrame()
             return
-        self.ScoreDf4All[strName] = strName
+        self.ScoreDf4All['Model'] = strName
         # Classification report
         self.ClassReportAll = MC_model.GetClassificationReport()
-        self.ClassRprtAll[strName] = strName
-        # Find specific label and score
+        self.ClassReportAll['Model'] = strName
 
-        self.SpecificLS_All[strName] = strName
         # Feature importance
         Feature_all = MC_model.GetFeatureImportance(ShowChart=False)
-        Feature_all[strName] = strName
+        Feature_all['Model'] = strName
 
         self.FirstModel = False
+
+    def __InsertNoneFirstModel(self, MC_model, strName):
+        self.AllResult['Model'] = MC_model.GetResults()
+        # Score
+        CurrScore = MC_model.ScoreSummery()
+        if not isinstance(self.ScoreDf4All, pd.DataFrame):
+            return
+        CurrScore['Model'] = strName
+        self.ScoreDf4All = self.ScoreDf4All.append(CurrScore)
+        # Classification report
+        CurrClassReport = MC_model.GetClassificationReport()
+        CurrClassReport['Model'] = strName
+        self.ClassReportAll = self.ClassReportAll.append(CurrClassReport)
+
+        # Feature importance
+        Curr_Feature = MC_model.GetFeatureImportance(ShowChart=False)
+        Curr_Feature['Model'] = strName
+        self.Feature_all = self.Feature_all.append(Curr_Feature)

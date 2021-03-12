@@ -645,7 +645,7 @@ class MultiMegaClassifiers:
     def insertModel(self, MC_model, strName):
         self.MultiMC[strName] = MC_model
         self.SaveModel()
-        print('\nModel: ' + strName + ' Inserted and saved.\n')
+        print('\nModel: ' + str(strName) + ' Inserted and saved.\n')
 
     def ReadMultiMCFromFile(self, path=''):
         if path == '':

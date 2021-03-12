@@ -663,8 +663,8 @@ class MultiMegaClassifiers:
             with open(path, 'rb') as MultiMCFile:
                 currMultiMC = pickle.load(MultiMCFile)
             # Every path may have more than one model
-            for MultiModel in currMultiMC.MultiMC.keys():
-                self.insertModel(currMultiMC.MultiMC[MultiModel], MultiModel)
+            for MultiModel in currMultiMC.keys():
+                self.insertModel(currMultiMC[MultiModel], MultiModel)
 
         print('Read completed')
 

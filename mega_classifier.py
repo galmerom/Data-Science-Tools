@@ -657,6 +657,17 @@ class MultiMegaClassifiers:
                 self.MultiMC = pickle.load(MultiMCFile)
                 print('Read completed')
 
+    def ReadMultiMCFromManyFiles(self, PathList):
+        for path in PathList:
+            # Read from each path
+            with open(path, 'rb') as MultiMCFile:
+                currMultiMC = pickle.load(MultiMCFile)
+            # Every path may have more than one model
+            for MultiModel in currMultiMC.MultiMC.keys():
+                self.insertModel(currMultiMC.MultiMC[MultiModel], MultiModel)
+
+        print('Read completed')
+
     def CreateCombinedData(self):
         mdl = ''
         for mdl in self.MultiMC.keys():
@@ -666,8 +677,8 @@ class MultiMegaClassifiers:
                 self.__InsertNoneFirstModel(self.MultiMC[mdl], mdl)
 
         self.NumOfModels = len(self.MultiMC[mdl].RelevantModel)
-        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels-1].max(axis=1)
-        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels-1].idxmax(axis=1, skipna=True)
+        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels - 1].max(axis=1)
+        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels - 1].idxmax(axis=1, skipna=True)
         self.FirstModel = True
         print("Done")
 

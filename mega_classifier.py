@@ -658,6 +658,13 @@ class MultiMegaClassifiers:
                 print('Read completed')
 
     def ReadMultiMCFromManyFiles(self, PathList):
+        """
+        This method takes a path list of saved multi MegaClassifier object and join them in one model.
+        We use this method if we split the tests. Every split saved the result in different path.
+
+        :param PathList: A list of strings that are the paths to the saved model
+        :return:
+        """
         for path in PathList:
             # Read from each path
             with open(path, 'rb') as MultiMCFile:

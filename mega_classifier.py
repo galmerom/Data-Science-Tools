@@ -630,6 +630,14 @@ class MegaClassifier:
 
 
 class MultiMegaClassifiers:
+    """
+    This class is used when we want to use the Mega classifier on different segments of a dataset.
+
+    For example:
+    If we have a dataset that contains a feature of the area. What if each area contains data that seems very different.
+    We want to run a model for each area separately. We also want to use the MegaClassifier to find the best model for
+    each area. This class helps to manage the data and the processes.
+    """
     def __init__(self, SavePath=''):
         self.MultiMC = {}
         self.path = SavePath
@@ -684,8 +692,8 @@ class MultiMegaClassifiers:
                 self.__InsertNoneFirstModel(self.MultiMC[mdl], mdl)
 
         self.NumOfModels = len(self.MultiMC[mdl].RelevantModel)
-        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels - 1].max(axis=1)
-        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels - 1].idxmax(axis=1, skipna=True)
+        self.ScoreDf4All['Max score'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels].max(axis=1)
+        self.ScoreDf4All['BestModel'] = self.ScoreDf4All.iloc[:, 0:self.NumOfModels].idxmax(axis=1, skipna=True)
         self.FirstModel = True
         print("Done")
 

@@ -654,15 +654,16 @@ class MultiMegaClassifiers:
         self.SliceByColumn = ''
 
     def FitSlicersMultiModel(self, Slicer, X_train, X_test, y_train, y_test, RelevantModels='all', **kwargs):
-        for clm in X_train[Slicer].unique():
+        self.SliceByColumn = Slicer
+        for clm in X_train[self.SliceByColumn].unique():
             print('Start working on: ' + str(clm))
-            Curr_X_train = X_train[X_train[Slicer] == clm]
-            Curr_y_train = y_train[X_train[Slicer] == clm]
-            Curr_X_test = X_test[X_test[Slicer] == clm]
-            Curr_y_test = y_test[X_test[Slicer] == clm]
+            Curr_X_train = X_train[X_train[self.SliceByColumn] == clm]
+            Curr_y_train = y_train[X_train[self.SliceByColumn] == clm]
+            Curr_X_test = X_test[X_test[self.SliceByColumn] == clm]
+            Curr_y_test = y_test[X_test[self.SliceByColumn] == clm]
 
-            Curr_X_train = Curr_X_train.drop([Slicer], axis=1)
-            Curr_X_test = Curr_X_test.drop([Slicer], axis=1)
+            Curr_X_train = Curr_X_train.drop([self.SliceByColumn], axis=1)
+            Curr_X_test = Curr_X_test.drop([self.SliceByColumn], axis=1)
 
             CurrMegaCls = MegaClassifier(**kwargs)
             CurrMegaCls.fit(Curr_X_train, Curr_y_train, RelevantModels)

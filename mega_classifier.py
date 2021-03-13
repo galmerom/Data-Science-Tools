@@ -722,6 +722,7 @@ class MultiMegaClassifiers:
             x = x.drop(self.SliceByColumn, axis=1)
             y = Y[X[self.SliceByColumn] == Slice]
             self.BestSliceModel[Slice]['Best estimator'].fit(x, y)
+            print('Slice' + str(Slice) + ' was fitted')
 
     def UseBestModel2Predict(self, X):
 

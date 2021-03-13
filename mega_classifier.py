@@ -722,7 +722,7 @@ class MultiMegaClassifiers:
             x = x.drop(self.SliceByColumn, axis=1)
             y = Y[X[self.SliceByColumn] == Slice]
             self.BestSliceModel[Slice]['Best estimator'].fit(x, y)
-            print('Slice' + str(Slice) + ' was fitted')
+            print('Slice ' + str(Slice) + ' was fitted')
 
     def UseBestModel2Predict(self, X):
 
@@ -737,7 +737,7 @@ class MultiMegaClassifiers:
                 yPred_DF = CurrModel
                 Flag = False
             else:
-                yPred_DF = pd.concat(yPred_DF, CurrModel)
+                yPred_DF = yPred_DF.append(CurrModel)
 
         yPred_DF = yPred_DF.reindex(X.index.tolist())
 

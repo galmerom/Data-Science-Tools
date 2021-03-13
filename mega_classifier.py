@@ -197,7 +197,7 @@ class MegaClassifier:
                      'random_state': [self.Random], 'class_weight': [self.Weights]},
                     {'solver': ['liblinear'], 'penalty': ['l1', 'l2'], 'C': [10, 1, 0.1, 0.01],
                      'random_state': [self.Random], 'class_weight': [self.Weights]},
-                    {'solver': ['lbfgs'], 'penalty': ['none'],
+                    {'solver': ['lbfgs'],
                      'random_state': [self.Random], 'class_weight': [self.Weights]}]
 
             self.Parameters['RandomForest'] = {'n_estimators': [50, 100, 200], 'criterion': ['gini', 'entropy'],

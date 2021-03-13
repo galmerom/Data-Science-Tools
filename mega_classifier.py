@@ -710,31 +710,31 @@ class MultiMegaClassifiers:
         if not isinstance(self.ScoreDf4All, pd.DataFrame):
             self.ScoreDf4All = pd.DataFrame()
             return
-        self.ScoreDf4All['Model'] = strName
+        self.ScoreDf4All['Slice'] = strName
         # Classification report
         self.ClassReportAll = MC_model.GetClassificationReport()
-        self.ClassReportAll['Model'] = strName
+        self.ClassReportAll['Slice'] = strName
 
         # Feature importance
         self.Feature_all = MC_model.GetFeatureImportance(ShowChart=False)
-        self.Feature_all['Model'] = strName
+        self.Feature_all['Slice'] = strName
 
         self.FirstModel = False
 
     def __InsertNoneFirstModel(self, MC_model, strName):
-        self.AllResult['Model'] = MC_model.GetResults()
+        self.AllResult['Slice'] = MC_model.GetResults()
         # Score
         CurrScore = MC_model.ScoreSummery()
         if not isinstance(CurrScore, pd.DataFrame):
             return
-        CurrScore['Model'] = strName
+        CurrScore['Slice'] = strName
         self.ScoreDf4All = self.ScoreDf4All.append(CurrScore)
         # Classification report
         CurrClassReport = MC_model.GetClassificationReport()
-        CurrClassReport['Model'] = strName
+        CurrClassReport['Slice'] = strName
         self.ClassReportAll = self.ClassReportAll.append(CurrClassReport)
 
         # Feature importance
         Curr_Feature = MC_model.GetFeatureImportance(ShowChart=False)
-        Curr_Feature['Model'] = strName
+        Curr_Feature['Slice'] = strName
         self.Feature_all = self.Feature_all.append(Curr_Feature)

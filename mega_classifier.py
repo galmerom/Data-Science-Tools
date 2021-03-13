@@ -713,7 +713,7 @@ class MultiMegaClassifiers:
             BestEstimator = clone(self.MultiMC[Slice].GridClassifiers[BestClassifier].estimator)
             self.BestSliceModel[Slice] = {'Best name': BestClassifier, 'Best parameters': BestEstimator.get_params,
                                           'Best estimator': BestEstimator}
-            return self.BestSliceModel
+        return self.BestSliceModel
 
     def __InsertFirstModel(self, MC_model, strName):
         self.AllResult[strName] = MC_model.GetResults()

@@ -651,6 +651,7 @@ class MultiMegaClassifiers:
         self.ScoreDf4All = pd.DataFrame()
         self.ClassReportAll = pd.DataFrame()
         self.Feature_all = pd.DataFrame()
+        self.SliceByColumn = ''
 
     def insertModel(self, MC_model, strName):
         self.MultiMC[strName] = MC_model

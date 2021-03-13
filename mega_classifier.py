@@ -209,7 +209,7 @@ class MegaClassifier:
             self.Parameters['SVC'] = {'C': [10, 1, 0.1, 0.01], 'kernel': ['poly', 'rbf', 'sigmoid'],
                                       'degree': [3, 5, 10],
                                       'random_state': [self.Random], 'class_weight': [self.Weights]}
-            self.Parameters['XGBOOST'] = {'n_estimators': [100, 300], 'learning_rate': [0.1],
+            self.Parameters['XGBOOST'] = {'n_estimators': [100, 500], 'learning_rate': [0.1],
                                           'gamma': [0.001, 0.01, 0.1, 1, 5],
                                           'max_depth': [6, 15, 30], 'lambda': [1e-5, 1e-2, 0.1, 1, 100],
                                           'min_child_weight': [5, 10],

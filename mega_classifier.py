@@ -653,6 +653,22 @@ class MultiMegaClassifiers:
         self.Feature_all = pd.DataFrame()
         self.SliceByColumn = ''
 
+    def FitSlicersMultiModel(self, Slicer, X_train, X_test, y_train, y_test, RelevantModels='all', **kwargs):
+        for clm in X_train[Slicer].unique():
+            print('Start working on: ' + str(clm))
+            Curr_X_train = X_train[X_train[Slicer] == clm]
+            Curr_y_train = y_train[X_train[Slicer] == clm]
+            Curr_X_test = X_test[X_test[Slicer] == clm]
+            Curr_y_test = y_test[X_test[Slicer] == clm]
+
+            Curr_X_train = Curr_X_train.drop([Slicer], axis=1)
+            Curr_X_test = Curr_X_test.drop([Slicer], axis=1)
+
+            CurrMegaCls = MegaClassifier(**kwargs)
+            CurrMegaCls.fit(Curr_X_train, Curr_y_train, RelevantModels)
+            CurrMegaCls.predict(Curr_X_test, Curr_y_test)
+            self.insertModel(CurrMegaCls, clm)
+
     def insertModel(self, MC_model, strName):
         self.MultiMC[strName] = MC_model
         self.SaveModel()

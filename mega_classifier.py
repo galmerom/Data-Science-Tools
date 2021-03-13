@@ -715,6 +715,23 @@ class MultiMegaClassifiers:
                                           'Best estimator': BestEstimator}
         return self.BestSliceModel
 
+    def UseBestModel2Predict(self, X):
+
+        Flag = True
+        for Slice in self.BestSliceModel:
+            x = X[X['Slice'] == Slice]
+            y_pred = self.BestSliceModel[Slice]['Best estimator'].predict(x)
+            CurrModel = pd.DataFrame(y_pred, index=x.index.tolist(), columns=['y_predict'])
+            if Flag:
+                yPred_DF = CurrModel
+                Flag = False
+            else:
+                yPred_DF = pd.concat(yPred_DF, CurrModel)
+
+        yPred_DF = yPred_DF.reindex(X.index.tolist())
+
+        return yPred_DF
+
     def __InsertFirstModel(self, MC_model, strName):
         self.AllResult[strName] = MC_model.GetResults()
         self.ScoreDf4All = MC_model.ScoreSummery()

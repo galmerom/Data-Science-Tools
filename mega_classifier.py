@@ -716,6 +716,13 @@ class MultiMegaClassifiers:
                                           'Best estimator': BestEstimator}
         return self.BestSliceModel
 
+    def UseBestModel2Fit(self, X, Y):
+        for Slice in self.BestSliceModel:
+            x = X[X[self.SliceByColumn] == Slice]
+            x = x.drop(self.SliceByColumn, axis=1)
+            y = Y[X[self.SliceByColumn] == Slice]
+            self.BestSliceModel[Slice]['Best estimator'].fit(x, y)
+
     def UseBestModel2Predict(self, X):
 
         Flag = True

@@ -26,12 +26,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+from xgboost import XGBClassifier
 
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
-from xgboost import XGBClassifier
+from sklearn.base import clone
 
 from sklearn.metrics import accuracy_score, make_scorer, classification_report
 from sklearn import preprocessing
@@ -638,11 +639,12 @@ class MultiMegaClassifiers:
     We want to run a model for each area separately. We also want to use the MegaClassifier to find the best model for
     each area. This class helps to manage the data and the processes.
     """
+
     def __init__(self, SavePath=''):
         self.MultiMC = {}
         self.path = SavePath
         self.FirstModel = True
-
+        self.BestSliceModel = {}
         self.NumOfModels = 0
 
         self.AllResult = {}
@@ -703,6 +705,14 @@ class MultiMegaClassifiers:
         # Save the model dictionary
         with open(self.path + '/MultiMC.MC', 'wb') as MultiMCFile:
             pickle.dump(self.MultiMC, MultiMCFile)
+
+    def BuildBestModelPerSlice(self):
+        BestModelDic = pd.Series(self.ScoreDf4All.BestModel.values, index=self.ScoreDf4All.Slice).to_dict()
+        for Slice in BestModelDic.keys():
+            BestClassifier = BestModelDic[Slice]
+            BestEstimator = clone(self.MultiMC[Slice].GridClassifiers[BestClassifier].estimator)
+            self.BestSliceModel[Slice] = {'Best name': BestClassifier, 'Best parameters': BestEstimator.get_params,
+                                          'Best estimator': BestEstimator}
 
     def __InsertFirstModel(self, MC_model, strName):
         self.AllResult[strName] = MC_model.GetResults()

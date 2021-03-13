@@ -721,7 +721,8 @@ class MultiMegaClassifiers:
         Flag = True
         for Slice in self.BestSliceModel:
             x = X[X[self.SliceByColumn] == Slice]
-            print(x)
+            x = x.drop(self.SliceByColumn)
+
             y_pred = self.BestSliceModel[Slice]['Best estimator'].predict(x)
             CurrModel = pd.DataFrame(y_pred, index=x.index.tolist(), columns=['y_predict'])
             if Flag:

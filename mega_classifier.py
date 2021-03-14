@@ -210,10 +210,10 @@ class MegaClassifier:
                                       'degree': [3, 5, 10],
                                       'random_state': [self.Random], 'class_weight': [self.Weights]}
             self.Parameters['XGBOOST'] = {'n_estimators': [100, 500], 'learning_rate': [0.1],
-                                          'gamma': [0.001, 0.01, 0.1, 1, 5],
-                                          'max_depth': [6, 15, 30], 'lambda': [1e-5, 1e-2, 0.1, 1, 100],
+                                          'gamma': [0.001, 0.01, 0.1, 1]
+                                          'max_depth': [6, 15, 30], 'lambda': [1e-5, 1e-2,  1, 100],
                                           'min_child_weight': [5, 10],
-                                          'alpha': [1e-5, 1e-2, 0.1, 1, 100], 'seed': [self.Random]}
+                                          'alpha': [1e-5, 1e-2, 1, 100], 'seed': [self.Random]}
 
     # Creates an instance of each classifier
     def __InitClassifier(self):

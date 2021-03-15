@@ -211,7 +211,7 @@ class MegaClassifier:
                                       'random_state': [self.Random], 'class_weight': [self.Weights]}
             self.Parameters['XGBOOST'] = {'n_estimators': [100, 500], 'learning_rate': [0.1],
                                           'gamma': [0.001, 0.01, 0.1, 1],
-                                          'max_depth': [6, 15, 30], 'lambda': [1e-5, 1e-2,  1, 100],
+                                          'max_depth': [6, 15, 30], 'lambda': [1e-5, 1e-2, 1, 100],
                                           'min_child_weight': [5, 10],
                                           'alpha': [1e-5, 1e-2, 1, 100], 'seed': [self.Random]}
 
@@ -759,6 +759,10 @@ class MultiMegaClassifiers:
         yPred_DF = yPred_DF.reindex(X.index.tolist())
 
         return yPred_DF
+
+    def SetBestModelInSlice(self, Slice, Model, strModelName, ):
+        self.BestSliceModel[Slice] = {'Best name': strModelName, 'Best parameters': Model.get_params,
+                                      'Best estimator': Model}
 
     def __InsertFirstModel(self, MC_model, strName):
         self.AllResult[strName] = MC_model.GetResults()

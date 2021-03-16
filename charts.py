@@ -878,6 +878,6 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
     # Create a data frame to return
     FI_DF = pd.DataFrame(FI, index=X.columns, columns=['feature_importance'])
     pltDf = FI_DF['feature_importance'].head(TopFeatures)
-    pltDf = pltDf.sort_values(by='feature_importance', ascending=False)
-    BarCharts([pltDf], ['Feature importance'], WithPerc=3, LabelPrecision=Label_Precision)
+    # pltDf = pltDf.sort_values(by='feature_importance', ascending=False)
+    # BarCharts([pltDf], ['Feature importance'], WithPerc=3, LabelPrecision=Label_Precision)
     return pltDf

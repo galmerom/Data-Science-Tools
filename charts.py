@@ -11,6 +11,7 @@ pairplotVerColSNS - The same as pairplotVerCol but charts made with seaborn libr
 AnomalyChart - Use this chart for showing inertia when using k - means
 plotCM - Plotting graphical confusion matrix, can also shows classification report
 ClassicGraphicCM - like plotCM except it does not get a model and perform a predict (gets y_pred and classes instead)
+PlotFeatureImportance - Plot feature importance and return a dataframe
 """
 
 # Imports
@@ -857,3 +858,25 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         print('\n\nClassification_report\n*********************\n')
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
+
+
+def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precision=2):
+    """
+    Show feature importance as a chart and returns a dataframe
+    :param X: dataframe. The dataframe used for the fitting
+    :param model: classifier. The model used for the fitting
+    :param TopFeatures: int. The number of features to show in the chart
+    :param ShowChart: bool. If true, then show the chart
+    :param Label_Precision: int. The number of digits after the period in the value label
+    :return: Dataframe and show chart
+    """
+    FI = model.feature_importances_
+    featuresDic = {}  # a dict to hold feature_name: feature_importance
+    for feature, importance in zip(X.columns, FI):
+        featuresDic[feature] = importance  # add the name/value pair
+
+    # Create a data frame to return
+    FI_DF = pd.DataFrame(FI, index=X.columns, columns=['feature_importance'])
+    pltDf = FI_DF['feature_importance'].head(TopFeatures)
+    BarCharts([pltDf], ['Feature importance'], WithPerc=3, LabelPrecision=Label_Precision)
+    return pltDf

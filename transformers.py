@@ -148,7 +148,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         X_fit_new = X.copy()
 
         if self.NegValueProcess == 1:
-            MinMax = MinMaxScaler()
+            MinMax = P_MinMaxScaler()
             train_X_new = MinMax.fit_transform(X_fit_new, y)
         elif self.NegValueProcess == 2:
             for col in X_fit_new.columns():
@@ -166,7 +166,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         mask = self.Transformer_model.get_support()  # list of booleans
         new_features = []  # The list of  K best features
         # noinspection PyTypeChecker
-        for Flag, feature in zip(mask, X_new.columns()):
+        for Flag, feature in zip(mask, X_new.columns):
             if Flag:
                 new_features.append(feature)
 

@@ -21,6 +21,7 @@ from sklearn.impute import SimpleImputer
 from pandas.api.types import is_numeric_dtype
 
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.feature_selection import SelectKBest, chi2, f_classif, mutual_info_classif, f_regression
 
 
 class PandasTransformer(BaseEstimator, TransformerMixin):
@@ -121,6 +122,40 @@ class P_SimpleImputer(PandasTransformer):
 
         self.columns = columns
         self.Transformer_model = SimpleImputer(**kwargs)
+
+
+class P_SelectKBest(BaseEstimator, TransformerMixin):
+    def __init__(self, score_func=f_classif, k=10):
+        """
+        Like a SelectKBest but it returns  a dataframe
+        score_func - callable, default = f_classif
+                    Function taking two arrays X and y, and returning a pair of arrays (scores, pvalues) or a single
+                     array with scores.
+        k - int or “all”, default=10
+            Number of top features to select. The “all” option bypasses selection, for use in a parameter search.
+        :return: DataFrame, with the selected columns.
+        """
+        self.score_func = score_func
+        self.k = k
+        self.Transformer_model = SelectKBest(self.score_func, self.k)
+
+    def fit(self, X, y=None):
+        self.Transformer_model.fit(X, y)
+        return self
+
+    def transform(self, X):
+        X_new = X.copy()
+        X_np = self.Transformer_model.transform(X_new)
+
+        # The results are np array we change them back to dataframe
+        mask = self.Transformer_model.get_support()  # list of booleans
+        new_features = []  # The list of  K best features
+        for Flag, feature in zip(mask, X_new.columns):
+            if Flag:
+                new_features.append(feature)
+
+        X_newDF = pd.DataFrame(X_np, columns=new_features, index=X_new.index)
+        return X_newDF
 
 
 class BinaryDownSizeTransformer(BaseEstimator, TransformerMixin):

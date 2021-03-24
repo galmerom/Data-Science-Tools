@@ -166,7 +166,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         mask = self.Transformer_model.get_support()  # list of booleans
         new_features = []  # The list of  K best features
         # noinspection PyTypeChecker
-        for Flag, feature in zip(mask, X_new.columns):
+        for Flag, feature in zip(mask, X_new.columns()):
             if Flag:
                 new_features.append(feature)
 

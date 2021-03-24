@@ -23,6 +23,7 @@ from pandas.api.types import is_numeric_dtype
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection import SelectKBest, chi2, f_classif, mutual_info_classif, f_regression
+from sklearn.preprocessing import LabelEncoder
 
 
 class PandasTransformer(BaseEstimator, TransformerMixin):
@@ -145,7 +146,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         self.Transformer_model = SelectKBest(self.score_func, self.k)
         self.NegValueProcess = DealWithNegValues
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None, **kwargs):
         X_fit_new = X.copy()
 
         if self.NegValueProcess == 1:
@@ -157,7 +158,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
                     X_fit_new[col] = X_fit_new[col] + abs(X_fit_new[col].min())
 
         # run the following in all cases
-        self.Transformer_model.fit(X_fit_new, y)
+        self.Transformer_model.fit(X_fit_new, y, **kwargs)
         return self
 
     def transform(self, X):
@@ -174,6 +175,27 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
 
         X_newDF = pd.DataFrame(X_np, columns=new_features, index=X_new.index)
         return X_newDF
+
+    def fit_transform(self, X, y=None, **kwargs):
+        self.fit(X, y=None, **kwargs)
+        return self.transform(X)
+
+
+class P_LabelEncoder(BaseEstimator, TransformerMixin):
+    def __init__(self, columns=None, **kwargs):
+        """
+        Like a LabelEncoder but it returns  a dataframe
+        columns - list of columns names to apply the transformation on.If empty it will work on all numeric columns
+        :return: DataFrame, with the transformed values in the wanted columns.
+        """
+        if columns is None:
+            columns = []
+
+        self.columns = columns
+        self.Transformer_model = LabelEncoder(**kwargs)
+
+    def inverse_transform(self, X):
+        return self.Transformer_model.inverse_transform(X)
 
 
 class BinaryDownSizeTransformer(BaseEstimator, TransformerMixin):

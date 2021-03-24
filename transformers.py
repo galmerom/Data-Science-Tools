@@ -181,7 +181,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         return self.transform(X)
 
 
-class P_LabelEncoder(BaseEstimator, TransformerMixin):
+class P_LabelEncoder(PandasTransformer):
     def __init__(self, columns=None, **kwargs):
         """
         Like a LabelEncoder but it returns  a dataframe

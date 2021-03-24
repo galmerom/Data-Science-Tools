@@ -156,7 +156,6 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
                 if X_fit_new[col].min() < 0:
                     X_fit_new[col] = X_fit_new[col] + abs(X_fit_new[col].min())
 
-        print(X_fit_new)
         # run the following in all cases
         self.Transformer_model.fit(X_fit_new, y)
         return self

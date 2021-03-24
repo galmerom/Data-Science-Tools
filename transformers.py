@@ -177,7 +177,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         return X_newDF
 
     def fit_transform(self, X, y=None, **kwargs):
-        self.fit(X, y=None, **kwargs)
+        self.fit(X, y=y, **kwargs)
         return self.transform(X)
 
 

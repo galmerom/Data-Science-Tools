@@ -125,7 +125,7 @@ class P_SimpleImputer(PandasTransformer):
 
 
 class P_SelectKBest(BaseEstimator, TransformerMixin):
-    def __init__(self, score_func=f_classif, k=10):
+    def __init__(self, score_func=f_classif, k=10, DealWithNegValues=0):
         """
         Like a SelectKBest but it returns  a dataframe
         score_func - callable, default = f_classif
@@ -133,14 +133,29 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
                      array with scores.
         k - int or “all”, default=10
             Number of top features to select. The “all” option bypasses selection, for use in a parameter search.
+        DealWithNegValues - What to do with negative values:
+                                                            0 - Don't do anything
+                                                            1 - Use MinMaxScaler
+                                                            2 - Add minimum value for each column
         :return: DataFrame, with the selected columns.
         """
         self.score_func = score_func
         self.k = k
         self.Transformer_model = SelectKBest(self.score_func, self.k)
+        self.NegValueProcess = DealWithNegValues
 
     def fit(self, X, y=None):
-        self.Transformer_model.fit(X, y)
+        X_fit_new = X.copy()
+
+        if self.NegValueProcess == 1:
+            MinMax = MinMaxScaler()
+            train_X_new = MinMax.fit_transform(X_fit_new, y)
+        elif self.NegValueProcess == 2:
+            for col in X_fit_new.columns():
+                X_fit_new[col] = X_fit_new[col] + X_fit_new[col].min()
+
+        # run the following in all cases
+        self.Transformer_model.fit(X_fit_new, y)
         return self
 
     def transform(self, X):
@@ -150,6 +165,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         # The results are np array we change them back to dataframe
         mask = self.Transformer_model.get_support()  # list of booleans
         new_features = []  # The list of  K best features
+        # noinspection PyTypeChecker
         for Flag, feature in zip(mask, X_new.columns):
             if Flag:
                 new_features.append(feature)

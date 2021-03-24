@@ -153,7 +153,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         elif self.NegValueProcess == 2:
             for col in X_fit_new.columns:
                 X_fit_new[col] = X_fit_new[col] + X_fit_new[col].min()
-
+        print(X_fit_new)
         # run the following in all cases
         self.Transformer_model.fit(X_fit_new, y)
         return self

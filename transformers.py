@@ -152,6 +152,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
             train_X_new = MinMax.fit_transform(X_fit_new, y)
         elif self.NegValueProcess == 2:
             for col in X_fit_new.columns:
+                print('Col: ' + col + ' Min: ' + str(X_fit_new[col].min()))
                 X_fit_new[col] = X_fit_new[col] + X_fit_new[col].min()
         print(X_fit_new)
         # run the following in all cases

@@ -9,6 +9,7 @@ Pandas transformers classes:
     P_MaxAbsScaler -    MaxAbsScaler that returns a dataframe.
     P_MinMaxScaler -    MinMaxScaler that returns a dataframe.
     P_SimpleImputer -   SimpleImputer that returns a dataframe.
+    P_SelectKBest -     P_SelectKBest returns a dataframe + can deal with negative number if chosen
 
 Other transformers:
     BinaryDownSizeTransformer - Use when a data downsize is needed.
@@ -149,10 +150,10 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
 
         if self.NegValueProcess == 1:
             MinMax = P_MinMaxScaler()
-            train_X_new = MinMax.fit_transform(X_fit_new, y)
+            X_fit_new = MinMax.fit_transform(X_fit_new, y)
         elif self.NegValueProcess == 2:
             for col in X_fit_new.columns:
-                if X_fit_new[col].min() < 0 :
+                if X_fit_new[col].min() < 0:
                     X_fit_new[col] = X_fit_new[col] + abs(X_fit_new[col].min())
 
         print(X_fit_new)

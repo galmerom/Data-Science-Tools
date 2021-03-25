@@ -553,6 +553,11 @@ class MegaClassifier:
                                                                         title=NewTitle)
         return SlicedDf
 
+    def SaveModel(self):
+        # Save the model dictionary
+        with open(self.OutPath = + '/MegClass.save', 'wb') as MultiMCFile:
+            pickle.dump(self, MultiMCFile)
+
     def ShowConfusionMatrix(self, FigSize=(7, 5)):
         """
         Show the confusion matrix of all models.

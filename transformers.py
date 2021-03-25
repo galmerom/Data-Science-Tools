@@ -9,7 +9,8 @@ Pandas transformers classes:
     P_MaxAbsScaler -    MaxAbsScaler that returns a dataframe.
     P_MinMaxScaler -    MinMaxScaler that returns a dataframe.
     P_SimpleImputer -   SimpleImputer that returns a dataframe.
-    P_SelectKBest -     P_SelectKBest returns a dataframe + can deal with negative number if chosen
+    P_SelectKBest -     Returns a dataframe + can deal with negative number if chosen
+    P_LabelEncoder -    Label encoder to all relevant columns (that are not numeric and not in the not transformed list)
 
 Other transformers:
     BinaryDownSizeTransformer - Use when a data downsize is needed.

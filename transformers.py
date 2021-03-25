@@ -184,9 +184,20 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
 
 
 class P_LabelEncoder:
-    def __init__(self):
+    """
+    A dataframe LabelEncoder can get columns that shouldn't be transformed
+    """
+    def __init__(self, ListOfColNotToTransformed=None):
+        """
+
+        :param ListOfColNotToTouch: List of columns headers that should not be transformed
+        """
         self.ColLabelsDict = defaultdict(LabelEncoder)
         self.TransformedCol = {}
+        if ListOfColNotToTransformed is None:
+            self.ColNotToTouch = []
+        else:
+            self.ColNotToTouch = ListOfColNotToTransformed
 
     def fit_transform(self, Dataframe):
         df = Dataframe.copy()
@@ -206,6 +217,8 @@ class P_LabelEncoder:
         return Output
 
     def ColConvertor(self, Col, ActionType):
+        if Col in self.ColNotToTouch:
+            return Col
         colName = Col.name
         NumCol = is_numeric_dtype(Col.dtype)
         if NumCol and not ActionType == 'inverse_transform':

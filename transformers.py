@@ -217,7 +217,7 @@ class P_LabelEncoder:
         return Output
 
     def ColConvertor(self, Col, ActionType):
-        if Col in self.ColNotToTouch:
+        if Col.name in self.ColNotToTouch:
             return Col
         colName = Col.name
         NumCol = is_numeric_dtype(Col.dtype)

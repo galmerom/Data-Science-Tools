@@ -67,6 +67,7 @@ class MegaClassifier:
     GetGridHyperParameters: Returns a dictionary contains hyperparameters used for grid search in a specific model.
     SetGridHyperParameters: Gets a dictionary. Update the hyperparameters dictionary. and then update the relevant
                             grid search
+    CopyData: Copy only the values of class to a new instance but not the methods
 
     Explore Outputs methods:
 
@@ -156,6 +157,33 @@ class MegaClassifier:
         self.__InitClassifier()
         self.__InitCV()
         self.__BuildGridSearch()
+
+    def CopyData(self):
+        Out = MegaClassifier()
+        Out.Random = self.Random
+        Out.multiclass = self.multiclass
+        Out.bigDataSet = self.bigDataSet
+        Out.OutPath = self.OutPath
+        Out.Weights = self.Weights
+        Out.verbose = self.verbose
+        Out.classifiers = self.classifiers
+        Out.GridClassifiers = self.GridClassifiers
+        Out.Parameters = self.Parameters
+        Out.Score = self.Score
+        Out.OriginalScoring = self.OriginalScoring
+        Out.Scv = self.Scv = ShortCrossValidParts
+        Out.Lcv = self.Lcv = LongCrossValidParts
+        Out.cv = self.cv
+        Out.BestParam = self.BestParam
+        Out.Label2Num = self.Label2Num
+        Out.PossibleModels = self.PossibleModels
+        Out.RelevantModel = self.RelevantModel
+        Out.results = self.results
+        Out.OutputDF = self.OutputDF
+        Out.featuresImport = self.featuresImport
+        Out.ClassReportDF = self.ClassReportDF
+        Out.NumOfClassesLessThen2 = self.NumOfClassesLessThen2
+        return Out
 
     # Update the relevant parameter per model, big data and multiclass
     def __DefaultsGridParameters(self):

@@ -555,7 +555,7 @@ class MegaClassifier:
 
     def SaveModel(self):
         # Save the model dictionary
-        with open(self.OutPath = + '/MegClass.save', 'wb') as MultiMCFile:
+        with open(self.OutPath + '/MegClass.save', 'wb') as MultiMCFile:
             pickle.dump(self, MultiMCFile)
 
     def ShowConfusionMatrix(self, FigSize=(7, 5)):

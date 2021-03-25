@@ -287,7 +287,7 @@ class MegaClassifier:
         X_new = X.copy()
         y_new_label = y.copy()  # Array of y with labels
         y_newNum = self.Label2Num.transform(y_new_label)  # Array of y after label encoder
-        self.OutputDF = pd.DataFrame()  # Restart OutputDF
+        self.OutputDF = pd.DataFrame(index=X_new.index)  # Restart OutputDF
         self.OutputDF['y_true'] = y_new_label
         for mdl in self.RelevantModel:
             y_pred = self.GridClassifiers[mdl].predict(X_new)

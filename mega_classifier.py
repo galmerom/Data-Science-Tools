@@ -485,7 +485,7 @@ class MegaClassifier:
         for clf in self.results.keys():
             # Creates a dataframe from the classification report per model and append all to one dataframe
             y_pred = self.results[clf]['y_pred']
-            CRDic = classification_report(y_pred, self.OutputDF['y_true'], output_dict=True)
+            CRDic = classification_report(self.OutputDF['y_true'], y_pred, output_dict=True)
             tempDF = pd.DataFrame.from_dict(CRDic)
             tempDF.reset_index(inplace=True)
             tempDF.rename(columns={'index': 'Score_type'}, inplace=True)

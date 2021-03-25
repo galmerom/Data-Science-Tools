@@ -171,8 +171,8 @@ class MegaClassifier:
         Out.Parameters = self.Parameters
         Out.Score = self.Score
         Out.OriginalScoring = self.OriginalScoring
-        Out.Scv = self.Scv = ShortCrossValidParts
-        Out.Lcv = self.Lcv = LongCrossValidParts
+        Out.Scv = self.Scv
+        Out.Lcv = self.Lcv
         Out.cv = self.cv
         Out.BestParam = self.BestParam
         Out.Label2Num = self.Label2Num

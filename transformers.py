@@ -186,23 +186,44 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
 class P_LabelEncoder:
     def __init__(self):
         self.ColLabelsDict = defaultdict(LabelEncoder)
+        self.TransformedCol = {}
 
     def fit_transform(self, Dataframe):
         df = Dataframe.copy()
         # Encoding the variable
-        Output = df.apply(lambda x: self.ColLabelsDict[x.name].fit_transform(x))
+        Output = df.apply(lambda x: self.ColConvertor(x, ActionType='fit_transform'))
         return Output
 
     def transform(self, Dataframe):
         df = Dataframe.copy()
-        Output = df.apply(lambda x: self.ColLabelsDict[x.name].transform(x))
+        Output = df.apply(lambda x: self.ColConvertor(x, ActionType='transform'))
         return Output
 
     def inverse_transform(self, Dataframe):
         df = Dataframe.copy()
         # Inverse the encoded
-        Output = df.apply(lambda x: self.ColLabelsDict[x.name].inverse_transform(x))
+        Output = df.apply(lambda x: self.ColConvertor(x, ActionType='inverse_transform'))
         return Output
+
+    def ColConvertor(self, Col, ActionType):
+        colName = Col.name
+        NumCol = is_numeric_dtype(Col.dtype)
+        if NumCol and not ActionType == 'inverse_transform':
+            self.TransformedCol[colName] = False
+            return Col
+        else:
+            self.TransformedCol[colName] = True
+
+        if ActionType == 'fit_transform':
+            return self.ColLabelsDict[colName].fit_transform(Col)
+        elif ActionType == 'transform':
+            return self.ColLabelsDict[colName].transform(Col)
+
+        elif ActionType == 'inverse_transform':
+            if self.TransformedCol[colName]:
+                return self.ColLabelsDict[colName].inverse_transform(Col)
+            else:
+                return Col
 
 
 class BinaryDownSizeTransformer(BaseEstimator, TransformerMixin):

@@ -19,11 +19,13 @@ import pandas as pd
 
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler
 from sklearn.impute import SimpleImputer
+# noinspection PyProtectedMember
 from pandas.api.types import is_numeric_dtype
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection import SelectKBest, chi2, f_classif, mutual_info_classif, f_regression
 from sklearn.preprocessing import LabelEncoder
+from collections import defaultdict
 
 
 class PandasTransformer(BaseEstimator, TransformerMixin):
@@ -101,10 +103,10 @@ class P_MaxAbsScaler(PandasTransformer):
 class P_MinMaxScaler(PandasTransformer):
     def __init__(self, columns=None):
         """
-    Like a MinMaxScaler but it returns  a dataframe
-    columns - list, list of columns names to apply the transformation on.If empty it will work on all numeric columns
-    :return: DataFrame, with the transformed values in the wanted columns.
-    """
+        Like a MinMaxScaler but it returns  a dataframe
+        columns - list.list of columns names to apply the transformation on.If empty it will work on all numeric columns
+        :return: DataFrame, with the transformed values in the wanted columns.
+        """
         if columns is None:
             columns = []
 
@@ -181,21 +183,26 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         return self.transform(X)
 
 
-class P_LabelEncoder(PandasTransformer):
-    def __init__(self, columns=None, **kwargs):
-        """
-        Like a LabelEncoder but it returns  a dataframe
-        columns - list of columns names to apply the transformation on.If empty it will work on all numeric columns
-        :return: DataFrame, with the transformed values in the wanted columns.
-        """
-        if columns is None:
-            columns = []
+class P_LabelEncoder:
+    def __init__(self):
+        self.ColLabelsDict = defaultdict(LabelEncoder)
 
-        self.columns = columns
-        self.Transformer_model = LabelEncoder(**kwargs)
+    def fit_transform(self, Dataframe):
+        df = Dataframe.copy()
+        # Encoding the variable
+        Output = df.apply(lambda x: self.ColLabelsDict[x.name].fit_transform(x))
+        return Output
 
-    def inverse_transform(self, X):
-        return self.Transformer_model.inverse_transform(X)
+    def transform(self, Dataframe):
+        df = Dataframe.copy()
+        Output = df.apply(lambda x: self.ColLabelsDict[x.name].transform(x))
+        return Output
+
+    def inverse_transform(self, Dataframe):
+        df = Dataframe.copy()
+        # Inverse the encoded
+        Output = df.apply(lambda x: self.ColLabelsDict[x.name].inverse_transform(x))
+        return Output
 
 
 class BinaryDownSizeTransformer(BaseEstimator, TransformerMixin):

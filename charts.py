@@ -782,7 +782,8 @@ def plotCM(X, y_true, modelName,
 
 
 def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
-                     titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False):
+                     titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False,
+                     RemoveColorBar=False):
     """
     This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
     Normalization can be applied by setting `normalize=True`.
@@ -800,6 +801,7 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         LabelSize:      Label font size (the classes names on the axes)
         ClassReport:    If true add a classification report at the bottom
         ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
+        RemoveColorBar: bool. If True then don't show the color bar
 
     """
 
@@ -823,7 +825,8 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
     fig, ax = plt.subplots(figsize=fig_size)
 
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
-    ax.figure.colorbar(im, ax=ax)
+    if not RemoveColorBar:
+        ax.figure.colorbar(im, ax=ax)
 
     # We want to show all ticks...
     ax.set(xticks=np.arange(cm.shape[1]),

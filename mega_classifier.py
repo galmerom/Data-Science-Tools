@@ -558,11 +558,15 @@ class MegaClassifier:
         with open(self.OutPath + '/MegClass.save', 'wb') as MultiMCFile:
             pickle.dump(self, MultiMCFile)
 
-    def ShowConfusionMatrix(self, FigSize=(7, 5)):
+    def ShowConfusionMatrix(self, FigSize=(7, 5), RemoveColorBar=False, normalize=False, precisionVal=2):
         """
         Show the confusion matrix of all models.
 
         :param FigSize: tuple of 2 integers. Changing the figsize.
+        :param normalize: If True then normalize the by row
+        :param RemoveColorBar: bool. If True then don't show the color bar
+        :param precisionVal: Precision values (0.00 = 2)
+        :
         :return: Nothing
         """
         if self.NumOfClassesLessThen2:
@@ -571,7 +575,8 @@ class MegaClassifier:
         for clf in self.RelevantModel:
             classes = self.Label2Num.inverse_transform(self.GridClassifiers[clf].classes_)
             charts.ClassicGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
-                                    fig_size=FigSize, ClassReport=False, ReturnAx=True)
+                                    fig_size=FigSize, ClassReport=False, ReturnAx=True, normalize=normalize,
+                                    precisionVal=precisionVal, RemoveColorBar=RemoveColorBar)
 
     def __UpdateFeatureImportance(self, X):
         """

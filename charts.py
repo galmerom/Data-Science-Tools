@@ -702,7 +702,8 @@ def plotCM(X, y_true, modelName,
            fig_size=(7, 5),
            InFontSize=15,
            LabelSize=15,
-           ClassReport=True):
+           ClassReport=True,
+           RemoveColorBar=False):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -719,7 +720,7 @@ def plotCM(X, y_true, modelName,
       InFontSize:   The font of the values inside the table
       LabelSize:    Label font size (the classes names on the axes)
       ClassReport:  If true add a classification report at the bottom
-
+      RemoveColorBar: bool. If True then don't show the color bar
     """
 
     if not title:
@@ -743,7 +744,8 @@ def plotCM(X, y_true, modelName,
     fig, ax = plt.subplots(figsize=fig_size)
 
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
-    ax.figure.colorbar(im, ax=ax)
+    if not RemoveColorBar:
+        ax.figure.colorbar(im, ax=ax)
 
     # We want to show all ticks...
     ax.set(xticks=np.arange(cm.shape[1]),

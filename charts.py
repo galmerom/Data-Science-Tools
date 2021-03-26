@@ -849,7 +849,7 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
             ax.text(j, i, format(cm[i, j], fmt),
                     ha="center", va="center",
                     color="white" if cm[i, j] > thresh else "black", fontdict={'fontsize': InFontSize})
-    fig.tight_layout()
+    # fig.tight_layout()
     plt.xlim(-0.5, len(np.unique(y_true)) - 0.5)
     plt.ylim(len(np.unique(y_true)) - 0.5, -0.5)
     plt.xlabel(xlabel='Predicted label', fontdict={'fontsize': 15, 'color': '#411a20'})

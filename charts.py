@@ -790,7 +790,7 @@ def plotCM(X, y_true, modelName,
 
 def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
                      titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False,
-                     RemoveColorBar=False, ShowAUCVal=True, pos_label=1):
+                     RemoveColorBar=False, ShowAUCVal=False, pos_label=1):
     """
     This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
     Normalization can be applied by setting `normalize=True`.

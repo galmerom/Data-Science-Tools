@@ -897,7 +897,7 @@ def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X=None):
         probas = cls.predict_proba(X)[:, 1]
         roc_values = []
         for thresh in np.linspace(0, 1, 100):
-            preds = get_preds(thresh, probas)
+            preds = __get_preds(thresh, probas)
             tn, fp, fn, tp = confusion_matrix(y_test, preds).ravel()
             tpr = tp / (tp + fn)
             fpr = fp / (fp + tn)

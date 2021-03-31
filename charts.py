@@ -785,7 +785,7 @@ def plotCM(X, y_true, modelName,
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
     if ShowAUCVal:
-        Show_AucAndROC(y_true, y_pred, pos_label, modelName)
+        Show_AucAndROC(y_true, y_pred, pos_label, modelName,X)
 
 
 def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
@@ -876,7 +876,7 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         Show_AucAndROC(y_true, y_pred, pos_label)
 
 
-def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X_test=None):
+def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X=None):
     """
     Shows the AUC value, and if a classification model is given, it also offers a plot of the ROC curve
     Source code: https://medium.com/@kunanba/what-is-roc-auc-and-how-to-visualize-it-in-python-f35708206663
@@ -886,7 +886,7 @@ def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X_test=None):
     :param y_true: The actual values (ground true)
     :param y_pred: The predicted values
     :param pos_label: The label that is considered a positive value
-    :param X_test: array. Used for predict proba
+    :param X: array. Used for predict proba
     :return: nothing
 
     """
@@ -894,7 +894,7 @@ def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X_test=None):
     result = auc(fpr, tpr)
     print('\n\n AUC value: ' + str(result))
     if cls is not None:
-        probas = cls.predict_proba(X_test)[:, 1]
+        probas = cls.predict_proba(X)[:, 1]
         roc_values = []
         for thresh in np.linspace(0, 1, 100):
             preds = get_preds(thresh, probas)

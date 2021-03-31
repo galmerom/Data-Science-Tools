@@ -12,6 +12,8 @@ AnomalyChart - Use this chart for showing inertia when using k - means
 plotCM - Plotting graphical confusion matrix, can also shows classification report
 ClassicGraphicCM - like plotCM except it does not get a model and perform a predict (gets y_pred and classes instead)
 PlotFeatureImportance - Plot feature importance and return a dataframe
+Show_AucAndROC - Show AUC value and if a classifier model is given it also show the ROC chart
+
 """
 
 # Imports
@@ -21,10 +23,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 
-from pandas.api.types import is_string_dtype
-from pandas.api.types import is_numeric_dtype
-from pandas.api.types import is_bool_dtype
-from sklearn.metrics import confusion_matrix, classification_report, roc_curve,auc
+from pandas.api.types import is_string_dtype, is_numeric_dtype, is_bool_dtype
+
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
 
 
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
@@ -113,9 +114,9 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
             ax.set_ylabel(Ylabelstr[0], fontsize=Ylabelstr[1])
             # ax.set_xticklabels(labels)
             if ChartType == 'barh':
-                MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue)
+                MaxVal = __add_Horizontal_value_labels(ax, Fsize, WithPerc, PadValue=PadValue)
             else:
-                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue, precision=LabelPrecision)
+                MaxVal = __add_value_labels(ax, Fsize, WithPerc, PadValue=PadValue, precision=LabelPrecision)
 
             if RemarkAvail:
                 __AddTextOnTheCorner(ax, txt2show[counter])
@@ -704,7 +705,8 @@ def plotCM(X, y_true, modelName,
            LabelSize=15,
            ClassReport=True,
            RemoveColorBar=False,
-           ShowAUCVal=True):
+           ShowAUCVal=False,
+           pos_label=1):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -722,7 +724,8 @@ def plotCM(X, y_true, modelName,
       LabelSize:    Label font size (the classes names on the axes)
       ClassReport:  If true add a classification report at the bottom
       RemoveColorBar: bool. If True then don't show the color bar
-      ShowAUCVal: bool. If true then show the auc value
+      ShowAUCVal: bool. If true then show the auc value and ROC chart
+      pos_label: str. The positive value for calculating the AUC
     """
 
     if not title:
@@ -782,14 +785,12 @@ def plotCM(X, y_true, modelName,
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
     if ShowAUCVal:
-        fpr, tpr, thresholds = roc_curve(y_true, y_pred, pos_label=2)
-        result = auc(fpr, tpr)
-        print('\n\n AUC value: ' + str(result))
+        Show_AucAndROC(y_true, y_pred, pos_label, modelName)
 
 
 def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
                      titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False,
-                     RemoveColorBar=False,ShowAUCVal=True):
+                     RemoveColorBar=False, ShowAUCVal=True, pos_label=1):
     """
     This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
     Normalization can be applied by setting `normalize=True`.
@@ -809,6 +810,7 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
         RemoveColorBar: bool. If True then don't show the color bar
         ShowAUCVal: bool. If true then show the auc value
+        pos_label: str. The positive value for calculating the AUC
 
     """
 
@@ -871,9 +873,48 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
     if ShowAUCVal:
-        fpr, tpr, thresholds = roc_curve(y_true, y_pred, pos_label=2)
-        result = auc(fpr, tpr)
-        print('\n\n AUC value: ' + str(result))
+        Show_AucAndROC(y_true, y_pred, pos_label)
+
+
+def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None):
+    """
+    Shows the AUC value, and if a classification model is given, it also offers a plot of the ROC curve
+    Source code: https://medium.com/@kunanba/what-is-roc-auc-and-how-to-visualize-it-in-python-f35708206663
+
+    :param cls: classifier model. If no classifier is given then it will only show the AUC value
+    :param y_true: The actual values (ground true)
+    :param y_pred: The predicted values
+    :param pos_label: The label that is considered a positive value
+    :return: nothing
+
+    """
+    fpr, tpr, thresholds = roc_curve(y_true, y_pred, pos_label=pos_label)
+    result = auc(fpr, tpr)
+    print('\n\n AUC value: ' + str(result))
+    if cls is not None:
+        probas = lr.predict_proba(X_test)[:, 1]
+        roc_values = []
+        for thresh in np.linspace(0, 1, 100):
+            preds = get_preds(thresh, probas)
+            tn, fp, fn, tp = confusion_matrix(y_test, preds).ravel()
+            tpr = tp / (tp + fn)
+            fpr = fp / (fp + tn)
+            roc_values.append([tpr, fpr])
+        tpr_values, fpr_values = zip(*roc_values)
+        fig, ax = plt.subplots(figsize=(10, 7))
+        ax.plot(fpr_values, tpr_values)
+        ax.plot(np.linspace(0, 1, 100),
+                np.linspace(0, 1, 100),
+                label='baseline',
+                linestyle='--')
+        plt.title('Receiver Operating Characteristic Curve', fontsize=18)
+        plt.ylabel('TPR', fontsize=16)
+        plt.xlabel('FPR', fontsize=16)
+        plt.legend(fontsize=12)
+
+
+def __get_preds(threshold, probabilities):
+    return [1 if prob > threshold else 0 for prob in probabilities]
 
 
 def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precision=2):

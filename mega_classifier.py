@@ -185,6 +185,10 @@ class MegaClassifier:
         Out.NumOfClassesLessThen2 = self.NumOfClassesLessThen2
         return Out
 
+    def SaveModels2Disk(self,path):
+        with open(path + '/GridClassifiers.save', 'wb') as OutFile:
+            pickle.dump(self.GridClassifiers, OutFile)
+
     # Update the relevant parameter per model, big data and multiclass
     def __DefaultsGridParameters(self):
         if self.bigDataSet:

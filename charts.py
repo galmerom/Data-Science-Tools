@@ -24,7 +24,7 @@ import warnings
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_bool_dtype
-from sklearn.metrics import confusion_matrix, classification_report, roc_curve
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve,auc
 
 
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
@@ -782,8 +782,8 @@ def plotCM(X, y_true, modelName,
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
     if ShowAUCVal:
-        fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred, pos_label=2)
-        result = metrics.auc(fpr, tpr)
+        fpr, tpr, thresholds = roc_curve(y_true, y_pred, pos_label=2)
+        result = auc(fpr, tpr)
         print('\n\n AUC value: ' + str(result))
 
 
@@ -871,8 +871,8 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
     if ShowAUCVal:
-        fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred, pos_label=2)
-        result = metrics.auc(fpr, tpr)
+        fpr, tpr, thresholds = roc_curve(y_true, y_pred, pos_label=2)
+        result = auc(fpr, tpr)
         print('\n\n AUC value: ' + str(result))
 
 

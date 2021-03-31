@@ -301,7 +301,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         fig, axes = plt.subplots(nrows=NumRows, ncols=NumCol, figsize=ChartSize)
 
     if NumRows == 1 and NumCol == 1:
-        ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadValue, StackBarPer=StackBarPer,
+        ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadValue=PadVal, StackBarPer=StackBarPer,
                                              ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc,
                                              ColorInt=ColorInt)
         ax.title.set_size(TitleSize)
@@ -876,15 +876,17 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         Show_AucAndROC(y_true, y_pred, pos_label)
 
 
-def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None):
+def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X_test=None):
     """
     Shows the AUC value, and if a classification model is given, it also offers a plot of the ROC curve
     Source code: https://medium.com/@kunanba/what-is-roc-auc-and-how-to-visualize-it-in-python-f35708206663
+
 
     :param cls: classifier model. If no classifier is given then it will only show the AUC value
     :param y_true: The actual values (ground true)
     :param y_pred: The predicted values
     :param pos_label: The label that is considered a positive value
+    :param X_test: array. Used for predict proba
     :return: nothing
 
     """
@@ -892,7 +894,7 @@ def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None):
     result = auc(fpr, tpr)
     print('\n\n AUC value: ' + str(result))
     if cls is not None:
-        probas = lr.predict_proba(X_test)[:, 1]
+        probas = cls.predict_proba(X_test)[:, 1]
         roc_values = []
         for thresh in np.linspace(0, 1, 100):
             preds = get_preds(thresh, probas)

@@ -24,7 +24,7 @@ import warnings
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_bool_dtype
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve
 
 
 def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=15, TitleSize=30,
@@ -703,7 +703,8 @@ def plotCM(X, y_true, modelName,
            InFontSize=15,
            LabelSize=15,
            ClassReport=True,
-           RemoveColorBar=False):
+           RemoveColorBar=False,
+           ShowAUCVal=True):
     """
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
@@ -712,7 +713,7 @@ def plotCM(X, y_true, modelName,
       y_true:       Target column
       modelName:    The model used to predict AFTER FIT
       normalize:    If True then normalize the by row
-      title:        Chart title
+      title:        string. Chart title
       cmap:         color map
       precisionVal: Precision values (0.00 = 2)
       titleSize:    Title font size
@@ -721,6 +722,7 @@ def plotCM(X, y_true, modelName,
       LabelSize:    Label font size (the classes names on the axes)
       ClassReport:  If true add a classification report at the bottom
       RemoveColorBar: bool. If True then don't show the color bar
+      ShowAUCVal: bool. If true then show the auc value
     """
 
     if not title:
@@ -779,11 +781,15 @@ def plotCM(X, y_true, modelName,
         print('\n\nClassification_report\n*********************\n')
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
+    if ShowAUCVal:
+        fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred, pos_label=2)
+        result = metrics.auc(fpr, tpr)
+        print('\n\n AUC value: ' + str(result))
 
 
 def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
                      titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False,
-                     RemoveColorBar=False):
+                     RemoveColorBar=False,ShowAUCVal=True):
     """
     This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
     Normalization can be applied by setting `normalize=True`.
@@ -802,6 +808,7 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         ClassReport:    If true add a classification report at the bottom
         ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
         RemoveColorBar: bool. If True then don't show the color bar
+        ShowAUCVal: bool. If true then show the auc value
 
     """
 
@@ -849,7 +856,7 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
             ax.text(j, i, format(cm[i, j], fmt),
                     ha="center", va="center",
                     color="white" if cm[i, j] > thresh else "black", fontdict={'fontsize': InFontSize})
-    # fig.tight_layout()
+    fig.tight_layout()
     plt.xlim(-0.5, len(np.unique(y_true)) - 0.5)
     plt.ylim(len(np.unique(y_true)) - 0.5, -0.5)
     plt.xlabel(xlabel='Predicted label', fontdict={'fontsize': 15, 'color': '#411a20'})
@@ -863,6 +870,10 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         print('\n\nClassification_report\n*********************\n')
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
+    if ShowAUCVal:
+        fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred, pos_label=2)
+        result = metrics.auc(fpr, tpr)
+        print('\n\n AUC value: ' + str(result))
 
 
 def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precision=2):

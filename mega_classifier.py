@@ -185,9 +185,24 @@ class MegaClassifier:
         Out.NumOfClassesLessThen2 = self.NumOfClassesLessThen2
         return Out
 
-    def SaveModels2Disk(self,path):
+    def SaveModels2Disk(self, path):
         with open(path + '/GridClassifiers.save', 'wb') as OutFile:
             pickle.dump(self.GridClassifiers, OutFile)
+        with open(path + '/BestParam.save', 'wb') as OutFile:
+            pickle.dump(self.BestParam, OutFile)
+
+    def GetModelFromDisk(self, path, OverWrite=True):
+        with open(self.path + '/GridClassifiers.save', 'rb') as InputFile:
+            NewGrids = pickle.load(InputFile)
+        with open(self.path + '/BestParam.save', 'rb') as InputFile:
+            NewParam = pickle.load(InputFile)
+
+        for Grid in NewGrids.keys():
+            if not OverWrite:
+                if Grid in self.GridClassifiers:
+                    continue
+            self.GridClassifiers[Grid] = NewGrids[NewGrids]
+            self.BestParam[Grid] = NewParam[Grid]
 
     # Update the relevant parameter per model, big data and multiclass
     def __DefaultsGridParameters(self):

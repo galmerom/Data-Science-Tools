@@ -499,8 +499,8 @@ class MegaClassifier:
         HyperParamDic - Dictionary of grid search hyper parameters for the specific model
         """
         self.Parameters[mdlName] = HyperParamDic
-        self.GridClassifiers[mdlName] = GridSearchCV(self.classifiers[mdlName], self.Parameters[mdlName], self.Score,
-                                                     cv=self.cv[clf])
+        self.GridClassifiers[mdlName] = GridSearchCV(self.classifiers[mdlName], self.Parameters[mdlName],
+                                                     self.Score, cv=self.cv[clf])
 
     def GetResults(self, modelName='All'):
         """

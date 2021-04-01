@@ -500,7 +500,7 @@ class MegaClassifier:
         """
         self.Parameters[mdlName] = HyperParamDic
         self.GridClassifiers[mdlName] = GridSearchCV(self.classifiers[mdlName], self.Parameters[mdlName], self.Score,
-                                                     cv=self.cv)
+                                                     cv=self.cv[clf])
 
     def GetResults(self, modelName='All'):
         """

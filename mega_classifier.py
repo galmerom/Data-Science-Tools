@@ -94,7 +94,7 @@ class MegaClassifier:
     ShowConfusionMatrix - Show a confusion matrix for each model
 """
 
-    def __init__(self, scoring=accuracy_score, ShortCrossValidParts=5, LongCrossValidParts=3, Class_weight='balanced',
+    def __init__(self, scoring=accuracy_score, ShortCrossValidParts=2, LongCrossValidParts=2, Class_weight='balanced',
                  MultiClass=False, BigDataSet=False, PathForOutFile='', verbose=0, RandomSeed=1234):
         """
         scoring - Scoring function to use for all models
@@ -188,21 +188,28 @@ class MegaClassifier:
     def SaveModels2Disk(self, path):
         with open(path + '/GridClassifiers.save', 'wb') as OutFile:
             pickle.dump(self.GridClassifiers, OutFile)
-        with open(path + '/BestParam.save', 'wb') as OutFile:
-            pickle.dump(self.BestParam, OutFile)
 
-    def GetModelFromDisk(self, path, OverWrite=True):
+    def GetModelFromDisk(self, path, OverWrite=True, UpdateRelevantModel=True):
+        """
+        Get saved and fitted models and add them into the dictionary of models in the current instance.
+
+        :param path: string. Where to read from (path+file name)
+        :param OverWrite: bool. If true, then models with the same name will overwrite existing models.
+                            If false, don't do anything
+        :param UpdateRelevantModel: bool. If True, then the model name will enter the relevant model list and will
+                                    be used for prediction and data exploratory
+        :return: nothing
+        """
         with open(self.path + '/GridClassifiers.save', 'rb') as InputFile:
             NewGrids = pickle.load(InputFile)
-        with open(self.path + '/BestParam.save', 'rb') as InputFile:
-            NewParam = pickle.load(InputFile)
 
         for Grid in NewGrids.keys():
             if not OverWrite:
                 if Grid in self.GridClassifiers:
+                    print('Model ' + str(Grid) + ' already exists and was not used.')
                     continue
             self.GridClassifiers[Grid] = NewGrids[NewGrids]
-            self.BestParam[Grid] = NewParam[Grid]
+            self.BestParam[Grid] = NewGrids[NewGrids].best_params_
 
     # Update the relevant parameter per model, big data and multiclass
     def __DefaultsGridParameters(self):

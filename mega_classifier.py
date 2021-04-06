@@ -471,7 +471,7 @@ class MegaClassifier:
 
         # For every file extract the name of the model and append it to the models dictionary
         for file in files:
-            ModelName = x.split('__')[1].split('.')[0]
+            ModelName = file.split('__')[1].split('.')[0]
             print('ModelName:' + ModelName)
             with open(file, 'rb') as LoadFilePointer:
                 self.ModelsAfterFit[ModelName] = pickle.load(LoadFilePointer)

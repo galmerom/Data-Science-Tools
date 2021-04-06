@@ -470,12 +470,10 @@ class MegaClassifier:
                 files.append(i)
 
         # For every file extract the name of the model and append it to the models dictionary
-        for mdl in files:
-            ModelNameIndex = re.search('_(.+?).model', mdl)
-            ModelName = ModelNameIndex.group()
+        for file in files:
+            ModelName = x.split('__')[1].split('.')[0]
             print('ModelName:' + ModelName)
-            FilePointer = self.OutPath + 'RunId_' + MultiFittersRun + '_' + str(ModelName)
-            with open(FilePointer, 'rb') as LoadFilePointer:
+            with open(file, 'rb') as LoadFilePointer:
                 self.ModelsAfterFit[ModelName] = pickle.load(LoadFilePointer)
 
     def ScoreSummery(self):
@@ -754,7 +752,7 @@ class MegaClassifier:
         :param strTime: string. The string that is printed at the end of each model fit
         :return:
         """
-        SaveFile = self.OutPath + 'RunId_' + strRun_id + '_' + ModelName + '.model'
+        SaveFile = self.OutPath + 'RunId_' + strRun_id + '__' + ModelName + '.model'
         ModeratorFile = self.OutPath + 'ModelModerator.csv'
 
         # First save the model

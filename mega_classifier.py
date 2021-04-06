@@ -467,7 +467,7 @@ class MegaClassifier:
         files = []
         for i in os.listdir(self.OutPath):
             if os.path.isfile(os.path.join(self.OutPath, i)) and MultiFittersRun in i:
-                files.append(i)
+                files.append(os.path.join(self.OutPath, i))
 
         # For every file extract the name of the model and append it to the models dictionary
         for fileName in files:

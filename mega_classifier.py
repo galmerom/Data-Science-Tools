@@ -39,6 +39,9 @@ from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 import datetime
 import time
+import re
+import os
+import os.path
 import charts
 
 
@@ -92,6 +95,11 @@ class MegaClassifier:
     GetFeatureImportance: return a dataframe with the feature importance for every model that supports this attribute
                           As a default, it also shows a chart with the combined results (normalized)
     ShowConfusionMatrix - Show a confusion matrix for each model
+
+    Explore ensemble of models:
+    PrePredict - Do a predict proba on all models. Then create all possible combinations and check the score of:
+                 Average on all results, Max for all results, SPS (sum of prediction squared).
+                 Return a dataframe for all combination and aggregate function (AVG,MAX,SPS) + score
 """
 
     def __init__(self, scoring=accuracy_score, ShortCrossValidParts=2, LongCrossValidParts=2, Class_weight='balanced',
@@ -151,7 +159,10 @@ class MegaClassifier:
         self.ClassReportDF = pd.DataFrame()
         # True if there are less then 2 classes. Then don't allow: fir, predict and the rest
         self.NumOfClassesLessThen2 = False
-
+        # Holds the models after fitting. Allow models that are not grid search to be added for a prediction and analyze
+        self.ModelsAfterFit = {}
+        # Holds the best combinations of the results
+        self.BestCombResults = pd.DataFrame(columns=['Combination', 'Score', 'NumOfModels'])
         # Initiate the models by running the following methods
         self.__DefaultsGridParameters()
         self.__InitClassifier()
@@ -292,14 +303,28 @@ class MegaClassifier:
             self.GridClassifiers[clf] = GridSearchCV(self.classifiers[clf], self.Parameters[clf], self.Score,
                                                      cv=self.cv[clf], verbose=self.verbose)
 
-    def fit(self, X, y=None, RelevantModels='all', SaveEachRes=False):
+    def fit(self, X, y=None, RelevantModels='all', MultiFittersRun=None):
         """
-        Fits all relevant models.
-        RelevantModels - A list of models to fit. The default is 'all', then all models will get fitted.
+         Fits all relevant models.
+         If MultiFittersRun is not None then it fits models according to a moderator file. That way you can have
+         many instances running the same code and fitting different model with no double handling.
+         Later combine them to a join instance and continue to predicting
+
+        RelevantModels - A list of models to fit. The default is 'all'. Then all models will get fitted.
                          Available models: ['DecisionTree','LogisticRegression','RandomForest','SVC','XGBOOST']
-        SaveEachRes = If True then every time a model gets fit.
+        SaveEachRes - If True, then every time a model gets fit.
                       It will save the grid search parameter: cv_results_ to a file.
+        MultiFittersRun - string or None. If not None, Use more than one instance to run all relevant models.
+                            Each instance will check in a common file which models to run and pick the next model that
+                             was not marked "in progress." The string for this parameter is the "name" of the "run."
+                             It makes it possible to run more than one "run" in parallel.
+
         """
+        if MultiFittersRun is not None:
+            NextModel2Run = self.__AssignNextModelToFit(MultiFittersRun)
+        else:
+            NextModel2Run = 'All'
+
         X_new = X.copy()
         y_new = self.Label2Num.fit_transform(y)  # Update the y labels to an array of numbers. Avoid strings in labels
         # If there are less then 2 classes then don't do fit and stop attempts to do predict
@@ -312,22 +337,34 @@ class MegaClassifier:
         # Update the models that are relevant. 'all' means all models. Else use a list of models
         self.__RelevantModels(RelevantModels)
 
-        for cls in self.RelevantModel:
-            print('Start fitting ' + cls + ' model.')
-            print('Current time: ' + self.__GetLocalTime())
+        if NextModel2Run == 'All':
+            for cls in self.RelevantModel:
+                print('Start fitting ' + cls + ' model.')
+                print('Current time: ' + self.__GetLocalTime())
 
-            current_time = datetime.datetime.now()  # Count the time for fitting
+                current_time = datetime.datetime.now()  # Count the time for fitting
 
-            self.GridClassifiers[cls].fit(X_new, y_new)
-            self.BestParam[cls] = self.GridClassifiers[cls].best_params_
+                self.GridClassifiers[cls].fit(X_new, y_new)
+                self.BestParam[cls] = self.GridClassifiers[cls].best_params_
+                self.ModelsAfterFit[cls] = self.GridClassifiers[cls].best_estimator_
 
-            TimeFitting = self.__ShowTimeInMin((datetime.datetime.now() - current_time))
-            if SaveEachRes:
-                self.__Save2File(cls)
-            print(cls + ' model done fitting.' + '\n Time for fitting: ' + TimeFitting)
-        return self
+                TimeFitting = self.__ShowTimeInMin((datetime.datetime.now() - current_time))
 
-    def predict(self, X, y):
+                print(cls + ' model done fitting.' + '\n Time for fitting: ' + TimeFitting)
+            return self
+        else:
+            while NextModel2Run is not None:
+                print('Start fitting ' + cls + ' model.')
+                print('Current time: ' + self.__GetLocalTime())
+                current_time = datetime.datetime.now()  # Count the time for fitting
+
+                self.GridClassifiers[NextModel2Run].fit(X_new, y_new)
+                self.BestParam[NextModel2Run] = self.GridClassifiers[NextModel2Run].best_params_
+                self.ModelsAfterFit[NextModel2Run] = self.GridClassifiers[NextModel2Run].best_estimator_
+
+                NextModel2Run = self.__AssignNextModelToFit(MultiFittersRun)
+
+    def predict(self, X, y=None):
         """
         Run predict on every model that was fitted. Fills the results dictionary
         Return a dataframe with: y_true, PredAllModelsByProba
@@ -342,24 +379,26 @@ class MegaClassifier:
         y_new_label = y.copy()  # Array of y with labels
         y_newNum = self.Label2Num.transform(y_new_label)  # Array of y after label encoder
         self.OutputDF = pd.DataFrame(index=X_new.index)  # Restart OutputDF
-        self.OutputDF['y_true'] = y_new_label
-        for mdl in self.RelevantModel:
-            y_pred = self.GridClassifiers[mdl].predict(X_new)
+        if y is not None:
+            self.OutputDF['y_true'] = y_new_label
+
+        for mdl in self.ModelsAfterFit.keys():
+            y_pred = self.ModelsAfterFit[mdl].predict(X_new)
             y_predDecode = self.Label2Num.inverse_transform(y_pred)
             self.OutputDF[mdl] = y_predDecode
-            Score_result = self.GridClassifiers[mdl].score(X_new, y_newNum)
             self.results[mdl] = {'Classifier': mdl,
-                                 'Score': Score_result,
-                                 'y_pred': y_predDecode,
-                                 'Best_param': self.GridClassifiers[mdl].best_params_,
-                                 'cv_results': self.GridClassifiers[mdl].cv_results_}
+                                 'Score': self.OriginalScoring(X_new, y_newNum),
+                                 'y_pred': y_predDecode}
+            if mdl in self.GridClassifiers.keys():
+                self.results[mdl]['Best_param'] = self.GridClassifiers[mdl].best_params_
+                self.results[mdl]['cv_results'] = self.GridClassifiers[mdl].cv_results_
 
         # Add prediction by predict proba
         NumOfClasses = len(np.unique(y_newNum))
         # AccumSumProba = np.zeros((len(y_newNum), NumOfClasses))
         Flag = True
-        for mdl in self.RelevantModel:
-            y_pred = self.GridClassifiers[mdl].predict_proba(X_new)
+        for mdl in self.ModelsAfterFit.keys():
+            y_pred = self.ModelsAfterFit.predict_proba(X_new)
             if Flag:
                 AccumSumProba = (y_pred ** 2)  # We use **2 to give more weight to the highest probabilities
                 Flag = False
@@ -420,6 +459,20 @@ class MegaClassifier:
 
         return self.OutputDF
 
+    def CombineModelsToAnInstance(self, MultiFittersRun):
+        LoadMask = self.OutPath + 'RunId_' + strRun_id + '_' + ModelName + '.model'
+        # Make a list of all the files in the directory that contains strRun_id
+        files = []
+        for i in os.listdir(self.OutPath):
+            if os.path.isfile(os.path.join(self.OutPath, i)) and strRun_id in i:
+                files.append(i)
+
+        # For every file extract the name of the model and append it to the models dictionary
+        for mdl in files:
+            ModelName = re.search('_(.+?).model', mdl)
+            with open(mdl, 'rb') as FilePointer:
+                self.ModelsAfterFit[ModelName] = pickle.load(FilePointer)
+
     def ScoreSummery(self):
         """
         Return a data frame that contains the score for each model
@@ -436,6 +489,59 @@ class MegaClassifier:
         OutDF.index.name = self.OriginalScoring.__name__
 
         return OutDF
+
+    def PrePredict(self, X, y, MinComb=1, MaxComb=None):
+
+        # Create a list of all possible combinations of models available
+        CombModelList = []
+        AllModelsName = list(self.ModelsAfterFit.keys())
+        MaxCombLength = len(AllModelsName) + 1
+        if MaxComb is not None:
+            MaxCombLength = MaxCombLength
+
+        for CombLength in range(1, MaxCombLength):
+            for comb in itertools.combinations(AllModelsName, CombLength):
+                CombModelList.extend(comb)
+        # Create a dataframe with all models predict proba
+        Proba_df = pd.DataFrame()  # This DataFrame Contains all the y_pred for all models in proba form (probabilities)
+        for mdl in self.ModelsAfterFit.keys():
+            y_pred = self.ModelsAfterFit.predict_proba(X)
+            Proba_df[mdl] = y_pred
+
+        # Check each combination of models using aggregation function: Average(A), Max(M),sum of probability square(SPS)
+        # Fill a dataframe for each combination and its score
+
+        for comb in CombModelList:
+            Comb_DF = OutputDF.loc[:, OutputDF.columns.isin(CombModelList)]
+            Y_average = Comb_DF.mean(axis=1)
+            y_max = Comb_DF.max(axis=1)
+            # Calculate  sum of probability square(SPS)
+            for col in Comb_DF.columns:
+                Flag = True
+                if Flag:
+                    AccumSumProba = (Comb_DF[col] ** 2)  # We use **2 to give more weight to the highest probabilities
+                    Flag = False
+                else:
+                    AccumSumProba += (Comb_DF[col] ** 2)  # We use **2 to give more weight to the highest probabilities
+
+            y_SPS = np.argmax(AccumSumProba, axis=1)  # Find the max of all probabilities squared
+            # Scoring
+            Y_averageScore = self.OriginalScoring(y, Y_average)
+            Y_maxScore = self.OriginalScoring(y, y_max)
+            Y_SPS_Score = self.OriginalScoring(y, AccumSumProba)
+            # Add to dataframe
+            CombName = '_'.join([str(elem) for elem in comb])
+            DataFrame.append(self.BestCombResults, {'Combination': CombName + '_Avg',
+                                                    'Score': Y_averageScore,
+                                                    'NumOfModels': len(comb)})
+            DataFrame.append(self.BestCombResults, {'Combination': CombName + '_Max',
+                                                    'Score': Y_maxScore,
+                                                    'NumOfModels': len(comb)})
+            DataFrame.append(self.BestCombResults, {'Combination': CombName + '_SPC',
+                                                    'Score': Y_SPS_Score,
+                                                    'NumOfModels': len(comb)})
+        # Sort data frame according to score
+        self.BestCombResults.sort_values(by='Score', ascending=False)
 
     def ParamInsight(self, ModelName):
         """
@@ -603,6 +709,56 @@ class MegaClassifier:
             charts.ClassicGraphicCM(self.OutputDF[clf], self.OutputDF['y_true'], classes, title='\nModel: ' + clf,
                                     fig_size=FigSize, ClassReport=False, ReturnAx=True, normalize=normalize,
                                     precisionVal=precisionVal, RemoveColorBar=RemoveColorBar)
+
+    def __AssignNextModelToFit(self, strRun_id):
+        """
+        Return the name of the next model to fit
+        :param strRun_id: string. The run id that runs now (given as a parameter during the fit method)
+        :return: The name of the next model to fit or None if there are none
+        """
+        FileName = self.OutPath + 'ModelModerator.csv'
+        if not os.path.isfile(FileName):
+            x = pd.Series(self.RelevantModel)
+            df = pd.DataFrame(x, columns=['Model'], index=x.index)
+            df['run_id'] = strRun_id
+            df['Assigned'] = False
+            df['Finished'] = False
+            df['Time4Fit'] = ''
+
+            df.to_csv(FileName)
+
+        Run_DF = pd.read_csv(FileName)
+        AvailModels = Run_DF[(not Run_DF['Assigned']) & (Run_DF['run_id'] == strRun_id)]
+        if len(AvailModels) == 0:
+            return None
+        else:
+            PickedModel = AvailModels['Model'].iloc[0]
+            ModelIndex = AvailModels.index[0]
+            Run_DF['Assigned'].iloc[ModelIndex] = True
+            print('Model picked for fitting:' + str(PickedModel))
+            return PickedModel
+
+    def __SaveAndGetNextModel(self, ModelName, Model, strRun_id, strTime):
+        """
+        Save the model and update the moderator file
+        :param ModelName: string. The model name as assigned by the moderator
+        :param Model: The fitted model
+        :param strRun_id: The run id parameter given during the fitting
+        :param strTime: string. The string that is printed at the end of each model fit
+        :return:
+        """
+        SaveFile = self.OutPath + 'RunId_' + strRun_id + '_' + ModelName + '.model'
+        ModeratorFile = self.OutPath + 'ModelModerator.csv'
+
+        # First save the model
+        with open(SaveFile) as SaveFilePointer:
+            pickle.dump(Model, SaveFilePointer)
+
+        # Then update "the job done" at the moderator file
+        Run_DF = pd.read_csv(ModeratorFile)
+        index = Run_DF[(Run_DF['Model'] == ModelName) & (Run_DF['run_id'] == strRun_id)].index
+        Run_DF['Finished'] = True
+        Run_DF['Time4Fit'] = strTime
 
     def __UpdateFeatureImportance(self, X):
         """

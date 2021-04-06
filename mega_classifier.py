@@ -470,10 +470,11 @@ class MegaClassifier:
                 files.append(i)
 
         # For every file extract the name of the model and append it to the models dictionary
-        for file in files:
-            ModelName = file.split('__')[1].split('.')[0]
+        for fileName in files:
+            ModelName = fileName.split('__')[1].split('.')[0]
             print('ModelName:' + ModelName)
-            with open(file, 'rb') as LoadFilePointer:
+            print('fileName: ' + fileName)
+            with open(fileName, 'rb') as LoadFilePointer:
                 self.ModelsAfterFit[ModelName] = pickle.load(LoadFilePointer)
 
     def ScoreSummery(self):

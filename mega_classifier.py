@@ -354,7 +354,7 @@ class MegaClassifier:
             return self
         else:
             while NextModel2Run is not None:
-                print('Start fitting ' + cls + ' model.')
+                print('Start fitting ' + str(NextModel2Run) + ' model.')
                 print('Current time: ' + self.__GetLocalTime())
                 current_time = datetime.datetime.now()  # Count the time for fitting
 

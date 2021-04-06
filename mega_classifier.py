@@ -471,8 +471,8 @@ class MegaClassifier:
 
         # For every file extract the name of the model and append it to the models dictionary
         for mdl in files:
-            ModelNameIndx = re.search('_(.+?).model', mdl)
-            ModelName = ModelNameIndx.group()
+            ModelNameIndex = re.search('_(.+?).model', mdl)
+            ModelName = ModelNameIndex.group()
             FilePointer = self.OutPath + 'RunId_' + MultiFittersRun + '_' + str(ModelName) + '.model'
             with open(FilePointer, 'rb') as LoadFilePointer:
                 self.ModelsAfterFit[ModelName] = pickle.load(LoadFilePointer)

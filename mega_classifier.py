@@ -755,7 +755,7 @@ class MegaClassifier:
         ModeratorFile = self.OutPath + 'ModelModerator.csv'
 
         # First save the model
-        with open(SaveFile) as SaveFilePointer:
+        with open(SaveFile, 'wb') as SaveFilePointer:
             pickle.dump(Model, SaveFilePointer)
 
         # Then update "the job done" at the moderator file

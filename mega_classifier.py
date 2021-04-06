@@ -466,7 +466,7 @@ class MegaClassifier:
         # Make a list of all the files in the directory that contains strRun_id
         files = []
         for i in os.listdir(self.OutPath):
-            if os.path.isfile(os.path.join(self.OutPath, i)) and strRun_id in i:
+            if os.path.isfile(os.path.join(self.OutPath, i)) and MultiFittersRun in i:
                 files.append(i)
 
         # For every file extract the name of the model and append it to the models dictionary

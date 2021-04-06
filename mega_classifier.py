@@ -726,6 +726,7 @@ class MegaClassifier:
             df['Time4Fit'] = ''
 
             df.to_csv(FileName)
+            print('ModelModerator file created.')
 
         Run_DF = pd.read_csv(FileName, index_col=0)
         AvailModels = Run_DF[(~Run_DF['Assigned']) & (Run_DF['run_id'] == strRun_id)]

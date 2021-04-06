@@ -37,6 +37,8 @@ from sklearn.base import clone
 from sklearn.metrics import accuracy_score, make_scorer, classification_report
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
+
+import itertools
 import datetime
 import time
 import re

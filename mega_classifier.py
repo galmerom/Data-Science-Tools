@@ -511,7 +511,7 @@ class MegaClassifier:
         # Create a dataframe with all models predict proba
         Proba_df = pd.DataFrame()  # This DataFrame Contains all the y_pred for all models in proba form (probabilities)
         for mdl in self.ModelsAfterFit.keys():
-            y_pred = self.ModelsAfterFit.predict_proba(X)
+            y_pred = self.ModelsAfterFit[mdl].predict_proba(X)
             Proba_df[mdl] = y_pred
 
         # Check each combination of models using aggregation function: Average(A), Max(M),sum of probability square(SPS)

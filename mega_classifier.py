@@ -495,7 +495,7 @@ class MegaClassifier:
         return OutDF
 
     def PrePredict(self, X, y, MinComb=1, MaxComb=None):
-        y_true = self.Label2Num.fit_transorm(y)
+        y_true = self.Label2Num.fit_transform(y)
         # Create a list of all possible combinations of models available
         CombModelList = []
         AllModelsName = list(self.ModelsAfterFit.keys())

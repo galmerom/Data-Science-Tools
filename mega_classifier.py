@@ -725,16 +725,17 @@ class MegaClassifier:
             df['Finished'] = False
             df['Time4Fit'] = ''
 
-            df.to_csv(FileName)
+        df.to_csv(FileName)
 
-        Run_DF = pd.read_csv(FileName)
+        Run_DF = pd.read_csv(FileName, index_col=0)
         AvailModels = Run_DF[(~Run_DF['Assigned']) & (Run_DF['run_id'] == strRun_id)]
         if len(AvailModels) == 0:
             return None
         else:
             PickedModel = AvailModels['Model'].iloc[0]
             ModelIndex = AvailModels.index[0]
-            Run_DF['Assigned'].iloc[ModelIndex] = True
+            Run_DF.loc[ModelIndex, 'Assigned'] = True
+            Run_DF.to_csv(FileName)
             print('Model picked for fitting:' + str(PickedModel))
             return PickedModel
 
@@ -755,10 +756,12 @@ class MegaClassifier:
             pickle.dump(Model, SaveFilePointer)
 
         # Then update "the job done" at the moderator file
-        Run_DF = pd.read_csv(ModeratorFile)
+        Run_DF = pd.read_csv(ModeratorFile, index_col=0)
         index = Run_DF[(Run_DF['Model'] == ModelName) & (Run_DF['run_id'] == strRun_id)].index
-        Run_DF['Finished'] = True
-        Run_DF['Time4Fit'] = strTime
+
+        Run_DF.loc[index, 'Finished'] = True
+        Run_DF.loc[index, 'Time4Fit'] = strTime
+        Run_DF.to_csv(ModeratorFile)
 
     def __UpdateFeatureImportance(self, X):
         """

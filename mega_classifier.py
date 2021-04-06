@@ -123,7 +123,7 @@ class MegaClassifier:
         self.bigDataSet = BigDataSet  # Gets True if this is a big database so the grid should be downsized
         self.OutPath = ''  # if the path is not empty it is the path to put the result files
         if len(PathForOutFile) > 1:
-            self.OutPath = PathForOutFile + '\\'
+            self.OutPath = PathForOutFile
         self.Weights = Class_weight  # Class weights does not work in XGBOOST
         self.verbose = verbose
         self.classifiers = {}  # A dictionary of all available classifiers

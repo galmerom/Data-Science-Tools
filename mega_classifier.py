@@ -495,7 +495,7 @@ class MegaClassifier:
         return OutDF
 
     def PrePredict(self, X, y, MinComb=1, MaxComb=None):
-
+        y_true = self.Label2Num.fit_transorm(y)
         # Create a list of all possible combinations of models available
         CombModelList = []
         AllModelsName = list(self.ModelsAfterFit.keys())
@@ -530,9 +530,9 @@ class MegaClassifier:
 
             y_SPS = np.argmax(AccumSumProba, axis=1)  # Find the max of all probabilities squared
             # Scoring
-            Y_averageScore = self.OriginalScoring(y, Y_average)
-            Y_maxScore = self.OriginalScoring(y, y_max)
-            Y_SPS_Score = self.OriginalScoring(y, AccumSumProba)
+            Y_averageScore = self.OriginalScoring(y_true, Y_average)
+            Y_maxScore = self.OriginalScoring(y_true, y_max)
+            Y_SPS_Score = self.OriginalScoring(y_true, AccumSumProba)
             # Add to dataframe
             CombName = '_'.join([str(elem) for elem in comb])
             DataFrame.append(self.BestCombResults, {'Combination': CombName + '_Avg',

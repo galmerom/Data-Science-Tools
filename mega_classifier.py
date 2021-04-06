@@ -462,7 +462,7 @@ class MegaClassifier:
         return self.OutputDF
 
     def CombineModelsToAnInstance(self, MultiFittersRun):
-        # LoadMask = self.OutPath + 'RunId_' + MultiFittersRun + '_' + ModelName + '.model'
+
         # Make a list of all the files in the directory that contains strRun_id
         files = []
         for i in os.listdir(self.OutPath):
@@ -472,6 +472,7 @@ class MegaClassifier:
         # For every file extract the name of the model and append it to the models dictionary
         for mdl in files:
             ModelName = re.search('_(.+?).model', mdl)
+            FilePointer = self.OutPath + 'RunId_' + MultiFittersRun + '_' + ModelName + '.model'
             with open(mdl, 'rb') as FilePointer:
                 self.ModelsAfterFit[ModelName] = pickle.load(FilePointer)
 

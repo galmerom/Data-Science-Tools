@@ -361,7 +361,9 @@ class MegaClassifier:
                 self.GridClassifiers[NextModel2Run].fit(X_new, y_new)
                 self.BestParam[NextModel2Run] = self.GridClassifiers[NextModel2Run].best_params_
                 self.ModelsAfterFit[NextModel2Run] = self.GridClassifiers[NextModel2Run].best_estimator_
-
+                TimeFitting = self.__ShowTimeInMin((datetime.datetime.now() - current_time))
+                self.__SaveAndGetNextModel(NextModel2Run, self.ModelsAfterFit[NextModel2Run], MultiFittersRun,
+                                           TimeFitting)
                 NextModel2Run = self.__AssignNextModelToFit(MultiFittersRun)
 
     def predict(self, X, y=None):
@@ -737,7 +739,7 @@ class MegaClassifier:
             ModelIndex = AvailModels.index[0]
             Run_DF.loc[ModelIndex, 'Assigned'] = True
             Run_DF.to_csv(FileName)
-            print('Model picked for fitting:' + str(PickedModel))
+            print('\nModel picked for fitting:' + str(PickedModel) + '\n')
             return PickedModel
 
     def __SaveAndGetNextModel(self, ModelName, Model, strRun_id, strTime):

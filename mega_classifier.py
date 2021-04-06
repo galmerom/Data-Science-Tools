@@ -473,8 +473,8 @@ class MegaClassifier:
         for mdl in files:
             ModelName = re.search('_(.+?).model', mdl)
             FilePointer = self.OutPath + 'RunId_' + MultiFittersRun + '_' + ModelName + '.model'
-            with open(mdl, 'rb') as FilePointer:
-                self.ModelsAfterFit[ModelName] = pickle.load(FilePointer)
+            with open(FilePointer, 'rb') as LoadFilePointer:
+                self.ModelsAfterFit[ModelName] = pickle.load(LoadFilePointer)
 
     def ScoreSummery(self):
         """

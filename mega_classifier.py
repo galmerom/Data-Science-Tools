@@ -728,7 +728,7 @@ class MegaClassifier:
             df.to_csv(FileName)
 
         Run_DF = pd.read_csv(FileName)
-        AvailModels = Run_DF[(not Run_DF['Assigned']) & (Run_DF['run_id'] == strRun_id)]
+        AvailModels = Run_DF[(~Run_DF['Assigned']) & (Run_DF['run_id'] == strRun_id)]
         if len(AvailModels) == 0:
             return None
         else:

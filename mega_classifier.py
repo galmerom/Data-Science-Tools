@@ -511,7 +511,7 @@ class MegaClassifier:
 
         for CombLength in range(1, MaxCombLength):
             for comb in itertools.combinations(AllModelsName, CombLength):
-                CombModelList.extend(comb)
+                CombModelList.append(comb)
 
         # Create a dataframe with all models predict proba
         Proba_dic = {}  # This dictionary Contains all the y_pred for all models in proba form (probabilities)

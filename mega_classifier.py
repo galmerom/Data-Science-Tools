@@ -4,7 +4,10 @@
 This module is used for creating a class that can run 5 classifiers using grid search with
 many defaults hyper parameters. Then the results can be analyzed in 7 different levels in order for finding
 the best model and best hyper parameters or combine all/some models to ensemble prediction.
-Available levels:
+It allows different instances of the class (different notebooks) to run in parallel and then join back to 1 instance.
+It also allows the addition of new models that were not in the original models.
+
+Available levels of output:
 1. Score for each model (according to the input function scoring) - method:ScoreSummery
 2. Detailed results: a dictionary with the following: model name, the y_pred (prediction),
                      best parameters found in grid search, the full cv_results from the grid search of the model
@@ -55,11 +58,16 @@ class MegaClassifier:
     The results can be seen in 6 different levels; see below for details.
 
     Available methods:
+    SaveModel - Saves the instance to the given path
 
     Classics methods:
     fit: get X, y for fit. It fits all models if RelevantModels='all'.
          Can get a list of models that will be used instead.
-        If SaveEachRes = True (default=False), then every model will save the grid results to a file.
+         If MultiFittersRun is not None, then it allows running different instances on different notebooks.
+         The first time it runs, it creates a moderator file that keeps track of each model,
+         whether it was fitted or not. That way, new instances automatically get the next model to run.
+         At the end of all the fitting, use "CombineModelsToAnInstance" to read all the saved models to one instance.
+
     predict: Run predict on all models. Returns a dataframe with y_pred on all models + y_true + Average column
              + a column that sums the probability squared for each class and returns the class with the highest score.
              The predict methods also create the results dictionary (read more in the GetResults method).
@@ -86,8 +94,8 @@ class MegaClassifier:
                                 'Best_param':Best parameters for the model (decided during the fit phase),
                                 'cv_results':Read the cv_results in the grid search documentation.
                                              gets the result of every run in the grid search and the cross validation}
-    ParamInsight: Works on a specific model. It takes every hyperparameter and every value it gets and shows the score
-            it gets when we group by the parameter and value. That allows us to understand the effect this
+    ParamInsight: Works on a specific model. It takes every hyperparameter and every value it gets and shows its score
+            when we group it by the parameter and value. That allows us to understand the effect this
             hyperparameter has on the scoring.
             It returns a grid of charts for each parameter that shows the mean score (after cross-validation) and
             the standard deviation of the cross-validation
@@ -99,10 +107,17 @@ class MegaClassifier:
     ShowConfusionMatrix - Show a confusion matrix for each model
 
     Explore ensemble of models:
+    AddNewModel - Allow the user to add different model to the set of models. Model must be fitted and it must allow
+                  predict proba.
+    CombineModelsToAnInstance - During the different fitting instances, can run other models. This method join
+                                all the different models back to one instance.
     PrePredict - Do a predict proba on all models. Then create all possible combinations and check the score of:
                  Average on all results, Max for all results, SPS (sum of prediction squared).
                  Return a dataframe for all combination and aggregate function (AVG,MAX,SPS) + score
-"""
+    PredictBestCombination - After running "PrePredict," that gives the best combinations during the TRAIN MODE.
+    Use this method for getting the actual prediction and the actual score for the test prediction.
+
+    """
 
     def __init__(self, scoring=accuracy_score, ShortCrossValidParts=2, LongCrossValidParts=2, Class_weight='balanced',
                  MultiClass=False, BigDataSet=False, PathForOutFile='', verbose=0, RandomSeed=1234):
@@ -172,6 +187,10 @@ class MegaClassifier:
         self.__BuildGridSearch()
 
     def CopyData(self):
+        """
+        In case we want to copy one instance to other instance
+        :return: MegaClassifier
+        """
         Out = MegaClassifier()
         Out.Random = self.Random
         Out.multiclass = self.multiclass
@@ -196,36 +215,28 @@ class MegaClassifier:
         Out.featuresImport = self.featuresImport
         Out.ClassReportDF = self.ClassReportDF
         Out.NumOfClassesLessThen2 = self.NumOfClassesLessThen2
+        Out.ModelsAfterFit = self.ModelsAfterFit
         return Out
 
-    def SaveModels2Disk(self, path):
-        with open(path + '/GridClassifiers.save', 'wb') as OutFile:
-            pickle.dump(self.GridClassifiers, OutFile)
-
-    def GetModelFromDisk(self, path, OverWrite=True, UpdateRelevantModel=True):
+    def SaveModel(self, path=None):
         """
-        Get saved and fitted models and add them into the dictionary of models in the current instance.
-
-        :param path: string. Where to read from (path+file name)
-        :param OverWrite: bool. If true, then models with the same name will overwrite existing models.
-                            If false, don't do anything
-        :param UpdateRelevantModel: bool. If True, then the model name will enter the relevant model list and will
-                                    be used for prediction and data exploratory
+        Save the whole class instance to the path given at the initialization(default) or path given by user
+        If we use the default then the file name will be MegClass.save
         :return: nothing
         """
-        with open(self.path + '/GridClassifiers.save', 'rb') as InputFile:
-            NewGrids = pickle.load(InputFile)
-
-        for Grid in NewGrids.keys():
-            if not OverWrite:
-                if Grid in self.GridClassifiers:
-                    print('Model ' + str(Grid) + ' already exists and was not used.')
-                    continue
-            self.GridClassifiers[Grid] = NewGrids[NewGrids]
-            self.BestParam[Grid] = NewGrids[NewGrids].best_params_
+        if path is None:
+            with open(self.OutPath + '/MegClass.save', 'wb') as MultiMCFile:
+                pickle.dump(self, MultiMCFile)
+        else:
+            with open(path, 'wb') as MultiMCFile:
+                pickle.dump(self, MultiMCFile)
 
     # Update the relevant parameter per model, big data and multiclass
     def __DefaultsGridParameters(self):
+        """
+        Initiates the parameters that every model will get
+        :return: nothing
+        """
         if self.bigDataSet:
             self.Parameters['DecisionTree'] = {'criterion': ['gini'], 'max_depth': [None, 50],
                                                'min_samples_leaf': [10, 50], 'max_features': ['auto'],
@@ -284,6 +295,10 @@ class MegaClassifier:
 
     # Creates an instance of each classifier
     def __InitClassifier(self):
+        """
+        Initiate the classifiers
+        :return: nothing
+        """
         self.classifiers['XGBOOST'] = XGBClassifier(n_estimators=500, random_state=self.Random, seed=self.Random,
                                                     use_label_encoder=False)
         self.classifiers['RandomForest'] = RandomForestClassifier(max_depth=2, random_state=self.Random)
@@ -293,6 +308,10 @@ class MegaClassifier:
 
     # Define the cross validation parts for every model
     def __InitCV(self):
+        """
+        Initiate the cross validation parts per model
+        :return: nothing
+        """
         self.cv['XGBOOST'] = self.Lcv
         self.cv['RandomForest'] = self.Lcv
         self.cv['DecisionTree'] = self.Scv
@@ -301,6 +320,10 @@ class MegaClassifier:
 
     # Creates a grid search for every classification path
     def __BuildGridSearch(self):
+        """
+        Build grid search for every model
+        :return: nothing
+        """
         for clf in self.classifiers.keys():
             self.GridClassifiers[clf] = GridSearchCV(self.classifiers[clf], self.Parameters[clf], self.Score,
                                                      cv=self.cv[clf], verbose=self.verbose)
@@ -428,6 +451,7 @@ class MegaClassifier:
         Return a dataframe with: y_true,y_pred for every model, y_average (avg. of all y_pred), PredAllModelsByProba
                                  PredAllModelsByProba = column that sums the probability squared for each class and
                                  return the class with the highest score.
+         ***** For now, predict proba only works on models that are in the grid search models ******
         """
         if self.NumOfClassesLessThen2:
             print('Less then 2 classes in fitting. Method stop.')
@@ -463,7 +487,28 @@ class MegaClassifier:
 
         return self.OutputDF
 
+    def AddNewModel(self, model, ModelName):
+        """
+        This method allow the user to add new model to the set of models.
+        The model must be fitted and support predict proba
+
+        :param model: fitted classifier.
+        :param ModelName: string. The name of the model.
+                                  If the model name will be the same as an existing model it will overwrite it.
+        :return: nothing
+        """
+        self.ModelsAfterFit[ModelName] = model
+
     def CombineModelsToAnInstance(self, MultiFittersRun):
+        """
+        Read fitted models that were run by different instance to one class instance.
+        That allows running different notebooks for different models and then join them to one mega classifier
+        The models inserted to the "ModelsAfterFit" parameter
+
+        :param MultiFittersRun: string. The name of the "run". Every time we split the run between different instances
+                                        We keep them together by using a string the "defines" the run.
+        :return: Nothing
+        """
 
         # Make a list of all the files in the directory that contains strRun_id
         files = []
@@ -497,6 +542,20 @@ class MegaClassifier:
         return OutDF
 
     def PrePredict(self, X, y, MinComb=1, MaxComb=None):
+        """
+        In case we want to see how combinations of models work, we will use this method.
+        It will take a training set and give us the best possible combinations for the best results.
+        It looks for combinations of predicted proba for each model.
+        Then it aggregates them into 3 types for EACH combination: Average prediction, maximum prediction
+        and the sum of the squared probabilities(gives more weight to higher probabilities)
+
+        :param X: dataframe. X dataset.
+        :param y: array or dataframe. y_true . if nothing is given, then there will be no scoring.
+        :param MinComb: integer. The minimum number of models in each combination possible.
+        :param MaxComb: integer. The maximum number of models in each combination possible
+        :return: dataframe. Dataframe with all possible combinations and their score sorted by descending score value
+
+        """
         y_true = self.Label2Num.fit_transform(y)
 
         # Reset the output dataframe
@@ -555,6 +614,16 @@ class MegaClassifier:
         return self.BestCombResults.drop(['Param', 'index'], axis=1)
 
     def PredictBestCombination(self, X, y=None, n=1):
+        """
+        Will work only after running PrePredict
+        Return y_pred for the best n combinations of models
+         + a dataframe with each combination and its score (if y is given)
+        :param X: dataframe. X dataset
+        :param y: array or dataframe. y_true . if nothing is given then there will be no scoring
+        :param n: integer. Number of best combinations to return
+        :return: 2 dataframes. First: y_pred for best n combinations.
+                               Second: if y is given then it returns the score for every combination
+        """
         res_df = pd.DataFrame()
         Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
         ListOfComb = Top_DF['Param'].tolist()[:-1]
@@ -600,6 +669,13 @@ class MegaClassifier:
 
     @staticmethod
     def __CalculateAggregateFunctions(Comb_dic):
+        """
+        In case that we are looking for a combination of more than 1 model then we aggregate the results by:
+        Average, Maximum or sum of probabilities square.
+        This method gets a combination of models dictionary and return all of the aggregate results
+        :param Comb_dic: dictionary. Contains the y_pred for each model (that is already in the combination)
+        :return: 3 arrays: y_pred for: sum of probabilities square, Average, Maximum
+        """
         Flag = True
         # Calculate  sum of probability square(SPS)
         for key in Comb_dic.keys():
@@ -683,6 +759,11 @@ class MegaClassifier:
         plt.show()
 
     def GetGridHyperParameters(self, modelName):
+        """
+        Return the hyperparameters of a specific model
+        :param modelName: string. Name of the model to return
+        :return: dictionary
+        """
         return self.Parameters[modelName]
 
     def SetGridHyperParameters(self, mdlName, HyperParamDic):
@@ -717,10 +798,17 @@ class MegaClassifier:
             return self.results[modelName]
 
     def GetClassificationReport(self):
+        """
+        Return the classification report dataframe
+        :return: dataframe
+        """
         return self.ClassReportDF
 
-    # Update the self.ClassReportDF that contains the classification report dataframe
     def __UpdateClassificationReport(self):
+        """
+        Update the self.ClassReportDF that contains the classification report dataframe
+        :return: Nothing
+        """
         FirstFlag = True
         for clf in self.results.keys():
             # Creates a dataframe from the classification report per model and append all to one dataframe
@@ -764,11 +852,6 @@ class MegaClassifier:
                                                                         xlabel='\nModels\n', rot=0, sort_columns=True,
                                                                         title=NewTitle)
         return SlicedDf
-
-    def SaveModel(self):
-        # Save the model dictionary
-        with open(self.OutPath + '/MegClass.save', 'wb') as MultiMCFile:
-            pickle.dump(self, MultiMCFile)
 
     def ShowConfusionMatrix(self, FigSize=(7, 5), RemoveColorBar=False, normalize=False, precisionVal=2):
         """
@@ -903,6 +986,13 @@ class MegaClassifier:
     # Returns the next 2D index of an array
     @staticmethod
     def __nextij(CurrRow, CurrCol, NumOfColumns):
+        """
+        Gets the dimension of an array and the number of columns and return the next member
+        :param CurrRow:
+        :param CurrCol:
+        :param NumOfColumns:
+        :return: tuple of integers.(row,col)
+        """
         if CurrCol < (NumOfColumns - 1):
             return CurrRow, CurrCol + 1
         else:
@@ -910,6 +1000,12 @@ class MegaClassifier:
 
     # Update the RelevantModel list
     def __RelevantModels(self, RelevantModel):
+        """
+        Update the RelevantModel parameter
+
+        :param RelevantModel: list. Gets a list of models to make relevant
+        :return: Nothing
+        """
         if RelevantModel == 'all':
             self.RelevantModel = ['DecisionTree',
                                   'LogisticRegression',
@@ -922,6 +1018,11 @@ class MegaClassifier:
     # prints the time in h:m:s format
     @staticmethod
     def __ShowTimeInMin(DateTimeVal):
+        """
+        Gets a date time and return a string with the amount of time
+        :param DateTimeVal: datetime. The time to change to string
+        :return: string.
+        """
         seconds = DateTimeVal.total_seconds()
         hours = seconds // 3600
         minutes = (seconds % 3600) // 60
@@ -931,6 +1032,10 @@ class MegaClassifier:
     # Return the local time in the form of H:M:S
     @staticmethod
     def __GetLocalTime():
+        """
+        Return the local time in string format
+        :return: nothing
+        """
         return str(time.localtime().tm_hour) + ':' + str(time.localtime().tm_min) + ':' + str(time.localtime().tm_sec)
 
 

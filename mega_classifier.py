@@ -521,10 +521,11 @@ class MegaClassifier:
 
         # Check each combination of models using aggregation function: Average(A), Max(M),sum of probability square(SPS)
         # Fill a dataframe for each combination and its score
-        print(Proba_dic)
+
         for comb in CombModelList:
             # Create a filter dictionary that holds only the combo models
             Comb_dic = {}
+            print(comb)
             for model in comb:
                 Comb_dic[model] = Proba_dic[model]
 

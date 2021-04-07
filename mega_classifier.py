@@ -586,15 +586,17 @@ class MegaClassifier:
                 res_df = pd.concat([res_df, y_max], axis=1)
 
             counter += 1
+
+        Summary_df = None
+
         if y is not None:
             y_true = self.Label2Num.fit_transform(y)
             Summary_df = pd.DataFrame(columns=['Name of combination', 'Scoring'])
             for col in list(res_df.columns):
                 CurrScore = self.OriginalScoring(y_true, res_df[col])
                 Summary_df = Summary_df.append({'Name of combination': col, 'Scoring': CurrScore}, ignore_index=True)
-                print(Summary_df)
-
-        return res_df
+            charts.BarCharts([Summary_df], ['Summary of best combinations'],)
+        return res_df, Summary_df
 
     @staticmethod
     def __CalculateAggregateFunctions(Comb_dic):

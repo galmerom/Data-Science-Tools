@@ -559,11 +559,11 @@ class MegaClassifier:
             self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_Avg',
                                                                 'Score': Y_averageScore,
                                                                 'NumOfModels': len(comb),
-                                                                'Param': ('SPS', comb)}, ignore_index=True)
+                                                                'Param': ('Avg', comb)}, ignore_index=True)
             self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_Max',
                                                                 'Score': Y_maxScore,
                                                                 'NumOfModels': len(comb),
-                                                                'Param': ('SPS', comb)}, ignore_index=True)
+                                                                'Param': ('Max', comb)}, ignore_index=True)
             self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_SPC',
                                                                 'Score': Y_SPS_Score,
                                                                 'NumOfModels': len(comb),
@@ -575,7 +575,7 @@ class MegaClassifier:
     # def PredictBestCombination(self, X, n=1):
     #     res_df = pd.DataFrame()
     #     Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
-    #     for cmb
+    #     Top_DF['Param'].apply(lambda x: )
     def ParamInsight(self, ModelName):
         """
         Works on a specific model. Takes every hyper parameter and every value it gets and shows the score

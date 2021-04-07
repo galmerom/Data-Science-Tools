@@ -584,7 +584,7 @@ class MegaClassifier:
             elif Aggregate == 'y_max':
                 y_max = pd.Series(y_max, index=X.index, name=ListOfNames[counter])
                 res_df = res_df.append(y_max)
-
+            print('Counter:' + str(counter)+'\n\nres_df: ' + res_df)
             counter += 1
         return res_df
 

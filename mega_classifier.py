@@ -532,16 +532,18 @@ class MegaClassifier:
             Flag = True
             # Calculate  sum of probability square(SPS)
             for key in Comb_dic.keys():
+                KeyValue = Comb_dic[key]
                 if Flag:
-                    AccumSumProba = (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
-                    AvgSumProba = Comb_dic[key]
-                    MaxProba = Comb_dic[key]
+                    AccumSumProba = (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
+                    AvgSumProba = KeyValue
+                    MaxProba = KeyValue
                     Flag = False
                 else:
-                    AccumSumProba += (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
-                    AvgSumProba += Comb_dic[key]
-                    MaxProba = np.maximum(MaxProba, Comb_dic[key])
-
+                    AccumSumProba += (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
+                    AvgSumProba += KeyValue
+                    print('MaxProba before:' + str(MaxProba) + '\nKeyValue: ' + str(KeyValue))
+                    MaxProba = np.maximum(MaxProba, KeyValue)
+                    print('\nMaxProba after:' + str(MaxProba))
 
             print('\nAccumSumProba: ' + str(AccumSumProba) + '\nAvgSumProba: ' + str(
                 AvgSumProba) + '\nMaxProba: ' + str(MaxProba) + '\n')

@@ -529,9 +529,9 @@ class MegaClassifier:
             for model in comb:
                 Comb_dic[model] = Proba_dic[model]
 
+            Flag = True
             # Calculate  sum of probability square(SPS)
             for key in Comb_dic.keys():
-                Flag = True
                 if Flag:
                     AccumSumProba = (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba = Comb_dic[key]

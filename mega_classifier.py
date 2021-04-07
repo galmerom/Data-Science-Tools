@@ -536,14 +536,12 @@ class MegaClassifier:
                     AccumSumProba = (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba = Comb_dic[key]
                     MaxProba = Comb_dic[key]
-                    print('First round: AccumSumProba: ' + str(AccumSumProba))
                     Flag = False
                 else:
                     AccumSumProba += (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba += Comb_dic[key]
                     MaxProba = np.maximum(MaxProba, Comb_dic[key])
-                    print('\nComb_dic[key]: ' + str(Comb_dic[key]) + '\nComb_dic[key] ** 2: ' + str(
-                        Comb_dic[key] ** 2) + '\n')
+
 
             print('\nAccumSumProba: ' + str(AccumSumProba) + '\nAvgSumProba: ' + str(
                 AvgSumProba) + '\nMaxProba: ' + str(MaxProba) + '\n')

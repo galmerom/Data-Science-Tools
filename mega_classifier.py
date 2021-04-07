@@ -576,6 +576,7 @@ class MegaClassifier:
 
             # add the column to the result dataframe
             if Aggregate == 'y_SPS':
+                print('y_SPS:' + str(y_SPS))
                 y_SPS = pd.Series(y_SPS, index=X.index, name=ListOfNames[counter])
                 res_df = res_df.append(y_SPS)
             elif Aggregate == 'Y_average':
@@ -583,6 +584,7 @@ class MegaClassifier:
                 print('Y_average:'+str(Y_average))
                 res_df = res_df.append(Y_average)
             elif Aggregate == 'y_max':
+                print('y_max:' + str(y_max))
                 y_max = pd.Series(y_max, index=X.index, name=ListOfNames[counter])
                 res_df = res_df.append(y_max)
 

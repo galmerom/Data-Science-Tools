@@ -528,26 +528,7 @@ class MegaClassifier:
             for model in comb:
                 Comb_dic[model] = Proba_dic[model]
 
-            Flag = True
-            # Calculate  sum of probability square(SPS)
-            for key in Comb_dic.keys():
-                KeyValue = Comb_dic[key]
-                if Flag:
-                    AccumSumProba = (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
-                    AvgSumProba = KeyValue
-                    # The +0  used to avoid the python generator that  put the same pointer on AvgSumProba and MaxProba
-                    MaxProba = KeyValue + 0
-
-                    Flag = False
-                else:
-                    AccumSumProba += (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
-                    AvgSumProba += KeyValue
-                    MaxProba = np.maximum(MaxProba, KeyValue)
-
-            # Find the class with the highest value
-            y_SPS = np.argmax(AccumSumProba, axis=1)
-            Y_average = np.argmax(AvgSumProba, axis=1)
-            y_max = np.argmax(MaxProba, axis=1)
+            y_SPS, Y_average, y_max = self.__CalculateAggregateFunctions(Comb_dic)
 
             # Scoring
             Y_averageScore = self.OriginalScoring(y_true, Y_average)
@@ -572,10 +553,43 @@ class MegaClassifier:
         self.BestCombResults = self.BestCombResults.sort_values(by='Score', ascending=False)
         return self.BestCombResults.drop('Param', axis=1)
 
-    # def PredictBestCombination(self, X, n=1):
-    #     res_df = pd.DataFrame()
-    #     Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
-    #     Top_DF['Param'].apply(lambda x: )
+    def PredictBestCombination(self, X, n=1):
+        res_df = pd.DataFrame()
+        Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
+        ListOfComb = Top_DF['Param'].tolist()
+        for cmb in ListOfComb:
+            Aggregate, CombModels = cmb
+            # Create a prediction for every model that is in the cmb
+            Proba_dic = {}
+            for mdl in CombModels:
+                y_pred = self.ModelsAfterFit[mdl].predict_proba(X)
+                Proba_dic[mdl] = y_pred
+
+    @staticmethod
+    def __CalculateAggregateFunctions(Comb_dic):
+        Flag = True
+        # Calculate  sum of probability square(SPS)
+        for key in Comb_dic.keys():
+            KeyValue = Comb_dic[key]
+            if Flag:
+                AccumSumProba = (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
+                AvgSumProba = KeyValue
+                # The +0  used to avoid the python generator that  put the same pointer on AvgSumProba and MaxProba
+                MaxProba = KeyValue + 0
+
+                Flag = False
+            else:
+                AccumSumProba += (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
+                AvgSumProba += KeyValue
+                MaxProba = np.maximum(MaxProba, KeyValue)
+
+        # Find the class with the highest value
+        y_SPS = np.argmax(AccumSumProba, axis=1)
+        Y_average = np.argmax(AvgSumProba, axis=1)
+        y_max = np.argmax(MaxProba, axis=1)
+
+        return y_SPS, Y_average, y_max
+
     def ParamInsight(self, ModelName):
         """
         Works on a specific model. Takes every hyper parameter and every value it gets and shows the score

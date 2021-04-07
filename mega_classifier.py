@@ -517,7 +517,7 @@ class MegaClassifier:
         Proba_dic = {}  # This dictionary Contains all the y_pred for all models in proba form (probabilities)
         for mdl in self.ModelsAfterFit.keys():
             y_pred = self.ModelsAfterFit[mdl].predict_proba(X)
-            Proba_dic[mdl] = pd.Series(y_pred,index=X.index)
+            Proba_dic[mdl] = y_pred
 
         # Check each combination of models using aggregation function: Average(A), Max(M),sum of probability square(SPS)
         # Fill a dataframe for each combination and its score
@@ -558,7 +558,9 @@ class MegaClassifier:
         Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
         ListOfComb = Top_DF['Param'].tolist()[:-1]
 
+        counter = 0
         for cmb in ListOfComb:
+
             Aggregate, CombModels = cmb
             # Create a prediction for every model that is in the cmb
             Proba_dic = {}
@@ -567,11 +569,11 @@ class MegaClassifier:
                 Proba_dic[mdl] = y_pred
 
             y_SPS, Y_average, y_max = self.__CalculateAggregateFunctions(Proba_dic)
-            # if Aggregate == 'y_SPS':
-            #     pd.Series(y_SPS,)
-            #     res_df =
+            if Aggregate == 'y_SPS':
+                y_SPS = pd.Series(y_SPS, index=X.index, name=str(counter))
+                res_df.append(y_SPS)
 
-
+            counter += 1
 
     @staticmethod
     def __CalculateAggregateFunctions(Comb_dic):
@@ -595,9 +597,6 @@ class MegaClassifier:
         y_SPS = np.argmax(AccumSumProba, axis=1)
         Y_average = np.argmax(AvgSumProba, axis=1)
         y_max = np.argmax(MaxProba, axis=1)
-        y_SPS = pd.Series(y_SPS,index=KeyValue.index) # all KeyValues should have the same index by definition
-        Y_average = pd.Series(Y_average,index=KeyValue.index)
-        y_max = pd.Series(y_max,index=KeyValue.index)
 
         return y_SPS, Y_average, y_max
 

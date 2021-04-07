@@ -524,6 +524,7 @@ class MegaClassifier:
 
         for comb in CombModelList:
             # Create a filter dictionary that holds only the combo models
+            Comb_dic = {}
             for model in comb:
                 Comb_dic[model] = Proba_dic[model]
 

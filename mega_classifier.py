@@ -554,7 +554,7 @@ class MegaClassifier:
         self.BestCombResults = self.BestCombResults.reset_index()
         return self.BestCombResults.drop(['Param', 'index'], axis=1)
 
-    def PredictBestCombination(self, X, n=1):
+    def PredictBestCombination(self, X, y=None, n=1):
         res_df = pd.DataFrame()
         Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
         ListOfComb = Top_DF['Param'].tolist()[:-1]
@@ -586,6 +586,13 @@ class MegaClassifier:
                 res_df = pd.concat([res_df, y_max], axis=1)
 
             counter += 1
+        if y is not None:
+            Summary_df = pd.Dataframe(columns=['Name of combination', 'Scoring'])
+            for col in list(res_df.columns):
+                CurrScore = self.OriginalScoring(y, res_df[col])
+                Summary_df.append({'Name of combination': col, 'Scoring': CurrScore})
+                print(Summary_df)
+
         return res_df
 
     @staticmethod

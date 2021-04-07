@@ -875,7 +875,9 @@ class MegaClassifier:
 
     def __AssignNextModelToFit(self, strRun_id):
         """
-        Return the name of the next model to fit
+        Return the name of the next model to fit.
+        If this is the first time running then it creates the moderator file
+
         :param strRun_id: string. The run id that runs now (given as a parameter during the fit method)
         :return: The name of the next model to fit or None if there are none
         """
@@ -918,7 +920,7 @@ class MegaClassifier:
         # First save the model
         with open(SaveFile, 'wb') as SaveFilePointer:
             pickle.dump(Model, SaveFilePointer)
-
+        print(str(ModelName) + ' model saved.')
         # Then update "the job done" at the moderator file
         Run_DF = pd.read_csv(ModeratorFile, index_col=0)
         index = Run_DF[(Run_DF['Model'] == ModelName) & (Run_DF['run_id'] == strRun_id)].index
@@ -926,6 +928,7 @@ class MegaClassifier:
         Run_DF.loc[index, 'Finished'] = True
         Run_DF.loc[index, 'Time4Fit'] = strTime
         Run_DF.to_csv(ModeratorFile)
+        print('Moderator file updated that model: ' + str(ModelName) + ' is finished')
 
     def __UpdateFeatureImportance(self, X):
         """

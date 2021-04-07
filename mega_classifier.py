@@ -543,7 +543,7 @@ class MegaClassifier:
                     MaxProba = np.maximum(MaxProba, Comb_dic[key])
                     print('I am here')
 
-                print('AccumSumProba: ' + str(AccumSumProba) + '\nAvgSumProba: ' + str(
+            print('AccumSumProba: ' + str(AccumSumProba) + '\nAvgSumProba: ' + str(
                     AvgSumProba) + '\nMaxProba: ' + str(MaxProba))
 
             y_SPS = np.argmax(AccumSumProba, axis=1)  # Find the max of all probabilities squared

@@ -591,7 +591,7 @@ class MegaClassifier:
             Summary_df = pd.DataFrame(columns=['Name of combination', 'Scoring'])
             for col in list(res_df.columns):
                 CurrScore = self.OriginalScoring(y_true, res_df[col])
-                Summary_df.append({'Name of combination': col, 'Scoring': CurrScore}, ignore_index=True)
+                Summary_df = Summary_df.append({'Name of combination': col, 'Scoring': CurrScore}, ignore_index=True)
                 print(Summary_df)
 
         return res_df

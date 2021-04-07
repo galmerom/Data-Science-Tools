@@ -536,6 +536,7 @@ class MegaClassifier:
                 if Flag:
                     AccumSumProba = (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba = KeyValue
+                    print('First KeyValue:' + str(KeyValue))
                     MaxProba = KeyValue
                     Flag = False
                 else:

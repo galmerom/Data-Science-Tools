@@ -564,15 +564,17 @@ class MegaClassifier:
         for cmb in ListOfComb:
 
             Aggregate, CombModels = cmb
+            print ('Aggregate: ' + Aggregate + '\nCombModels: '+str(CombModels))
             # Create a prediction for every model that is in the cmb
             Proba_dic = {}
             for mdl in CombModels:
                 y_pred = self.ModelsAfterFit[mdl].predict_proba(X)
                 Proba_dic[mdl] = y_pred
+            print('Proba_dic:' + str(Proba_dic))
 
             # Find aggregated arrays
             y_SPS, Y_average, y_max = self.__CalculateAggregateFunctions(Proba_dic)
-
+            print('y_SPS:\n' + str(y_SPS)+'\nY_average:\n ' + str(Y_average))
             # add the column to the result dataframe
             if Aggregate == 'y_SPS':
                 y_SPS = pd.Series(y_SPS, index=X.index, name=ListOfNames[counter])

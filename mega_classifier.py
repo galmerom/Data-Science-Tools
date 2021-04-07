@@ -541,7 +541,9 @@ class MegaClassifier:
                     AccumSumProba += (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba += Comb_dic[key]
                     MaxProba = np.maximum(MaxProba, Comb_dic[key])
-                    print('AccumSumProba: ' + str(AccumSumProba) + '\nAvgSumProba: '+ str(AvgSumProba)+'\nMaxProba: '+ str(MaxProba))
+
+                print('AccumSumProba: ' + str(AccumSumProba) + '\nAvgSumProba: ' + str(
+                    AvgSumProba) + '\nMaxProba: ' + str(MaxProba))
 
             y_SPS = np.argmax(AccumSumProba, axis=1)  # Find the max of all probabilities squared
             Y_average = np.argmax(AvgSumProba, axis=1)

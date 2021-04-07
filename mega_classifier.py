@@ -555,15 +555,16 @@ class MegaClassifier:
             CombName = '_'.join([str(elem) for elem in comb])
             self.BestCombResults.append({'Combination': CombName + '_Avg',
                                          'Score': Y_averageScore,
-                                         'NumOfModels': len(comb)})
+                                         'NumOfModels': len(comb)},ignore_index=True)
             self.BestCombResults.append({'Combination': CombName + '_Max',
                                          'Score': Y_maxScore,
-                                         'NumOfModels': len(comb)})
+                                         'NumOfModels': len(comb)},ignore_index=True)
             self.BestCombResults.append({'Combination': CombName + '_SPC',
                                          'Score': Y_SPS_Score,
-                                         'NumOfModels': len(comb)})
+                                         'NumOfModels': len(comb)},ignore_index=True)
         # Sort data frame according to score
         self.BestCombResults.sort_values(by='Score', ascending=False)
+        return self.BestCombResults
 
     def ParamInsight(self, ModelName):
         """

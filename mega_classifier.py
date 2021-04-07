@@ -498,43 +498,57 @@ class MegaClassifier:
 
     def PrePredict(self, X, y, MinComb=1, MaxComb=None):
         y_true = self.Label2Num.fit_transform(y)
+
+        # Reset the output dataframe
+        self.BestCombResults = pd.DataFrame(columns=['Combination', 'Score', 'NumOfModels'])
+
         # Create a list of all possible combinations of models available
         CombModelList = []
         AllModelsName = list(self.ModelsAfterFit.keys())
         MaxCombLength = len(AllModelsName) + 1
         if MaxComb is not None:
-            MaxCombLength = MaxCombLength
+            MaxCombLength = MaxComb
 
         for CombLength in range(1, MaxCombLength):
             for comb in itertools.combinations(AllModelsName, CombLength):
                 CombModelList.extend(comb)
+
         # Create a dataframe with all models predict proba
-        Proba_df = pd.DataFrame()  # This DataFrame Contains all the y_pred for all models in proba form (probabilities)
+        Proba_dic = {}  # This dictionary Contains all the y_pred for all models in proba form (probabilities)
         for mdl in self.ModelsAfterFit.keys():
             y_pred = self.ModelsAfterFit[mdl].predict_proba(X)
-            Proba_df[mdl] = y_pred
+            Proba_dic[mdl] = y_pred
 
         # Check each combination of models using aggregation function: Average(A), Max(M),sum of probability square(SPS)
         # Fill a dataframe for each combination and its score
 
         for comb in CombModelList:
-            Comb_DF = OutputDF.loc[:, OutputDF.columns.isin(CombModelList)]
-            Y_average = Comb_DF.mean(axis=1)
-            y_max = Comb_DF.max(axis=1)
+            # Create a filter dictionary that holds only the combo models
+            for model in comb:
+                Comb_dic[model] = Proba_dic[model]
+
             # Calculate  sum of probability square(SPS)
-            for col in Comb_DF.columns:
+            for key in Comb_dic.keys():
                 Flag = True
                 if Flag:
-                    AccumSumProba = (Comb_DF[col] ** 2)  # We use **2 to give more weight to the highest probabilities
+                    AccumSumProba = (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
+                    AvgSumProba = Comb_dic[key]
+                    MaxProba = Comb_dic[key]
                     Flag = False
                 else:
-                    AccumSumProba += (Comb_DF[col] ** 2)  # We use **2 to give more weight to the highest probabilities
+                    AccumSumProba += (Comb_dic[key] ** 2)  # We use **2 to give more weight to the highest probabilities
+                    AvgSumProba += Comb_dic[key]
+                    MaxProba = np.maximum(MaxProba, Comb_dic[key])
 
             y_SPS = np.argmax(AccumSumProba, axis=1)  # Find the max of all probabilities squared
+            Y_average = np.argmax(AvgSumProba, axis=1)
+            y_max = np.argmax(MaxProba, axis=1)
+
             # Scoring
             Y_averageScore = self.OriginalScoring(y_true, Y_average)
             Y_maxScore = self.OriginalScoring(y_true, y_max)
-            Y_SPS_Score = self.OriginalScoring(y_true, AccumSumProba)
+            Y_SPS_Score = self.OriginalScoring(y_true, y_SPS)
+
             # Add to dataframe
             CombName = '_'.join([str(elem) for elem in comb])
             DataFrame.append(self.BestCombResults, {'Combination': CombName + '_Avg',

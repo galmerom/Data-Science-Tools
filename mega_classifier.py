@@ -536,21 +536,17 @@ class MegaClassifier:
                 if Flag:
                     AccumSumProba = (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba = KeyValue
-                    print('First KeyValue:' + str(KeyValue[0]))
+                    # The +0  used to avoid the python generator that  put the same pointer on AvgSumProba and MaxProba
                     MaxProba = KeyValue + 0
+
                     Flag = False
                 else:
                     AccumSumProba += (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba += KeyValue
                     MaxProba = np.maximum(MaxProba, KeyValue)
 
-                    print('MaxProba before:' + str(MaxProba[0]) + '\nKeyValue: ' + str(KeyValue[0]))
-                    print('\nMaxProba after:' + str(MaxProba[0]))
-
-            print('\nAccumSumProba: ' + str(AccumSumProba[0]) + '\nAvgSumProba: ' + str(
-                AvgSumProba[0]) + '\nMaxProba: ' + str(MaxProba[0]) + '\n')
-
-            y_SPS = np.argmax(AccumSumProba, axis=1)  # Find the max of all probabilities squared
+            # Find the class with the highest value
+            y_SPS = np.argmax(AccumSumProba, axis=1)
             Y_average = np.argmax(AvgSumProba, axis=1)
             y_max = np.argmax(MaxProba, axis=1)
 

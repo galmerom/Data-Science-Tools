@@ -587,9 +587,10 @@ class MegaClassifier:
 
             counter += 1
         if y is not None:
+            y_true = self.Label2Num.fit_transform(y)
             Summary_df = pd.Dataframe(columns=['Name of combination', 'Scoring'])
             for col in list(res_df.columns):
-                CurrScore = self.OriginalScoring(y, res_df[col])
+                CurrScore = self.OriginalScoring(y_true, res_df[col])
                 Summary_df.append({'Name of combination': col, 'Scoring': CurrScore})
                 print(Summary_df)
 

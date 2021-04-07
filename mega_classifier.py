@@ -577,13 +577,13 @@ class MegaClassifier:
             # add the column to the result dataframe
             if Aggregate == 'SPS':
                 y_SPS = pd.Series(y_SPS, index=X.index, name=ListOfNames[counter])
-                res_df = res_df.append(y_SPS, axis=1)
+                res_df = res_df.concat(y_SPS, axis=1)
             elif Aggregate == 'Avg':
                 Y_average = pd.Series(Y_average, index=X.index, name=ListOfNames[counter])
-                res_df = res_df.append(Y_average, axis=1)
+                res_df = res_df.concat(Y_average, axis=1)
             elif Aggregate == 'Max':
                 y_max = pd.Series(y_max, index=X.index, name=ListOfNames[counter])
-                res_df = res_df.append(y_max, axis=1)
+                res_df = res_df.concat(y_max, axis=1)
 
             counter += 1
         return res_df

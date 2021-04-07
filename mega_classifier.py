@@ -164,7 +164,7 @@ class MegaClassifier:
         # Holds the models after fitting. Allow models that are not grid search to be added for a prediction and analyze
         self.ModelsAfterFit = {}
         # Holds the best combinations of the results
-        self.BestCombResults = pd.DataFrame(columns=['Combination', 'Score', 'NumOfModels'])
+        self.BestCombResults = pd.DataFrame(columns=['Combination', 'Score', 'NumOfModels', 'Param'])
         # Initiate the models by running the following methods
         self.__DefaultsGridParameters()
         self.__InitClassifier()
@@ -500,7 +500,7 @@ class MegaClassifier:
         y_true = self.Label2Num.fit_transform(y)
 
         # Reset the output dataframe
-        self.BestCombResults = pd.DataFrame(columns=['Combination', 'Score', 'NumOfModels'])
+        self.BestCombResults = pd.DataFrame(columns=['Combination', 'Score', 'NumOfModels', 'Param'])
 
         # Create a list of all possible combinations of models available
         CombModelList = []
@@ -558,17 +558,24 @@ class MegaClassifier:
             CombName = '_'.join([str(elem) for elem in comb])
             self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_Avg',
                                                                 'Score': Y_averageScore,
-                                                                'NumOfModels': len(comb)}, ignore_index=True)
+                                                                'NumOfModels': len(comb),
+                                                                'Param': ('SPS', comb)}, ignore_index=True)
             self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_Max',
                                                                 'Score': Y_maxScore,
-                                                                'NumOfModels': len(comb)}, ignore_index=True)
+                                                                'NumOfModels': len(comb),
+                                                                'Param': ('SPS', comb)}, ignore_index=True)
             self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_SPC',
                                                                 'Score': Y_SPS_Score,
-                                                                'NumOfModels': len(comb)}, ignore_index=True)
+                                                                'NumOfModels': len(comb),
+                                                                'Param': ('SPS', comb)}, ignore_index=True)
         # Sort data frame according to score
-        self.BestCombResults.sort_values(by='Score', ascending=False)
-        return self.BestCombResults
+        self.BestCombResults = self.BestCombResults.sort_values(by='Score', ascending=False)
+        return self.BestCombResults.drop('Param', axis=1)
 
+    # def PredictBestCombination(self, X, n=1):
+    #     res_df = pd.DataFrame()
+    #     Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
+    #     for cmb
     def ParamInsight(self, ModelName):
         """
         Works on a specific model. Takes every hyper parameter and every value it gets and shows the score

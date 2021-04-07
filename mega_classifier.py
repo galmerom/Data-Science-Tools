@@ -521,7 +521,7 @@ class MegaClassifier:
 
         # Check each combination of models using aggregation function: Average(A), Max(M),sum of probability square(SPS)
         # Fill a dataframe for each combination and its score
-        print('CombModelList:'+str(CombModelList))
+        print('CombModelList:' + str(CombModelList))
         for comb in CombModelList:
             # Create a filter dictionary that holds only the combo models
             Comb_dic = {}
@@ -553,15 +553,15 @@ class MegaClassifier:
 
             # Add to dataframe
             CombName = '_'.join([str(elem) for elem in comb])
-            DataFrame.append(self.BestCombResults, {'Combination': CombName + '_Avg',
-                                                    'Score': Y_averageScore,
-                                                    'NumOfModels': len(comb)})
-            DataFrame.append(self.BestCombResults, {'Combination': CombName + '_Max',
-                                                    'Score': Y_maxScore,
-                                                    'NumOfModels': len(comb)})
-            DataFrame.append(self.BestCombResults, {'Combination': CombName + '_SPC',
-                                                    'Score': Y_SPS_Score,
-                                                    'NumOfModels': len(comb)})
+            self.BestCombResults.append({'Combination': CombName + '_Avg',
+                                         'Score': Y_averageScore,
+                                         'NumOfModels': len(comb)})
+            self.BestCombResults.append({'Combination': CombName + '_Max',
+                                         'Score': Y_maxScore,
+                                         'NumOfModels': len(comb)})
+            self.BestCombResults.append({'Combination': CombName + '_SPC',
+                                         'Score': Y_SPS_Score,
+                                         'NumOfModels': len(comb)})
         # Sort data frame according to score
         self.BestCombResults.sort_values(by='Score', ascending=False)
 

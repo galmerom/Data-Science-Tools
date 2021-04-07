@@ -573,7 +573,7 @@ class MegaClassifier:
 
             # Find aggregated arrays
             y_SPS, Y_average, y_max = self.__CalculateAggregateFunctions(Proba_dic)
-
+            print('Aggregate:' + str(Aggregate))
             # add the column to the result dataframe
             if Aggregate == 'y_SPS':
                 print('y_SPS:' + str(y_SPS))

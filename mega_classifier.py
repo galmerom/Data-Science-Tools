@@ -558,6 +558,7 @@ class MegaClassifier:
         res_df = pd.DataFrame()
         Top_DF = self.BestCombResults.head(n + 1)  # The +1 used in order for Top_DF to remain dataframe not a series
         ListOfComb = Top_DF['Param'].tolist()[:-1]
+        ListOfNames = Top_DF['Combination'].tolist()[:-1]
 
         counter = 0
         for cmb in ListOfComb:
@@ -569,12 +570,22 @@ class MegaClassifier:
                 y_pred = self.ModelsAfterFit[mdl].predict_proba(X)
                 Proba_dic[mdl] = y_pred
 
+            # Find aggregated arrays
             y_SPS, Y_average, y_max = self.__CalculateAggregateFunctions(Proba_dic)
+
+            # add the column to the result dataframe
             if Aggregate == 'y_SPS':
-                y_SPS = pd.Series(y_SPS, index=X.index, name=str(counter))
+                y_SPS = pd.Series(y_SPS, index=X.index, name=ListOfNames[counter])
                 res_df.append(y_SPS)
+            elif Aggregate == 'Y_average':
+                Y_average = pd.Series(Y_average, index=X.index, name=ListOfNames[counter])
+                res_df.append(Y_average)
+            elif Aggregate == 'y_max':
+                y_max = pd.Series(y_max, index=X.index, name=ListOfNames[counter])
+                res_df.append(y_max)
 
             counter += 1
+        return res_df
 
     @staticmethod
     def __CalculateAggregateFunctions(Comb_dic):

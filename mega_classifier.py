@@ -551,7 +551,8 @@ class MegaClassifier:
                                                                 'Param': ('SPS', comb)}, ignore_index=True)
         # Sort data frame according to score
         self.BestCombResults = self.BestCombResults.sort_values(by='Score', ascending=False)
-        return self.BestCombResults.drop('Param', axis=1)
+        self.BestCombResults = self.BestCombResults.reset_index()
+        return self.BestCombResults.drop(['Param', 'index'], axis=1)
 
     def PredictBestCombination(self, X, n=1):
         res_df = pd.DataFrame()

@@ -580,11 +580,12 @@ class MegaClassifier:
                 res_df = res_df.append(y_SPS)
             elif Aggregate == 'Y_average':
                 Y_average = pd.Series(Y_average, index=X.index, name=ListOfNames[counter])
+                print('Y_average:'+str(Y_average))
                 res_df = res_df.append(Y_average)
             elif Aggregate == 'y_max':
                 y_max = pd.Series(y_max, index=X.index, name=ListOfNames[counter])
                 res_df = res_df.append(y_max)
-            print('Counter:' + str(counter)+'\n\nres_df: ' + res_df)
+
             counter += 1
         return res_df
 

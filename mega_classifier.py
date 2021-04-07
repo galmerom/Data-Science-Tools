@@ -595,7 +595,7 @@ class MegaClassifier:
             for col in list(res_df.columns):
                 CurrScore = self.OriginalScoring(y_true, res_df[col])
                 Summary_df = Summary_df.append({'Name of combination': col, 'Scoring': CurrScore}, ignore_index=True)
-            charts.BarCharts([Summary_df], ['Summary of best combinations'],)
+            charts.BarCharts([Summary_df], ['Summary of best combinations'],LabelPrecision=5,WithPerc=2)
         return res_df, Summary_df
 
     @staticmethod

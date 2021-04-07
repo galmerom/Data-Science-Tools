@@ -573,20 +573,17 @@ class MegaClassifier:
 
             # Find aggregated arrays
             y_SPS, Y_average, y_max = self.__CalculateAggregateFunctions(Proba_dic)
-            print('Aggregate:' + str(Aggregate))
+
             # add the column to the result dataframe
             if Aggregate == 'SPS':
-                print('y_SPS:' + str(y_SPS))
                 y_SPS = pd.Series(y_SPS, index=X.index, name=ListOfNames[counter])
-                res_df = res_df.append(y_SPS)
+                res_df = res_df.append(y_SPS, axis=1)
             elif Aggregate == 'Avg':
                 Y_average = pd.Series(Y_average, index=X.index, name=ListOfNames[counter])
-                print('Y_average:'+str(Y_average))
-                res_df = res_df.append(Y_average)
+                res_df = res_df.append(Y_average, axis=1)
             elif Aggregate == 'Max':
-                print('y_max:' + str(y_max))
                 y_max = pd.Series(y_max, index=X.index, name=ListOfNames[counter])
-                res_df = res_df.append(y_max)
+                res_df = res_df.append(y_max, axis=1)
 
             counter += 1
         return res_df

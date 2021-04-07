@@ -537,13 +537,14 @@ class MegaClassifier:
                     AccumSumProba = (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba = KeyValue
                     print('First KeyValue:' + str(KeyValue[0]))
-                    MaxProba = KeyValue
+                    MaxProba = KeyValue + 0
                     Flag = False
                 else:
                     AccumSumProba += (KeyValue ** 2)  # We use **2 to give more weight to the highest probabilities
                     AvgSumProba += KeyValue
-                    print('MaxProba before:' + str(MaxProba[0]) + '\nKeyValue: ' + str(KeyValue[0]))
                     MaxProba = np.maximum(MaxProba, KeyValue)
+
+                    print('MaxProba before:' + str(MaxProba[0]) + '\nKeyValue: ' + str(KeyValue[0]))
                     print('\nMaxProba after:' + str(MaxProba[0]))
 
             print('\nAccumSumProba: ' + str(AccumSumProba[0]) + '\nAvgSumProba: ' + str(

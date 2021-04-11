@@ -301,7 +301,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         fig, axes = plt.subplots(nrows=NumRows, ncols=NumCol, figsize=ChartSize)
 
     if NumRows == 1 and NumCol == 1:
-        ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadValue=PadVal, StackBarPer=StackBarPer,
+        ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadVal=PadValue, StackBarPer=StackBarPer,
                                              ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc,
                                              ColorInt=ColorInt)
         ax.title.set_size(TitleSize)

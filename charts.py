@@ -13,6 +13,7 @@ plotCM - Plotting graphical confusion matrix, can also shows classification repo
 ClassicGraphicCM - like plotCM except it does not get a model and perform a predict (gets y_pred and classes instead)
 PlotFeatureImportance - Plot feature importance and return a dataframe
 Show_AucAndROC - Show AUC value and if a classifier model is given it also show the ROC chart
+BuildMuliLineChart - Built a chart with 2 or more lines. First line is on the left axis and the rest on the right axis
 
 """
 
@@ -940,3 +941,82 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
     pltDf = FI_DF.head(TopFeatures)
     BarCharts([pltDf], ['Feature importance'], WithPerc=3, LabelPrecision=Label_Precision)
     return FI_DF
+
+def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
+                       XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
+                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965)):
+    """
+    Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
+    Input:
+        df = dataframe. The dataframe
+        YFields =           List of strings. List of all the fields in the dataframe that we want to see as lines
+        FieldDescription =  List of strings. List of descriptions for each field used in the legend. If None then use
+                            the name of the fields instead.
+        rollinWindow =      integer. The rolling window is used for calculating moving averages. The integer is the
+                            number of periods to do the average on.The default is 1 which means no moving average
+        FirstAxisLimit =    List. A list of 2 units for the first Y axis. The first is the minimum and the second
+                            is the maximum. The default none means no limits
+        SecondAxisLimit =   List. A list of 2 units for the first Y axis. The first is the minimum and the second
+                            is the maximum. The default none means no limits
+        XField =            string. The name of the field to use as the X-axis. If none then use the index.
+        figsize =           tuple with a pair of int. Used as the figure size in inches
+        linewidth =         integer. The line width. Default =  no line only dots
+        colors =            List of strings. List of names allowed by mathplotlib to be line colors.
+                            The default allows 6 lines with 6 colors
+        LabelSizes =        tuple with a couple of integer. First element is the font size of the x-label.
+                            The second is for the y-axis
+        yLabels =           tuple with a couple of integer. First elemnt = left y axis label,
+                            second  = right y axis label
+        LegendBboxCorr =    tuple with a couple of floats. Used to correct the legend label to place it in the
+                            right position
+    return: None
+    """
+    NumOfLines = len(YFields)
+    lines = []
+    # create figure and axis objects with subplots()
+    fig, ax = plt.subplots(figsize=figsize)
+    if FieldDescription is None:
+        FieldDescription = YFields
+
+    if XField == 'dataframe_Index':
+        x = df.index
+        xLabel = 'index'
+        if not df.index.name is None:
+            if len(df.index.name) > 0:
+                xLabel = df.index.name
+    else:
+        x = df[XField]
+        xLabel = XField
+    if yLabels == ('FirstField', 'SecondLabel'):
+        y_labels = (YFields[0], YFields[1])
+    else:
+        y_labels = yLabels
+
+    if colors == ['none']:
+        colors = ['red', 'blue', 'pink', 'green', 'yellow', 'black']
+    # make a plot
+    lines.append(
+        ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker="o", linewidth=linewidth,
+                label=FieldDescription[0]))
+    # set x-axis label
+    ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
+
+    # set y-axis label
+    ax.set_ylabel(y_labels[0], fontsize=LabelSizes[1], color="red")
+
+    # set y-axis limits
+    ax.set_ylim(FirstAxisLimit)
+
+    # Add lines from the second line
+    for DrawLine in range(NumOfLines - 1):
+        Inx = DrawLine + 1
+        ax2 = ax.twinx()
+        lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker="o",
+                              linewidth=linewidth, label=FieldDescription[Inx]))
+        ax2.set_ylim(SecondAxisLimit)
+
+    ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
+
+    fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
+               bbox_to_anchor=LegendBboxCorr, shadow=True)
+    plt.show()

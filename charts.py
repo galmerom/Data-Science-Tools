@@ -944,7 +944,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
-                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965)):
+                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={}):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -969,7 +969,15 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             second  = right y axis label
         LegendBboxCorr =    tuple with a couple of floats. Used to correct the legend label to place it in the
                             right position
-    return: None
+        AnnotLst =          Dictionary with a tuple as values and integer as keys. Show strings next to the points of a specific line.
+                            The general form: {Line number: ([List of strings], Font size)}
+                            First element of a tupple is a list of strings and the second is an integer.
+                            It looks like this {0:['Point1,'Point2],20}. The keys of the dictionary refer to the line index
+                            in the YFields list. So, the first line gets a value of zero.
+                            The values of the dictionary: First elemnt is the list of strings to show
+                            second element is the font size.
+                            If AnnotLst is empty then nothing will happen
+    return: fig
     """
     NumOfLines = len(YFields)
     lines = []
@@ -1006,7 +1014,11 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
 
     # set y-axis limits
     ax.set_ylim(FirstAxisLimit)
-
+    if len(AnnotLst)>0:
+        if 0 in AnnotLst.keys():
+            for i, txt in enumerate(AnnotLst[0][0]):
+                sizeOfFonts=AnnotLst[0][1]
+                plt.annotate(txt, (x[i], df[YFields[0]].iloc[i]),fontsize=sizeOfFonts)
     # Add lines from the second line
     for DrawLine in range(NumOfLines - 1):
         Inx = DrawLine + 1
@@ -1014,9 +1026,16 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker="o",
                               linewidth=linewidth, label=FieldDescription[Inx]))
         ax2.set_ylim(SecondAxisLimit)
+        if len(AnnotLst)>0:
+            if Inx in AnnotLst.keys():
+                for i, txt in enumerate(AnnotLst[Inx][0]):
+                    sizeOfFonts=AnnotLst[Inx][1]
+                    plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]),fontsize=sizeOfFonts)
 
     ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
 
     fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     plt.show()
+    return fig
+

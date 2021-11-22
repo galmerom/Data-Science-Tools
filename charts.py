@@ -944,7 +944,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
-                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={}):
+                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -977,6 +977,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             The values of the dictionary: First elemnt is the list of strings to show
                             second element is the font size.
                             If AnnotLst is empty then nothing will happen
+        MarkerWidth =       int.The size of the marker (usually the size of the point)
     return: fig
     """
     NumOfLines = len(YFields)
@@ -1005,7 +1006,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     # make a plot
     lines.append(
         ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker="o", linewidth=linewidth,
-                label=FieldDescription[0]))
+                label=FieldDescription[0],markeredgewidth=MarkerWidth))
     # set x-axis label
     ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
 
@@ -1024,7 +1025,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         Inx = DrawLine + 1
         ax2 = ax.twinx()
         lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker="o",
-                              linewidth=linewidth, label=FieldDescription[Inx]))
+                              linewidth=linewidth, label=FieldDescription[Inx],markeredgewidth=MarkerWidth))
         ax2.set_ylim(SecondAxisLimit)
         if len(AnnotLst)>0:
             if Inx in AnnotLst.keys():
@@ -1038,4 +1039,3 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     plt.show()
     return fig
-

@@ -595,7 +595,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
 
 
 def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=50,
-                      UseTargetAsHue=False):
+                      UseTargetAsHue=False,ChangeAxis=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -615,19 +615,25 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     for col in DF.drop([TargetCol], axis=1).columns:
         plt.figure(figsize=Figsize)
         plt.title(col + ' ver. ' + TargetCol)
-
+        
+        X=col
+        Y=TargetCol
+        if ChangeAxis:
+          Y=col
+          X=TargetCol
+          
         # noinspection PyBroadException
         try:
             tempDF = DF[[col, TargetCol]]
             if is_bool_dtype(DF[col].dtype):
-                ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
+                ax = sns.boxplot(x=X, y=Y, data=tempDF)
             elif is_numeric_dtype(DF[col].dtype):
                 if UseTargetAsHue:
-                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=S, hue=TargetCol)
+                    ax = sns.scatterplot(x=X, y=Y, data=tempDF, s=S, hue=TargetCol)
                 else:
-                    ax = sns.scatterplot(x=col, y=TargetCol, data=tempDF, s=S)
+                    ax = sns.scatterplot(x=X, y=Y, data=tempDF, s=S)
             elif is_string_dtype(DF[col].dtype):
-                ax = sns.boxplot(x=col, y=TargetCol, data=tempDF)
+                ax = sns.boxplot(x=X, y=Y, data=tempDF)
 
         except:
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))

@@ -637,7 +637,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=X, y=Y, data=tempDF)
             if Savepng:
-              ax.savefig(col+' ver ' + TargetCol + '.png')
+              plt.savefig(col+' ver ' + TargetCol + '.png')
         except:
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 

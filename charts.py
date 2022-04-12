@@ -595,7 +595,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
 
 
 def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=50,
-                      UseTargetAsHue=False, ChangeAxis=False):
+                      UseTargetAsHue=False, ChangeAxis=False,Savepng=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -609,6 +609,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     :param UseTargetAsHue: bool. If true then use the target column value also as the hue value of the chart.
                            (determine the colors based on the values)
     :param ChangeAxis: bool. If false then f(x) is on the y asix (default) if true then change the axis so f(x)is on the x-axis
+    :param Savepng: bool. If True then every chart will be saved in png format
     :return: nothing
     """
     warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
@@ -635,7 +636,8 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
                     ax = sns.scatterplot(x=X, y=Y, data=tempDF, s=S)
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=X, y=Y, data=tempDF)
-
+           if Savepng:
+              ax.savefig(col+' ver ' + TargetCol + '.png')
         except:
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 

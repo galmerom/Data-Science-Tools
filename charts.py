@@ -595,7 +595,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
 
 
 def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=50,
-                      UseTargetAsHue=False,ChangeAxis=False):
+                      UseTargetAsHue=False, ChangeAxis=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -608,6 +608,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     :param S: In case of a scatter plot: how big should be the points.
     :param UseTargetAsHue: bool. If true then use the target column value also as the hue value of the chart.
                            (determine the colors based on the values)
+    :param ChangeAxis: bool. If false then f(x) is on the y asix (default) if true then change the axis so f(x)is on the x-axis
     :return: nothing
     """
     warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
@@ -615,7 +616,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     for col in DF.drop([TargetCol], axis=1).columns:
         plt.figure(figsize=Figsize)
         plt.title(col + ' ver. ' + TargetCol)
-        
+        # Find out which column should be on which axis
         X=col
         Y=TargetCol
         if ChangeAxis:

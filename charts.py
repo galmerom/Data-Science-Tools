@@ -1022,7 +1022,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     # Find the type and size of the marker for the first line
     if isinstance(marker, list):
       currMarker=marker[0]
-    else
+    else:
       currMarker=marker
     if isinstance(MarkerWidth, list):
       currMarWdth=MarkerWidth[0]
@@ -1052,7 +1052,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         # Find the type and size of the marker for the first line
         if isinstance(marker, list):
           currMarker=marker[Inx]
-        else
+        else:
           currMarker=marker
         if isinstance(MarkerWidth, list):
           currMarWdth=MarkerWidth[Inx]

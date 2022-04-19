@@ -1032,7 +1032,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     # draw the actual first line
     lines.append(
         ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker=currMarker, linewidth=linewidth,
-                label=FieldDescription[0],markeredgewidth=MarkerWidth))
+                label=FieldDescription[0],markeredgewidth=currMarWdth))
     # set x-axis label
     ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
 

@@ -953,7 +953,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
-                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16)):
+                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16),marker="o"):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -986,8 +986,12 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             The values of the dictionary: First elemnt is the list of strings to show
                             second element is the font size.
                             If AnnotLst is empty then nothing will happen
-        MarkerWidth =       int.The size of the marker (usually the size of the point)
+        MarkerWidth =       int or list of int.The size of the marker (usually the size of the point). If int then the size will be the same for all lines.
+                            If list then the first element will get the first value and so on.
         title =             tuple. First element is a string that will be the figure title. The second element is the font size.
+        marker =            string or a list of string that define the way the marker of the point will look like. if there is only one string then all lines will
+                            get the same marker. If not then first line will get the first element in the list and so on.
+                            check marker types in the following link: https://matplotlib.org/stable/api/markers_api.html
     return: fig
     """
     NumOfLines = len(YFields)
@@ -1012,10 +1016,22 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         y_labels = yLabels
 
     if colors == ['none']:
-        colors = ['red', 'blue', 'pink', 'green', 'yellow', 'black']
-    # make a plot
+        colors = ['red', 'blue','black' , 'green', 'yellow', 'pink']
+    
+    # make a plot of the first line
+    # Find the type and size of the marker for the first line
+    if isinstance(marker, list):
+      currMarker=marker[0]
+    else
+      currMarker=marker
+    if isinstance(MarkerWidth, list):
+      currMarWdth=MarkerWidth[0]
+    else:
+      currMarWdth = MarkerWidth
+      
+    # draw the actual first line
     lines.append(
-        ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker="o", linewidth=linewidth,
+        ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker=currMarker, linewidth=linewidth,
                 label=FieldDescription[0],markeredgewidth=MarkerWidth))
     # set x-axis label
     ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
@@ -1033,9 +1049,19 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     # Add lines from the second line
     for DrawLine in range(NumOfLines - 1):
         Inx = DrawLine + 1
+        # Find the type and size of the marker for the first line
+        if isinstance(marker, list):
+          currMarker=marker[Inx]
+        else
+          currMarker=marker
+        if isinstance(MarkerWidth, list):
+          currMarWdth=MarkerWidth[Inx]
+        else:
+          currMarWdth = MarkerWidth
+      
         ax2 = ax.twinx()
-        lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker="o",
-                              linewidth=linewidth, label=FieldDescription[Inx],markeredgewidth=MarkerWidth))
+        lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker=currMarker,
+                              linewidth=linewidth, label=FieldDescription[Inx],markeredgewidth=currMarWdth))
         ax2.set_ylim(SecondAxisLimit)
         if len(AnnotLst)>0:
             if Inx in AnnotLst.keys():

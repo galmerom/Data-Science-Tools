@@ -1028,7 +1028,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
       currMarWdth=MarkerWidth[0]
     else:
       currMarWdth = MarkerWidth
-    print(currMarWdth)  
+
     # draw the actual first line
     lines.append(
         ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker=currMarker, linewidth=linewidth,
@@ -1059,7 +1059,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
           currMarWdth=MarkerWidth[Inx]
         else:
           currMarWdth = MarkerWidth
-        print("2:"+str(currMarWdth))
+
         ax2 = ax.twinx()
         lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker=currMarker,
                               linewidth=linewidth, label=FieldDescription[Inx],markeredgewidth=currMarWdth))

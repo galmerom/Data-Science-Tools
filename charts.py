@@ -1073,10 +1073,13 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                     plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]),fontsize=sizeOfFonts)
 
     ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
+    
     if FlipYaxis:
       axTmp=ax2.get_ylabel()
       ax2.set_ylabel = ax.get_ylabel()
-      ax1.set_ylabel = axTmp.get_ylabel()
+      ax1.set_ylabel = axTmp
+    
+    
     fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     fig.suptitle(title[0], fontsize=title[1])

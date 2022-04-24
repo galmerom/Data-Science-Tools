@@ -954,7 +954,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16),
-                       marker="o"):
+                       marker="o",ReturnArtistOnly=False):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -1078,5 +1078,6 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     fig.suptitle(title[0], fontsize=title[1])
-    plt.show()
+    if not ReturnArtistOnly:
+      plt.show()
     return fig,ax,ax2

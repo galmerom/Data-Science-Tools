@@ -1079,4 +1079,4 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     fig.suptitle(title[0], fontsize=title[1])
     plt.show()
-    return fig,ax
+    return fig,ax,ax2

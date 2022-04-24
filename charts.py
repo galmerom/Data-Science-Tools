@@ -954,7 +954,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16),
-                       marker="o", FlipYaxis=False):
+                       marker="o"):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -993,7 +993,6 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         marker =            string or a list of string that define the way the marker of the point will look like. if there is only one string then all lines will
                             get the same marker. If not then first line will get the first element in the list and so on.
                             check marker types in the following link: https://matplotlib.org/stable/api/markers_api.html
-        FlipYaxis           bool. IF true then the 2 y axis are flipped.
     return: fig
     """
     NumOfLines = len(YFields)
@@ -1074,15 +1073,10 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
 
     ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
     
-    if FlipYaxis:
-      axTmp=ax2.get_ylabel()
-      print(axTmp)
-      ax2.set_ylabel = ax.get_ylabel()
-      ax.set_ylabel = axTmp
-    
+ 
     
     fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     fig.suptitle(title[0], fontsize=title[1])
     plt.show()
-    return fig
+    return fig,ax

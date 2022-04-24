@@ -993,7 +993,9 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         marker =            string or a list of string that define the way the marker of the point will look like. if there is only one string then all lines will
                             get the same marker. If not then first line will get the first element in the list and so on.
                             check marker types in the following link: https://matplotlib.org/stable/api/markers_api.html
-    return: fig
+        ReturnArtistOnly=   bool. If False  (default) then  show the chart before the end of the function. If True then don't show the chart and only return the
+                            artist that can be used to add more lines to the chart.
+    return: fig, ax1,ax2
     """
     NumOfLines = len(YFields)
     lines = []

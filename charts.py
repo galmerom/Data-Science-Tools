@@ -1076,6 +1076,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     
     if FlipYaxis:
       axTmp=ax2.get_ylabel()
+      print(axTmp)
       ax2.set_ylabel = ax.get_ylabel()
       ax.set_ylabel = axTmp
     

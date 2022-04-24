@@ -1077,7 +1077,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     if FlipYaxis:
       axTmp=ax2.get_ylabel()
       ax2.set_ylabel = ax.get_ylabel()
-      ax1.set_ylabel = axTmp
+      ax.set_ylabel = axTmp
     
     
     fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",

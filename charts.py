@@ -1088,123 +1088,123 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
       plt.show()
     return fig,ax,ax2
 
-  ##### start PolyFitResults ##########
-  
-  #### possibe fit functions #####
-      #line
-    def __poly_1(x, a, b):
-        return a + b*x
-    #parabola
-    def __poly_2(x, a, b, c):
-        return a + b*x + c*(x**2)
-    def __poly_3(x, a, b, c, d):
-        return a + b*x + c*(x**2) + d*(x**3)
-    def __poly_4(x, a, b, c, d, e):
-        return a + b*x + c*(x**2) + d*(x**3) + e*(x**4)
-    def __poly_5(x, a, b, c, d, e,f):
-        return a + b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
-    def __poly_1_no_inter(x, b):
-        return  b*x
-    #parabola
-    def __poly_2_no_inter(x, b, c):
-        return b*x + c*(x**2)
-    def __poly_3_no_inter(x, b, c, d):
-        return  b*x + c*(x**2) + d*(x**3)
-    def __poly_4_no_inter(x, b, c, d, e):
-        return  b*x + c*(x**2) + d*(x**3) + e*(x**4)
-    def __poly_5_no_inter(x, b, c, d, e,f):
-        return  b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
+##### start PolyFitResults ##########
 
-   ##### start main function followed by scoring function #####
-    def PolyFitResults(XInput,yInput):
-      '''
-      Takes X series and Y series and try to find the coefficients that can adopt X to y using polynoms regression.
-      The output is 10 charts that try to fit the polynom regression.
+#### possibe fit functions #####
+  #line
+def __poly_1(x, a, b):
+    return a + b*x
+#parabola
+def __poly_2(x, a, b, c):
+    return a + b*x + c*(x**2)
+def __poly_3(x, a, b, c, d):
+    return a + b*x + c*(x**2) + d*(x**3)
+def __poly_4(x, a, b, c, d, e):
+    return a + b*x + c*(x**2) + d*(x**3) + e*(x**4)
+def __poly_5(x, a, b, c, d, e,f):
+    return a + b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
+def __poly_1_no_inter(x, b):
+    return  b*x
+#parabola
+def __poly_2_no_inter(x, b, c):
+    return b*x + c*(x**2)
+def __poly_3_no_inter(x, b, c, d):
+    return  b*x + c*(x**2) + d*(x**3)
+def __poly_4_no_inter(x, b, c, d, e):
+    return  b*x + c*(x**2) + d*(x**3) + e*(x**4)
+def __poly_5_no_inter(x, b, c, d, e,f):
+    return  b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
 
-      Inputs: XInput,yInput both are pandas series that we are looking for the coefficients that by given XInput we will get yInput.
-      Returns:
-      The function returns a tuple of 3 objects:
-      Curves dataframe = for each record in x and y we get the values of the 10 polynoms that tried to fit and "connect the dots".
-                         This is a dataframe that summeriaze the results
-      curvesDic dictionary = A dictionary of all the coefficients of all 10 polynoms, so the user can pick the best one.
-      BestOpt string = The string of the best result (that gives the least RMSE). This string can be used to get the values
-                        from the curvesDic dictionary
-      '''
-      X = XInput
-      y = yInput
-      boundsVal=(0,np.inf)
-      popt1, _ = curve_fit(__poly_1, X, y)
-      popt2, _ = curve_fit(__poly_2, X, y)
-      popt3, _ = curve_fit(__poly_3, X, y)
-      popt4, _ = curve_fit(__poly_4, X, y)
-      popt5, _ = curve_fit(__poly_5, X, y)
-      popt1_no_inter, _ = curve_fit(__poly_1_no_inter, X, y)
-      popt2_no_inter, _ = curve_fit(__poly_2_no_inter, X, y)
-      popt3_no_inter, _ = curve_fit(__poly_3_no_inter, X, y)
-      popt4_no_inter, _ = curve_fit(__poly_4_no_inter, X, y)
-      popt5_no_inter, _ = curve_fit(__poly_5_no_inter, X, y)
-      # popspecial = curve_fit(poly_special, X, y)
-      curves=pd.DataFrame(X.apply(__poly_1,a=popt1[0],b=popt1[1]))
-      curves.rename({curves.columns[0]:'CF1'},axis=1,inplace=True)
-      curves['CF2'] = X.apply(__poly_2,a=popt2[0],b=popt2[1],c=popt2[2])
-      curves['CF3'] = X.apply(__poly_3,a=popt3[0],b=popt3[1],c=popt3[2],d=popt3[3])
-      curves['CF4'] = X.apply(__poly_4,a=popt4[0],b=popt4[1],c=popt4[2],d=popt4[3],e=popt4[4])
-      curves['CF1_no_inter'] = X.apply(__poly_1_no_inter,b=popt1_no_inter[0])
-      curves['CF2_no_inter'] = X.apply(__poly_2_no_inter,b=popt2_no_inter[0],c=popt2_no_inter[1])
-      curves['CF3_no_inter'] = X.apply(__poly_3_no_inter,b=popt3_no_inter[0],c=popt3_no_inter[1],d=popt3_no_inter[2])
-      curves['CF4_no_inter'] = X.apply(__poly_4_no_inter,b=popt4_no_inter[0],c=popt4_no_inter[1],d=popt4_no_inter[2],e=popt4_no_inter[3])
-      curves['X_Input'] = XInput
-      curves['y_Input'] = yInput
-      curves=curves.sort_values('X_Input')
+##### start main function followed by scoring function #####
+def PolyFitResults(XInput,yInput):
+  '''
+  Takes X series and Y series and try to find the coefficients that can adopt X to y using polynoms regression.
+  The output is 10 charts that try to fit the polynom regression.
 
-      #Create charts
-      fig, axs = plt.subplots(4,3,figsize=(20,20))
-      axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
-      axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
-      axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
-      axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
-      axs[0, 1].plot(curves.X_Input, curves.y_Input, '.k')
-      axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
-      axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
-      axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
-      axs[0, 2].plot(curves.X_Input, curves.y_Input, '.k')
-      axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
-      axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
-      axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
-      axs[1, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-      axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
-      axs[1, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
-      axs[1, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
-      axs[1, 1].plot(curves.X_Input, curves.y_Input, 'ok')
-      axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
-      axs[1, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
-      axs[1, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
-      axs[1, 2].plot(curves.X_Input, curves.y_Input, 'ok')
-      axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
-      axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
-      axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
-      axs[2, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-      axs[2, 0].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
-      axs[2, 0].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
-      axs[2, 0].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
-      axs[3, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-      axs[3, 0].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
-      axs[3, 0].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
-      axs[3, 0].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
-      curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,
-                 'CF2_no_inter':popt2_no_inter,'CF3_no_inter':popt3_no_inter,'CF4_no_inter':popt4_no_inter}
-      BestR2=0
-      for col in  curvesDic.keys():
-          tmp = r2_score(curves['y_Input'], curves[col])
-          if tmp>BestR2:
-              BestR2=tmp
-              BestCol=col
+  Inputs: XInput,yInput both are pandas series that we are looking for the coefficients that by given XInput we will get yInput.
+  Returns:
+  The function returns a tuple of 3 objects:
+  Curves dataframe = for each record in x and y we get the values of the 10 polynoms that tried to fit and "connect the dots".
+                     This is a dataframe that summeriaze the results
+  curvesDic dictionary = A dictionary of all the coefficients of all 10 polynoms, so the user can pick the best one.
+  BestOpt string = The string of the best result (that gives the least RMSE). This string can be used to get the values
+                    from the curvesDic dictionary
+  '''
+  X = XInput
+  y = yInput
+  boundsVal=(0,np.inf)
+  popt1, _ = curve_fit(__poly_1, X, y)
+  popt2, _ = curve_fit(__poly_2, X, y)
+  popt3, _ = curve_fit(__poly_3, X, y)
+  popt4, _ = curve_fit(__poly_4, X, y)
+  popt5, _ = curve_fit(__poly_5, X, y)
+  popt1_no_inter, _ = curve_fit(__poly_1_no_inter, X, y)
+  popt2_no_inter, _ = curve_fit(__poly_2_no_inter, X, y)
+  popt3_no_inter, _ = curve_fit(__poly_3_no_inter, X, y)
+  popt4_no_inter, _ = curve_fit(__poly_4_no_inter, X, y)
+  popt5_no_inter, _ = curve_fit(__poly_5_no_inter, X, y)
+  # popspecial = curve_fit(poly_special, X, y)
+  curves=pd.DataFrame(X.apply(__poly_1,a=popt1[0],b=popt1[1]))
+  curves.rename({curves.columns[0]:'CF1'},axis=1,inplace=True)
+  curves['CF2'] = X.apply(__poly_2,a=popt2[0],b=popt2[1],c=popt2[2])
+  curves['CF3'] = X.apply(__poly_3,a=popt3[0],b=popt3[1],c=popt3[2],d=popt3[3])
+  curves['CF4'] = X.apply(__poly_4,a=popt4[0],b=popt4[1],c=popt4[2],d=popt4[3],e=popt4[4])
+  curves['CF1_no_inter'] = X.apply(__poly_1_no_inter,b=popt1_no_inter[0])
+  curves['CF2_no_inter'] = X.apply(__poly_2_no_inter,b=popt2_no_inter[0],c=popt2_no_inter[1])
+  curves['CF3_no_inter'] = X.apply(__poly_3_no_inter,b=popt3_no_inter[0],c=popt3_no_inter[1],d=popt3_no_inter[2])
+  curves['CF4_no_inter'] = X.apply(__poly_4_no_inter,b=popt4_no_inter[0],c=popt4_no_inter[1],d=popt4_no_inter[2],e=popt4_no_inter[3])
+  curves['X_Input'] = XInput
+  curves['y_Input'] = yInput
+  curves=curves.sort_values('X_Input')
 
-      return  (curves,curvesDic,BestCol)
+  #Create charts
+  fig, axs = plt.subplots(4,3,figsize=(20,20))
+  axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
+  axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
+  axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
+  axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
+  axs[0, 1].plot(curves.X_Input, curves.y_Input, '.k')
+  axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
+  axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
+  axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
+  axs[0, 2].plot(curves.X_Input, curves.y_Input, '.k')
+  axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
+  axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
+  axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
+  axs[1, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+  axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
+  axs[1, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
+  axs[1, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
+  axs[1, 1].plot(curves.X_Input, curves.y_Input, 'ok')
+  axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
+  axs[1, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
+  axs[1, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
+  axs[1, 2].plot(curves.X_Input, curves.y_Input, 'ok')
+  axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
+  axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
+  axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
+  axs[2, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+  axs[2, 0].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
+  axs[2, 0].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
+  axs[2, 0].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
+  axs[3, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+  axs[3, 0].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
+  axs[3, 0].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
+  axs[3, 0].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
+  curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,
+             'CF2_no_inter':popt2_no_inter,'CF3_no_inter':popt3_no_inter,'CF4_no_inter':popt4_no_inter}
+  BestR2=0
+  for col in  curvesDic.keys():
+      tmp = r2_score(curves['y_Input'], curves[col])
+      if tmp>BestR2:
+          BestR2=tmp
+          BestCol=col
 
-    def _Scoring(df,y_true,y_pred):
-        r2='{:.3f}'.format(r2_score(df[y_true], df[y_pred]))
-        rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(df[y_true], df[y_pred])))
-        return 'R-squared: '+str(r2)+'   RMSE:'+str(rmse)
-  
-  
+  return  (curves,curvesDic,BestCol)
+
+def _Scoring(df,y_true,y_pred):
+    r2='{:.3f}'.format(r2_score(df[y_true], df[y_pred]))
+    rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(df[y_true], df[y_pred])))
+    return 'R-squared: '+str(r2)+'   RMSE:'+str(rmse)
+
+

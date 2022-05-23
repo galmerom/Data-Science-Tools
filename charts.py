@@ -1116,7 +1116,7 @@ def __poly_5_no_inter(x, b, c, d, e,f):
     return  b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
 
 ##### start main function followed by scoring function #####
-def PolyFitResults(XInput,yInput):
+def PolyFitResults(XInput,yInput,showCharts=True):
   '''
   Takes X series and Y series and try to find the coefficients that can adopt X to y using polynoms regression.
   The output is 10 charts that try to fit the polynom regression.
@@ -1157,40 +1157,43 @@ def PolyFitResults(XInput,yInput):
   curves['y_Input'] = yInput
   curves=curves.sort_values('X_Input')
 
-  #Create charts
-  fig, axs = plt.subplots(4,3,figsize=(20,20))
-  axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
-  axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
-  axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
-  axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
-  axs[0, 1].plot(curves.X_Input, curves.y_Input, '.k')
-  axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
-  axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
-  axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
-  axs[0, 2].plot(curves.X_Input, curves.y_Input, '.k')
-  axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
-  axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
-  axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
-  axs[1, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-  axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
-  axs[1, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
-  axs[1, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
-  axs[1, 1].plot(curves.X_Input, curves.y_Input, 'ok')
-  axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
-  axs[1, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
-  axs[1, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
-  axs[1, 2].plot(curves.X_Input, curves.y_Input, 'ok')
-  axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
-  axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
-  axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
-  axs[2, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-  axs[2, 0].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
-  axs[2, 0].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
-  axs[2, 0].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
-  axs[3, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-  axs[3, 0].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
-  axs[3, 0].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
-  axs[3, 0].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
+  if showCharts:
+    #Create charts
+    fig, axs = plt.subplots(4,3,figsize=(20,20))
+    axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
+    axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
+    axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
+    axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
+    axs[0, 1].plot(curves.X_Input, curves.y_Input, '.k')
+    axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
+    axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
+    axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
+    axs[0, 2].plot(curves.X_Input, curves.y_Input, '.k')
+    axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
+    axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
+    axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
+    axs[1, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
+    axs[1, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
+    axs[1, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
+    axs[1, 1].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
+    axs[1, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
+    axs[1, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
+    axs[1, 2].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
+    axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
+    axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
+    axs[2, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[2, 0].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
+    axs[2, 0].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
+    axs[2, 0].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
+    axs[3, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[3, 0].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
+    axs[3, 0].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
+    axs[3, 0].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
+  
+  
   curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,
              'CF2_no_inter':popt2_no_inter,'CF3_no_inter':popt3_no_inter,'CF4_no_inter':popt4_no_inter}
   BestR2=0

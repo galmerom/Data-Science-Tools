@@ -15,7 +15,9 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     '''
     Gets a directory path that contains csv files and returns a dataframe that
     contains all the concated data from all the files. At the end of the dataframe it
-    adds a new column called "FileName" that includes the name of the original file.
+    adds 2 new columns:
+    1. Called "FileName" that includes the name of the original file.
+    2. Called "OrigIndex" that include the original index from the original file.
     
     parameters:
     DirectoryPath str. The directory path
@@ -40,4 +42,6 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
                 tmpdata = pd.read_csv(DirectoryPath + f,**kwargs)
                 tmpdata['FileName'] = f
                 data = pd.concat([data,tmpdata],axis=0,copy=True)
+    data = data.reset_index()
+    data = data.rename({'index':'OrigIndex'},axis=1)
     return data

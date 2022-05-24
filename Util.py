@@ -14,7 +14,8 @@ import pandas as pd
 def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     '''
     Gets a directory path that contains csv files and returns a dataframe that
-    contains all the concated data from all the files.
+    contains all the concated data from all the files. At the end of the dataframe it
+    adds a new column called "FileName" that includes the name of the original file.
     
     parameters:
     DirectoryPath str. The directory path

@@ -1159,7 +1159,7 @@ def PolyFitResults(XInput,yInput,showCharts=True):
 
   if showCharts:
     #Create charts
-    fig, axs = plt.subplots(3,4,figsize=(20,20))
+    fig, axs = plt.subplots(2,4,figsize=(25,20))
     axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
     axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
     axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))

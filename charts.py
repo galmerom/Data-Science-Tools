@@ -1159,7 +1159,7 @@ def PolyFitResults(XInput,yInput,showCharts=True):
 
   if showCharts:
     #Create charts
-    fig, axs = plt.subplots(4,3,figsize=(20,20))
+    fig, axs = plt.subplots(3,4,figsize=(20,20))
     axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
     axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
     axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
@@ -1184,14 +1184,14 @@ def PolyFitResults(XInput,yInput,showCharts=True):
     axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
     axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
     axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
-    axs[2, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[2, 0].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
-    axs[2, 0].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
-    axs[2, 0].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
-    axs[3, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[3, 0].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
-    axs[3, 0].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
-    axs[3, 0].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
+    axs[0, 3].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[0, 3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
+    axs[0, 3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
+    axs[0, 3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
+    axs[1, 3].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[1, 3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
+    axs[1, 3].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
+    axs[1, 3].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
   
   
   curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,

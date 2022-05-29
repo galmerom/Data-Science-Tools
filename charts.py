@@ -1182,13 +1182,11 @@ def PolyFitResults(XInput,yInput,showCharts=True):
       axs[0, 3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
       axs[0, 3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
       axs[0, 3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
-    if showCharts == True or showCharts =='No_inter': 
+    if showCharts == True or showCharts =='No_inter':
+      FirstLine = 1
       if showCharts =='No_inter':
         fig, axs = plt.subplots(1,4,figsize=(25,5))
         FirstLine=0
-      else:
-        fig, axs = plt.subplots(2,4,figsize=(25,10))
-        FirstLine=1
     axs[FirstLine, 0].plot(curves.X_Input, curves.y_Input, 'ok')
     axs[FirstLine, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
     axs[FirstLine, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))

@@ -1122,6 +1122,8 @@ def PolyFitResults(XInput,yInput,showCharts=True):
   The output is 10 charts that try to fit the polynom regression.
 
   Inputs: XInput,yInput both are pandas series that we are looking for the coefficients that by given XInput we will get yInput.
+  showCharts bool or string. Supports the following: True(default) = Show all charts, False = Don't show charts,
+                             With_inter = Show only charts with intercept, No_inter - Show only charts without intercept (if x=0 then y=0)
   Returns:
   The function returns a tuple of 3 objects:
   Curves dataframe = for each record in x and y we get the values of the 10 polynoms that tried to fit and "connect the dots".
@@ -1157,41 +1159,52 @@ def PolyFitResults(XInput,yInput,showCharts=True):
   curves['y_Input'] = yInput
   curves=curves.sort_values('X_Input')
 
-  if showCharts:
-    #Create charts
-    fig, axs = plt.subplots(2,4,figsize=(25,10))
-    axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
-    axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
-    axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
-    axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
-    axs[0, 1].plot(curves.X_Input, curves.y_Input, '.k')
-    axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
-    axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
-    axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
-    axs[0, 2].plot(curves.X_Input, curves.y_Input, '.k')
-    axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
-    axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
-    axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
-    axs[1, 0].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
-    axs[1, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
-    axs[1, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
-    axs[1, 1].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
-    axs[1, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
-    axs[1, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
-    axs[1, 2].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
-    axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
-    axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
-    axs[0, 3].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[0, 3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
-    axs[0, 3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
-    axs[0, 3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
-    axs[1, 3].plot(curves.X_Input, curves.y_Input, 'ok')
-    axs[1, 3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
-    axs[1, 3].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
-    axs[1, 3].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
+  #Create charts
+  if showCharts != False:
+    if showCharts == True or showCharts =='With_inter': 
+      if showCharts =='With_inter':
+        fig, axs = plt.subplots(1,4,figsize=(25,5))
+      else:
+        fig, axs = plt.subplots(2,4,figsize=(25,10))
+      axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
+      axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
+      axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
+      axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
+      axs[0, 1].plot(curves.X_Input, curves.y_Input, '.k')
+      axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
+      axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
+      axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
+      axs[0, 2].plot(curves.X_Input, curves.y_Input, '.k')
+      axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
+      axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
+      axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
+      axs[0, 3].plot(curves.X_Input, curves.y_Input, 'ok')
+      axs[0, 3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
+      axs[0, 3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
+      axs[0, 3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
+    if showCharts == True or showCharts =='No_inter': 
+      if showCharts =='No_inter':
+        fig, axs = plt.subplots(1,4,figsize=(25,5))
+        FirstLine=0
+      else:
+        fig, axs = plt.subplots(2,4,figsize=(25,10))
+        FirstLine=1
+    axs[FirstLine, 0].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[FirstLine, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
+    axs[FirstLine, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
+    axs[FirstLine, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
+    axs[FirstLine, 1].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[FirstLine, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
+    axs[FirstLine, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
+    axs[FirstLine, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
+    axs[FirstLine, 2].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[FirstLine, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
+    axs[FirstLine, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
+    axs[FirstLine, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
+    axs[FirstLine, 3].plot(curves.X_Input, curves.y_Input, 'ok')
+    axs[FirstLine, 3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
+    axs[FirstLine, 3].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
+    axs[FirstLine, 3].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
   
   
   curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,

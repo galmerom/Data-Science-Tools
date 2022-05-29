@@ -1122,8 +1122,11 @@ def PolyFitResults(XInput,yInput,showCharts=True):
   The output is 10 charts that try to fit the polynom regression.
 
   Inputs: XInput,yInput both are pandas series that we are looking for the coefficients that by given XInput we will get yInput.
-  showCharts bool or string. Supports the following: True(default) = Show all charts, False = Don't show charts,
-                             With_inter = Show only charts with intercept, No_inter - Show only charts without intercept (if x=0 then y=0)
+  showCharts bool or string. Supports the following:
+                             True(default) bool. = Show all charts
+                             False bool. = Don't show charts,
+                             'Include_inter' string. = Show only charts with intercept,
+                             'No_inter' string. = Show only charts without intercept (if x=0 then y=0)
   Returns:
   The function returns a tuple of 3 objects:
   Curves dataframe = for each record in x and y we get the values of the 10 polynoms that tried to fit and "connect the dots".
@@ -1161,8 +1164,8 @@ def PolyFitResults(XInput,yInput,showCharts=True):
 
   #Create charts
   if showCharts != False:
-    if showCharts == True or showCharts =='With_inter': 
-      if showCharts =='With_inter':
+    if showCharts == True or showCharts =='Include_inter': 
+      if showCharts =='Include_inter':
         fig, axs = plt.subplots(1,4,figsize=(25,5))
         axs[0].plot(curves.X_Input, curves.y_Input, '.k')
         axs[0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')

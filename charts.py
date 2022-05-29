@@ -1163,7 +1163,7 @@ def PolyFitResults(XInput,yInput,showCharts=True):
   if showCharts != False:
     if showCharts == True or showCharts =='With_inter': 
       if showCharts =='With_inter':
-        fig, axs = plt.subplots(4,figsize=(25,5))
+        fig, axs = plt.subplots(1,4,figsize=(25,5))
         axs[0].plot(curves.X_Input, curves.y_Input, '.k')
         axs[0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
         axs[0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))

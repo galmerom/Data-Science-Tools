@@ -1167,7 +1167,7 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5)):
   #find the figure size
   if showCharts==True and figureSize==(25,5):
     Figsize=(25,10)
-  
+  print(Figsize)
   #Create charts  
   if showCharts != False:
     if showCharts == True or showCharts =='Include_inter': 

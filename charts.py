@@ -1116,7 +1116,7 @@ def __poly_5_no_inter(x, b, c, d, e,f):
     return  b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
 
 ##### start main function followed by scoring function #####
-def PolyFitResults(XInput,yInput,showCharts=True,figureSize=None):
+def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5)):
   '''
   Takes X series and Y series and try to find the coefficients that can adopt X to y using polynoms regression.
   The output is 10 charts that try to fit the polynom regression.
@@ -1165,12 +1165,7 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=None):
 
   
   #find the figure size
-  if figureSize is None:
-    Figsize=(25,5)
-  else:
-    Figsize=figureSize
-  
-  if showCharts==True:
+  if showCharts==True and figureSize==(25,5):
     Figsize=(25,10)
   
   #Create charts  

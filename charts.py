@@ -1116,7 +1116,7 @@ def __poly_5_no_inter(x, b, c, d, e,f):
     return  b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
 
 ##### start main function followed by scoring function #####
-def PolyFitResults(XInput,yInput,showCharts=True):
+def PolyFitResults(XInput,yInput,showCharts=True,figsize=None):
   '''
   Takes X series and Y series and try to find the coefficients that can adopt X to y using polynoms regression.
   The output is 10 charts that try to fit the polynom regression.
@@ -1127,6 +1127,7 @@ def PolyFitResults(XInput,yInput,showCharts=True):
                              False bool. = Don't show charts,
                              'Include_inter' string. = Show only charts with intercept,
                              'No_inter' string. = Show only charts without intercept (if x=0 then y=0)
+  Figsize tupple. Gets tupple like this: (x,y) where x is the width of the figure (in inches) and y is the length (in inches)
   Returns:
   The function returns a tuple of 3 objects:
   Curves dataframe = for each record in x and y we get the values of the 10 polynoms that tried to fit and "connect the dots".
@@ -1162,11 +1163,21 @@ def PolyFitResults(XInput,yInput,showCharts=True):
   curves['y_Input'] = yInput
   curves=curves.sort_values('X_Input')
 
-  #Create charts
+  
+  #find the figure size
+  if figsize is None:
+    Figsize=(25,5)
+  else:
+    Figsize=figsize
+  
+  if showCharts==True:
+    Figsize=(25,10)
+  
+  #Create charts  
   if showCharts != False:
     if showCharts == True or showCharts =='Include_inter': 
       if showCharts =='Include_inter':
-        fig, axs = plt.subplots(1,4,figsize=(25,5))
+        fig, axs = plt.subplots(1,4,figsize=Figsize)
         axs[0].plot(curves.X_Input, curves.y_Input, '.k')
         axs[0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
         axs[0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
@@ -1184,7 +1195,7 @@ def PolyFitResults(XInput,yInput,showCharts=True):
         axs[3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
         axs[3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
       else:
-        fig, axs = plt.subplots(2,4,figsize=(25,10))
+        fig, axs = plt.subplots(2,4,figsize=Figsize)
         axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
         axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
         axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
@@ -1204,7 +1215,7 @@ def PolyFitResults(XInput,yInput,showCharts=True):
 
     if showCharts == True or showCharts =='No_inter':
       if showCharts =='No_inter':
-        fig, axs = plt.subplots(1,4,figsize=(25,5))
+        fig, axs = plt.subplots(1,4,figsize=Figsize)
         axs[0].plot(curves.X_Input, curves.y_Input, 'ok')
         axs[0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
         axs[0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))

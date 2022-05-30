@@ -1166,13 +1166,13 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5)):
   
   #find the figure size
   if showCharts==True and figureSize==(25,5):
-    Figsize=(25,10)
-  print(Figsize)
+    figureSize=(25,10)
+  print(figureSize)
   #Create charts  
   if showCharts != False:
     if showCharts == True or showCharts =='Include_inter': 
       if showCharts =='Include_inter':
-        fig, axs = plt.subplots(1,4,figsize=Figsize)
+        fig, axs = plt.subplots(1,4,figsize=figureSize)
         axs[0].plot(curves.X_Input, curves.y_Input, '.k')
         axs[0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
         axs[0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
@@ -1190,7 +1190,7 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5)):
         axs[3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
         axs[3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
       else:
-        fig, axs = plt.subplots(2,4,figsize=Figsize)
+        fig, axs = plt.subplots(2,4,figsize=figureSize)
         axs[0, 0].plot(curves.X_Input, curves.y_Input, '.k')
         axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
         axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
@@ -1210,7 +1210,7 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5)):
 
     if showCharts == True or showCharts =='No_inter':
       if showCharts =='No_inter':
-        fig, axs = plt.subplots(1,4,figsize=Figsize)
+        fig, axs = plt.subplots(1,4,figsize=figureSize)
         axs[0].plot(curves.X_Input, curves.y_Input, 'ok')
         axs[0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
         axs[0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))

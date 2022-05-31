@@ -5,11 +5,16 @@
 # File handlings:
 #   ReadCsvDirectory2Pandas - used for reading many csv files into one dataframe
 #
+# Scoring:
+#   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
 #####################################################################################################
 
 #Imports
 import os
 import pandas as pd
+from sklearn.metrics import mean_squared_error , r2_score
+import numpy as np
+import matplotlib.pyplot as plt
 
 def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     '''
@@ -45,3 +50,46 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     data = data.reset_index()
     data = data.rename({'index':'OrigIndex'},axis=1)
     return data
+
+
+def Scoring(y_true,y_pred,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted'):
+    '''
+    This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
+    It can also draw a chart if needed.
+    input parameters:
+    y_true series. The actual values
+    y_pred series. The predicted values
+    WithChart bool. Show a chart or not
+    In case there is a chart, then there are default parameters that can be changed:
+    Figsize tuple. chart size
+    ylabel string. y axis description
+    xlabel string. x axis description
+    Title string. Title of chart
+    Returns: tuple. (string that show the results, float.R^2 result,float RMSE result)
+    '''
+    r2='{:.3f}'.format(r2_score(y_true, y_pred))
+    rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
+    Diff = y_true-y_pred
+
+    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) #+ '     Mean % diff: '+ str('{:.1%}'.format(change.mean()))
+    if WithChart:
+        MaxValue=max(max(y_true),max(y_pred))
+        MinValue=min(min(y_true),min(y_pred))
+        MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
+
+        plt.figure(figsize=Figsize)
+        plt.scatter(x=y_true,y=y_pred,label = "label_name")
+        plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
+
+        # for i, txt in enumerate(rngList):
+        #     plt.annotate(txt, (TOCPredField.reset_index(drop=True)[i]*1.015, No3PredField.reset_index(drop=True)[i]),fontsize=12)
+        # Set x and y axes labels
+        plt.ylabel(ylabel)
+        plt.xlabel(xlabel)
+
+        plt.xlim(MinValue,MaxValue)
+        plt.ylim(MinValue,MaxValue)
+        
+        plt.title(Title+'\n'+ReturnStr)
+        plt.show()
+    return ( ReturnStr,float(r2),float(rmse))

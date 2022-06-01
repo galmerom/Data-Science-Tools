@@ -69,7 +69,8 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     clrTpl tuple. (series,color dictionary) The first elemnent is the series to map. 
                                             The second is a dictionary that maps values (unique values in the series) to colors.
                     
-    Returns: tuple. (string that show the results, float.R^2 result,float RMSE result)
+    Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if colors were used then it returns a dictionary
+                    between unique series values and the colors that were picked auto.)
     '''
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
@@ -89,6 +90,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
             ColorInput = colorSer.map(colorDic)
         else:
             ColorInput = None
+            colorDic = None
         plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
@@ -103,4 +105,4 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         
         plt.title(Title+'\n'+ReturnStr)
         plt.show()
-    return ( ReturnStr,float(r2),float(rmse))
+    return ( ReturnStr,float(r2),float(rmse),colorDic)

@@ -86,9 +86,10 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         if isinstance(colorSer, pd.Series):
             colorlist = list(colors.ColorConverter.colors.keys())
             colorDic = dict(zip(colorSer.unique(),colorlist[0:len(colorSer.unique())])) # create a dictionary with unique values and colors
+            ColorInput = colorSer.apply(lambda x: colors[x])
         else:
-            colorSer = None
-        plt.scatter(x=y_true,y=y_pred,c=colorDic ,label = "label_name")
+            ColorInput = None
+        plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):

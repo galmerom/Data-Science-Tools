@@ -15,6 +15,7 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error , r2_score
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import colors
 
 def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     '''
@@ -52,7 +53,7 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     return data
 
 
-def Scoring(y_true,y_pred,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted'):
+def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted'):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -65,6 +66,9 @@ def Scoring(y_true,y_pred,WithChart=False,Figsize=(10,5),ylabel='Predicted value
     ylabel string. y axis description
     xlabel string. x axis description
     Title string. Title of chart
+    clrTpl tuple. (series,color dictionary) The first elemnent is the series to map. 
+                                            The second is a dictionary that maps values (unique values in the series) to colors.
+                    
     Returns: tuple. (string that show the results, float.R^2 result,float RMSE result)
     '''
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
@@ -78,7 +82,13 @@ def Scoring(y_true,y_pred,WithChart=False,Figsize=(10,5),ylabel='Predicted value
         MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
 
         plt.figure(figsize=Figsize)
-        plt.scatter(x=y_true,y=y_pred,label = "label_name")
+        
+        if colorSer == None:
+            colorSer = None
+        else:
+            colorlist = list(colors.ColorConverter.colors.keys())
+            colorDic = dict(zip(colorSer.unique(),colorlist[0:len(colorSer.unique())])) # create a dictionary with unique values and colors
+        plt.scatter(x=y_true,y=y_pred,c=colorDic ,label = "label_name")
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):

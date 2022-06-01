@@ -83,11 +83,11 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
 
         plt.figure(figsize=Figsize)
         
-        if colorSer == None:
-            colorSer = None
-        else:
+        if isinstance(colorSer, pd.Series):
             colorlist = list(colors.ColorConverter.colors.keys())
             colorDic = dict(zip(colorSer.unique(),colorlist[0:len(colorSer.unique())])) # create a dictionary with unique values and colors
+        else:
+            colorSer = None
         plt.scatter(x=y_true,y=y_pred,c=colorDic ,label = "label_name")
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 

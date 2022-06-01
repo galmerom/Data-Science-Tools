@@ -77,13 +77,15 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     Diff = y_true-y_pred
 
     ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) #+ '     Mean % diff: '+ str('{:.1%}'.format(change.mean()))
+    
+    colorDic = {} # This dict. is only used if we use chart with colors
     if WithChart:
         MaxValue=max(max(y_true),max(y_pred))
         MinValue=min(min(y_true),min(y_pred))
         MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
 
         plt.figure(figsize=Figsize)
-        colorDic = {}
+        
         if isinstance(colorSer, pd.Series):
             colorlist = list(colors.ColorConverter.colors.keys())
             colorDic = dict(zip(colorSer.unique(),colorlist[0:len(colorSer.unique())])) # create a dictionary with unique values and colors

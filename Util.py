@@ -83,14 +83,14 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
 
         plt.figure(figsize=Figsize)
-        
+        colorDic = None
         if isinstance(colorSer, pd.Series):
             colorlist = list(colors.ColorConverter.colors.keys())
             colorDic = dict(zip(colorSer.unique(),colorlist[0:len(colorSer.unique())])) # create a dictionary with unique values and colors
             ColorInput = colorSer.map(colorDic)
         else:
             ColorInput = None
-            colorDic = None
+            
         plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 

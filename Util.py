@@ -53,7 +53,7 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     return data
 
 
-def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted'):
+def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',LOD=1):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -74,10 +74,12 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     '''
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
+    joinedDF = pd.concat([y_true, y_pred], axis=1)
+    PercScore = joinedDF.apply(lambda x: __ErorCalc(x.y_true, x.y_pred,LOD),axis=1).mean()
     Diff = y_true-y_pred
 
-    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) #+ '     Mean % diff: '+ str('{:.1%}'.format(change.mean()))
-    
+    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   % scoring: ' str('{:.1%}'.format(PercScore)   
+                                                                                  
     colorDic = {} # This dict. is only used if we use chart with colors
     if WithChart:
         MaxValue=max(max(y_true),max(y_pred))
@@ -108,3 +110,13 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         plt.title(Title+'\n'+ReturnStr)
         plt.show()
     return ( ReturnStr,float(r2),float(rmse),str(colorDic))
+
+def __ErorCalc(y_true,y_pred,LOD):
+    if y_true >= LOD and y_pred < LOD:
+        return (abs(LOD-y_true)/y_true)
+    elif y_true < LOD and y_pred < LOD:
+        return 0
+    elif y_true < LOD and y_pred >=LOD:
+        return (abs(y_pred-LOD)/LOD)
+    else:
+        return (abs(y_pred-y_true)/y_pred)

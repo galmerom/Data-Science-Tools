@@ -78,7 +78,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     print(joinedDF)
     col1=joinedDF.columns[0]
     col2 = joinedDF.columns[1]
-    PercScore = joinedDF.apply(lambda x: __ErorCalc(x[col1], x[col2],NO3_LOD),axis=1).mean()
+    PercScore = joinedDF.apply(lambda x: __ErorCalc(x[col1], x[col2],LOD),axis=1).mean()
 
     Diff = y_true-y_pred
 

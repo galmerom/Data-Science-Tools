@@ -53,6 +53,15 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     return data
 
 
+def NoNegative(Inpseries):
+    """
+    Gets a pandas/numpy series, change all negative values to zero
+    """
+    Outseries = np.where(Inpseries< 0, 0, Inpseries)
+    return Outseries
+
+
+
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',LOD=0.00001):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
@@ -66,11 +75,15 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     ylabel string. y axis description
     xlabel string. x axis description
     Title string. Title of chart
+    LOD float. LOD = Limit of detection. Under this number we assume that the value that we got is zero
     clrTpl tuple. (series,color dictionary) The first elemnent is the series to map. 
                                             The second is a dictionary that maps values (unique values in the series) to colors.
                     
     Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if colors were used then it returns a dictionary
                     between unique series values and the colors that were picked auto.)
+                    The result string includes r^2, rmse, Percent scoring (if shows the average for all records of abs(y_true-y_pred)/y_pred
+                    when ever the values of each series is under the LOD barrier it takes either zero or LOD value. check __ErorCalc function
+                    for exact algorithm
     '''
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
@@ -81,7 +94,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
 
     Diff = y_true-y_pred
 
-    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   % scoring: ' + str('{:.1%}'.format(PercScore))   
+    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + str('{:.1%}'.format(PercScore))   
                                                                                   
     colorDic = {} # This dict. is only used if we use chart with colors
     if WithChart:
@@ -115,6 +128,12 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     return ( ReturnStr,float(r2),float(rmse),str(colorDic))
 
 def __ErorCalc(y_true,y_pred,LOD):
+    """
+    Gets one value y_true and one y_pred and LOD value.
+    The result usually is abs(y_pred-y_true)/y_pred.
+    sometimes one of the values is less than LOD and the we 
+    change the algorithm a bit.
+    """
     if y_true >= LOD and y_pred < LOD:
         return (abs(LOD-y_true)/y_true)
     elif y_true < LOD and y_pred < LOD:

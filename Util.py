@@ -78,7 +78,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     PercScore = joinedDF.apply(lambda x: __ErorCalc(x.y_true, x.y_pred,LOD),axis=1).mean()
     Diff = y_true-y_pred
 
-    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   % scoring: ' str('{:.1%}'.format(PercScore))   
+    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   % scoring: ' + str('{:.1%}'.format(PercScore))   
                                                                                   
     colorDic = {} # This dict. is only used if we use chart with colors
     if WithChart:

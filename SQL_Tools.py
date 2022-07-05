@@ -70,7 +70,7 @@ def CrtInsertSQL(RecDic, TblName):
 
 
 # Checks if a record exist based on key parameters
-def CheckIfExists(keyDic, TableName, mycursor):
+def CheckIfExists(keyDic, TableName, connection):
     """
     This function gets a keyDic and a table name and find out if there is
     a record in the database that contains this key.
@@ -93,6 +93,7 @@ def CheckIfExists(keyDic, TableName, mycursor):
     valuesStr = valuesStr[0:-4]
 
     sql = 'SELECT * FROM ' + TableName + ' WHERE ' + valuesStr
+    mycursor = connection.cursor()
     mycursor.execute(sql)
     records = mycursor.fetchall()
     if len(records) > 0:
@@ -123,7 +124,7 @@ def BuildSQLAndSend(Rec, KeyRec, Table2Upd, connection):
     connection database connection
     return the SQL as a string
     """
-    if CheckIfExists(KeyRec, Table2Upd, cursor):
+    if CheckIfExists(KeyRec, Table2Upd, connection):
         SQL = CrtUpdateSQL(Rec, KeyRec, Table2Upd)
         print("Record to be updated to  " + Table2Upd)
     else:

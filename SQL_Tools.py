@@ -125,8 +125,10 @@ def BuildSQLAndSend(Rec, KeyRec, Table2Upd, cursor):
     """
     if CheckIfExists(KeyRec, Table2Upd, cursor):
         SQL = CrtUpdateSQL(Rec, KeyRec, Table2Upd)
+        print("Record to be updated to  " + Table2Upd + table)
     else:
         SQL = CrtInsertSQL(Rec, Table2Upd)
+         print("Record to be inserted to  " + Table2Upd + table)
     # print(SQL)
     sendSQL(SQL, cursor)
     print('SQL sent')

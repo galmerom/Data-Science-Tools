@@ -101,26 +101,26 @@ def CheckIfExists(keyDic, TableName, mycursor):
         return False
 
 
-def sendSQL(SQL, mycursor):
+def sendSQL(SQL, connection):
     """
     Gets an SQL atatement and a connection object and send it to the DB.
     Inputs:
     SQL str. SQL atatement
     connection mysql.connector object for connecting to DB
     """
-    cursor = mycursor
-    cursor.execute(SQL)
+    mycursor = connection.cursor()
+    mycursor.execute(SQL)
+    connection.commit()
 
 
-
-def BuildSQLAndSend(Rec, KeyRec, Table2Upd, cursor):
+def BuildSQLAndSend(Rec, KeyRec, Table2Upd, connection):
     """
     Gets the record in dictionary format, the key record, the table name and the cursor
     Update the record in the database, if the record exists it overwrite the given fields
     Rec dict. A dictionary that contains the header and the value for each record
     KeyRec dict. Dictionary that contains only the keys of the table header:value
     Table2Upd string. The name of the table to update
-    cursor database cursor
+    connection database connection
     return the SQL as a string
     """
     if CheckIfExists(KeyRec, Table2Upd, cursor):
@@ -130,6 +130,6 @@ def BuildSQLAndSend(Rec, KeyRec, Table2Upd, cursor):
         SQL = CrtInsertSQL(Rec, Table2Upd)
         print("Record to be inserted to  " + Table2Upd)
     # print(SQL)
-    sendSQL(SQL, cursor)
+    sendSQL(SQL, connection)
     print('SQL sent')
     return SQL

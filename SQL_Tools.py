@@ -110,7 +110,7 @@ def sendSQL(SQL, mycursor):
     """
     cursor = mycursor
     cursor.execute(SQL)
-    cursor.commit()
+
 
 
 def BuildSQLAndSend(Rec, KeyRec, Table2Upd, cursor):

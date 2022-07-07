@@ -1000,6 +1000,10 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         ReturnArtistOnly=   bool. If False  (default) then  show the chart before the end of the function. If True then don't show the chart and only return the
                             artist that can be used to add more lines to the chart.
     return: fig, ax1,ax2
+    code example:
+    tempdf=df[(df['Param1']=='xxx')&(df['Param2']>0)]
+    yfields = ['Param1','Param2','Param3','Param4']
+    charts.BuildMuliLineChart(tempdf, yfields,XField='Param5',linewidth=1,LegendBboxCorr=(0.8,0.75))
     """
     NumOfLines = len(YFields)
     lines = []

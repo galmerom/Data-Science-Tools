@@ -1253,6 +1253,7 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5)):
   curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,
              'CF2_no_inter':popt2_no_inter,'CF3_no_inter':popt3_no_inter,'CF4_no_inter':popt4_no_inter}
   BestR2=0
+  BestCol=curvesDic.keys()[0] # as default take the first column as best column
   for col in  curvesDic.keys():
       tmp = r2_score(curves['y_Input'], curves[col])
       if tmp>BestR2:

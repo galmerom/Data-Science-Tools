@@ -1,3 +1,23 @@
+##################################################################################################################
+# This module is udes for sending SQL messages to update dada tables in a database.
+# It checks if the record exist by checking if a record with the same keys exists.
+# If there is such a record it uses the SQL Update statement to update the record.
+# If not it uses the INSERT INTO statement.
+# It also copy the record to an archive table (with  name: original table name + "_archive"). The archive table
+# should contains  the same columns + "ArchiveDate" column as Datetime type.
+# Use this function to send SQL: BuildSQLAndSend
+# 
+# Example of using this module:
+# Table2Upd = 'clients_devices'
+# Rec = {'idDevice':DeviceID,'idClients':1,'idSite':1,'comment':'Welcome new Device','Start_date':Now}
+# KeyRec={'idDevice':DeviceID}
+# sql=BuildSQLAndSend(Rec,KeyRec,Table2Upd,connection)
+
+# The Rec dictionary uses keys as the table columns and the values are the values we want to enter the record.
+# The KeyRec dictionary is the dictionary that contains keys of the primary keys in the table. (the algorithm will
+# use KeyRec dictionary to look if the record is already exists in the database.
+##################################################################################################################
+
 import datetime as dt
 import pytz
 

@@ -24,6 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
+import sklearn
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error

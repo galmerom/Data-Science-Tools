@@ -121,7 +121,14 @@ def CheckIfExists(keyDic, TableName, connection, Debug=False):
         print('CheckIfExists:\n' + sql)
     cursor.execute(sql)
     records = cursor.fetchall()
-    header = cursor.column_names
+    # check if the cursor is from pymysql using sqlalchemy
+    if str(type(cursor))=="<class 'pymysql.cursors.Cursor'>":
+        Desc=cursor.description
+        header=[]
+        for i in range(0,len(Desc)):
+            header.append(Desc[i][0])
+    else:
+        header = cursor.column_names
 
     if len(records) > 0:
         rec = dict(zip(header, records[0]))

@@ -147,17 +147,18 @@ def sendSQL(SQL, connection):
     connection.commit()
 
 
-def ArchiveRecord(Rec, Archive_table, connection, Debug=False, DefaultTimeZone='Israel'):
+def ArchiveRecord(Record, Archive_table, connection, Debug=False, DefaultTimeZone='Israel'):
     """
     Take the new record and insert it to an archive table with ArchiveDate.
      The archive table should contain all fields + "ArchiveDate" that contains the date of the update
-    :param Rec dict. A dictionary that contains the header and the value for each record
+    :param Record dict. A dictionary that contains the header and the value for each record
     :param Archive_table: string. The name of the archive table
     :param connection: the connection to the database
     :param Debug: bool. If True then it prints the SQL statements. Helps when trying to debug
     :param DefaultTimeZone: string. To add the updated time we need the Timezone
     :return:
     """
+    Rec = Record.copy()
     Rec['ArchiveDate'] = str(dt.datetime.now(pytz.timezone(DefaultTimeZone)).strftime("%Y-%m-%d %H:%M:%S"))
     if Debug:
         print('Archive record:\n' + str(Rec))

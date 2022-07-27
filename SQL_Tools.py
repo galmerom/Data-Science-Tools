@@ -1,4 +1,5 @@
 import datetime as dt
+import pytz
 
 
 def CrtUpdateSQL(RecDic, KeyDic, TblName):
@@ -70,7 +71,7 @@ def CrtInsertSQL(RecDic, TblName):
 
 
 # Checks if a record exist based on key parameters
-def CheckIfExists(keyDic, TableName, connection):
+def CheckIfExists(keyDic, TableName, connection, Debug=False):
     """
     This function gets a keyDic and a table name and find out if there is
     a record in the database that contains this key.
@@ -79,8 +80,11 @@ def CheckIfExists(keyDic, TableName, connection):
                  as keys and values in a dictionary.
                  The keys are checked agaianst the DB.
     TableName str. The name of the table to check
+    connection database conncetion.
+    Debug bool. If True then print all SQL statements
     Return: bool. True if the record exists in the table, False if not
     """
+    cursor = connection.cursor()
     valuesStr = ''
     for i in keyDic.keys():
         key = str(i)
@@ -93,13 +97,22 @@ def CheckIfExists(keyDic, TableName, connection):
     valuesStr = valuesStr[0:-4]
 
     sql = 'SELECT * FROM ' + TableName + ' WHERE ' + valuesStr
-    mycursor = connection.cursor()
-    mycursor.execute(sql)
-    records = mycursor.fetchall()
+    if Debug:
+        print('CheckIfExists:\n' + sql)
+    cursor.execute(sql)
+    records = cursor.fetchall()
+    header = cursor.column_names
+
     if len(records) > 0:
-        return True
+        rec = dict(zip(header, records[0]))
+        for key in rec.keys():
+            if rec[key] is None:
+                rec[key] = 'null'
+        if Debug:
+            print('Rec after zip:\n' + str(rec))
+        return True, rec
     else:
-        return False
+        return False, 0
 
 
 def sendSQL(SQL, connection):
@@ -109,28 +122,55 @@ def sendSQL(SQL, connection):
     SQL str. SQL atatement
     connection mysql.connector object for connecting to DB
     """
-    mycursor = connection.cursor()
-    mycursor.execute(SQL)
+    cursor = connection.cursor()
+    cursor.execute(SQL)
     connection.commit()
 
 
-def BuildSQLAndSend(Rec, KeyRec, Table2Upd, connection):
+def ArchiveRecord(Rec, Archive_table, connection, Debug=False, DefaultTimeZone='Israel'):
+    """
+    Take the new record and insert it to an archive table with ArchiveDate.
+     The archive table should contain all fields + "ArchiveDate" that contains the date of the update
+    :param Rec dict. A dictionary that contains the header and the value for each record
+    :param Archive_table: string. The name of the archive table
+    :param connection: the connection to the database
+    :param Debug: bool. If True then it prints the SQL statements. Helps when trying to debug
+    :param DefaultTimeZone: string. To add the updated time we need the Timezone
+    :return:
+    """
+    Rec['ArchiveDate'] = str(dt.datetime.now(pytz.timezone(DefaultTimeZone)).strftime("%Y-%m-%d %H:%M:%S"))
+    if Debug:
+        print('Archive record:\n' + str(Rec))
+    SQL = CrtInsertSQL(Rec, Archive_table)
+    if Debug:
+        print('Archive SQL:\n' + SQL)
+    sendSQL(SQL, connection)
+
+
+def BuildSQLAndSend(Rec, KeyRec, Table2Upd, connection, Archive_table=True, Debug=False, DefaultTimeZone='Israel'):
     """
     Gets the record in dictionary format, the key record, the table name and the cursor
     Update the record in the database, if the record exists it overwrite the given fields
-    Rec dict. A dictionary that contains the header and the value for each record
-    KeyRec dict. Dictionary that contains only the keys of the table header:value
-    Table2Upd string. The name of the table to update
-    connection database connection
+    param: Rec dict. A dictionary that contains the header and the value for each record
+    param: KeyRec dict. Dictionary that contains only the keys of the table header:value
+    param: Table2Upd string. The name of the table to update
+    param: connection database connection
+    param: Archive_table bool. If true then it send the old record to the
+             archive table which has the name: Table2Upd +  "_archive"
+    param: Debug bool. If true then print all the SQL statements. False print nothing
+    param: DefaultTimeZone string. The timezone used to calculate now() only for the archive date
     return the SQL as a string
     """
-    if CheckIfExists(KeyRec, Table2Upd, connection):
+    OldRecExist, OldRec = CheckIfExists(KeyRec, Table2Upd, connection, Debug)
+    if OldRecExist:
+        if Archive_table:
+            # send the same record to the archive table
+            ArchiveRecord(Rec, Table2Upd + '_archive', connection, Debug, DefaultTimeZone)
         SQL = CrtUpdateSQL(Rec, KeyRec, Table2Upd)
-        print("Record to be updated to  " + Table2Upd)
     else:
         SQL = CrtInsertSQL(Rec, Table2Upd)
-        print("Record to be inserted to  " + Table2Upd)
-    # print(SQL)
+    if Debug:
+        print('Main SQL:\n' + SQL)
     sendSQL(SQL, connection)
     print('SQL sent')
     return SQL

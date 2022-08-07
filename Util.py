@@ -122,9 +122,9 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
 
         plt.xlim(MinValue,MaxValue)
         plt.ylim(MinValue,MaxValue)
-        print("scatter.legend_elements: " + str(scatter.legend_elements()))
+
         plt.title(Title+'\n'+ReturnStr)
-        plt.legend(handles=scatter.legend_elements(),loc='best')
+        plt.legend(colorDic,loc='best')
         plt.show()
     return ( ReturnStr,float(r2),float(rmse),str(colorDic))
 

@@ -112,7 +112,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
             ColorInput = None
             
         plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
-        plt.legend(colorDic,loc='best')
+        plt.legend(colorDic.keys(),loc='best')
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):

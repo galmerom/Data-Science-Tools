@@ -102,7 +102,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         MinValue=min(min(y_true),min(y_pred))
         MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
 
-        plt.figure(figsize=Figsize)
+        fig, ax = plt.subplots()
         
         if isinstance(colorSer, pd.Series):
             colorlist = list(colors.ColorConverter.colors.keys())
@@ -111,23 +111,22 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         else:
             ColorInput = None
             
-        scatter=plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
-        plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
+        scatter=ax.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
+        ax.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):
         #     plt.annotate(txt, (TOCPredField.reset_index(drop=True)[i]*1.015, No3PredField.reset_index(drop=True)[i]),fontsize=12)
         # Set x and y axes labels
-        plt.ylabel(ylabel)
-        plt.xlabel(xlabel)
+        ax.ylabel(ylabel)
+        ax.xlabel(xlabel)
 
-        plt.xlim(MinValue,MaxValue)
-        plt.ylim(MinValue,MaxValue)
+        ax.xlim(MinValue,MaxValue)
+        ax.ylim(MinValue,MaxValue)
         
-        plt.title(Title+'\n'+ReturnStr)
-        legend1 = plt.legend(*scatter.legend_elements(),
+        ax.title(Title+'\n'+ReturnStr)
+        legend1 = ax.legend(*scatter.legend_elements(),
                     loc="upper right")
-        plt.add_artist(legend1)
-        plt.legend()
+        ax.legend(legend1)
         plt.show()
     return ( ReturnStr,float(r2),float(rmse),str(colorDic))
 

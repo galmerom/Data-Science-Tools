@@ -111,7 +111,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         else:
             ColorInput = None
             
-        plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
+        scatter=plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):

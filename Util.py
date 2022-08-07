@@ -62,6 +62,7 @@ def NoNegative(Inpseries):
 
 
 
+import matplotlib.colors as mcolors
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',LOD=0.00001):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
@@ -105,14 +106,18 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         plt.figure(figsize=Figsize)
         
         if isinstance(colorSer, pd.Series):
-            colorlist = list(colors.ColorConverter.colors.keys())
+            if len(colorSer.unique())>=10:
+                colorlist =list(colors.ColorConverter.colors.keys())
+            else:
+                colorlist = list(mcolors.TABLEAU_COLORS) # This list contains only 10 colors with big contrast 
             colorDic = dict(zip(colorSer.unique(),colorlist[0:len(colorSer.unique())])) # create a dictionary with unique values and colors
             ColorInput = colorSer.map(colorDic)
         else:
             ColorInput = None
             
-        plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
-        plt.legend(colorDic.keys(),loc='best')
+        scatter=plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = ColorInput)
+        markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorDic.values()]
+        plt.legend(markers,colorDic.keys(),loc='best', numpoints=1)
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):

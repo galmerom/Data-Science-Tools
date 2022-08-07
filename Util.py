@@ -65,7 +65,7 @@ def NoNegative(Inpseries):
 
 
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
-            LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0):
+            LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0,AnnotFontSize = 12 ):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -86,6 +86,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
                                are less than YtrueOutlierMin.
                                The annotation text includes (index,true value, pred value)
     YtrueOutlierMin float. : Used with ShowOutliertxtFrom to filter out small outliers
+    AnnotFontSize int.     : The font size of the annotation
     Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if colors were used then it returns a dictionary
                     between unique series values and the colors that were picked auto.)
                     The result string includes r^2, rmse, Percent scoring (if shows the average for all records of abs(y_true-y_pred)/y_pred
@@ -140,7 +141,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         if ShowOutliertxtFrom != 9999:
             for indx in TempDF[TempDF['Outlier']].index:
                 txt= "(" + str(indx) + "," + str(TempDF.loc[indx].y_true.round(1)) + "," + str(TempDF.loc[indx].y_pred.round(1))+")"
-                plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=12)
+                plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=AnnotFontSize)
         
         # Set x and y axes labels
         plt.ylabel(ylabel)

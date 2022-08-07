@@ -126,7 +126,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         ax.title(Title+'\n'+ReturnStr)
         legend1 = ax.legend(*scatter.legend_elements(),
                     loc="upper right")
-        ax.legend(legend1)
+        ax.add_artist(legend1)
         plt.show()
     return ( ReturnStr,float(r2),float(rmse),str(colorDic))
 

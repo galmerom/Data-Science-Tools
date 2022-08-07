@@ -111,7 +111,8 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         else:
             ColorInput = None
             
-        scatter = plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
+        plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = "label_name")
+        plt.legend(colorDic,loc='best')
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         # for i, txt in enumerate(rngList):
@@ -124,7 +125,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         plt.ylim(MinValue,MaxValue)
 
         plt.title(Title+'\n'+ReturnStr)
-        plt.legend(colorDic,loc='best')
+        
         plt.show()
     return ( ReturnStr,float(r2),float(rmse),str(colorDic))
 

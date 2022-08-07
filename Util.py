@@ -16,6 +16,7 @@ from sklearn.metrics import mean_squared_error , r2_score
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
+import matplotlib.colors as mcolors
 
 def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     '''
@@ -62,7 +63,7 @@ def NoNegative(Inpseries):
 
 
 
-import matplotlib.colors as mcolors
+
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',LOD=0.00001):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.

@@ -64,7 +64,8 @@ def NoNegative(Inpseries):
 
 
 
-def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',LOD=0.00001):
+def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
+            LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -80,7 +81,11 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
     LOD float. LOD = Limit of detection. Under this number we assume that the value that we got is zero
     clrTpl tuple. (series,color dictionary) The first elemnent is the series to map. 
                                             The second is a dictionary that maps values (unique values in the series) to colors.
-                    
+    ShowOutliertxtFrom float. : Show annotation text to outlier point if the value of (y_true/y_pred) is greater than 1+ ShowOutliertxtFrom
+                               or smaller than 1 - ShowOutliertxtFrom. To avoid showing very small outliars we filter out any true values that
+                               are less than YtrueOutlierMin.
+                               The annotation text includes (index,true value, pred value)
+    YtrueOutlierMin float. : Used with ShowOutliertxtFrom to filter out small outliers
     Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if colors were used then it returns a dictionary
                     between unique series values and the colors that were picked auto.)
                     The result string includes r^2, rmse, Percent scoring (if shows the average for all records of abs(y_true-y_pred)/y_pred
@@ -103,9 +108,18 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
         MaxValue=max(max(y_true),max(y_pred))
         MinValue=min(min(y_true),min(y_pred))
         MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
-
-        plt.figure(figsize=Figsize)
         
+        ###### Find Outlier #######
+        if ShowOutliertxtFrom != 9999:
+            MaxLimit = pd.Series((1+ShowOutliertxtFrom), index=y_true[y_true>YtrueOutlierMin].index) 
+            MinLimit = pd.Series((1-ShowOutliertxtFrom), index=y_true[y_true>YtrueOutlierMin].index)
+            TempDF = pd.DataFrame()
+            TempDF['y_pred'] = y_pred[y_true>YtrueOutlierMin]
+            TempDF['y_true'] = y_true[y_true>YtrueOutlierMin]
+            TempDF['TrueOverPred'] = np.where (TempDF['y_pred']!=0,TempDF['y_true']/TempDF['y_pred'],0)
+            TempDF['Outlier'] = (~(TempDF['TrueOverPred'].between(MinLimit, MaxLimit)))
+            print(TempDF[TempDF['Outlier']])
+        ####### find and deal with colors ########
         if isinstance(colorSer, pd.Series):
             if len(colorSer.unique())>=10:
                 colorlist =list(colors.ColorConverter.colors.keys())
@@ -115,14 +129,19 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
             ColorInput = colorSer.map(colorDic)
         else:
             ColorInput = None
-            
+
+        ###### start plotting ######
+        plt.figure(figsize=Figsize)
         scatter=plt.scatter(x=y_true,y=y_pred,c=ColorInput ,label = ColorInput)
         markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorDic.values()]
         plt.legend(markers,colorDic.keys(),loc='best', numpoints=1)
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
-        # for i, txt in enumerate(rngList):
-        #     plt.annotate(txt, (TOCPredField.reset_index(drop=True)[i]*1.015, No3PredField.reset_index(drop=True)[i]),fontsize=12)
+        if ShowOutliertxtFrom != 9999:
+            for indx in TempDF[TempDF['Outlier']].index:
+                txt= "(" + str(indx) + "," + str(TempDF.loc[indx].y_true.round(1)) + "," + str(TempDF.loc[indx].y_pred.round(1))+")"
+                plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=12)
+        
         # Set x and y axes labels
         plt.ylabel(ylabel)
         plt.xlabel(xlabel)

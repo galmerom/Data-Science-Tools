@@ -64,8 +64,10 @@ def NoNegative(Inpseries):
 
 
 
+from matplotlib import colors
+import matplotlib.colors as mcolors
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
-            LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0,AnnotFontSize = 10 ):
+            LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0,AnnotFontSize = 12 ):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -119,6 +121,8 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='P
             TempDF['y_true'] = y_true[y_true>YtrueOutlierMin]
             TempDF['TrueOverPred'] = np.where (TempDF['y_pred']!=0,TempDF['y_true']/TempDF['y_pred'],0)
             TempDF['Outlier'] = (~(TempDF['TrueOverPred'].between(MinLimit, MaxLimit)))
+            TempDF['Max'] = MaxLimit
+            TempDF['Min'] = MinLimit
             print(TempDF[TempDF['Outlier']])
         ####### find and deal with colors ########
         if isinstance(colorSer, pd.Series):

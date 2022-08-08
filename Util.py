@@ -66,7 +66,7 @@ def NoNegative(Inpseries):
 
 from matplotlib import colors
 import matplotlib.colors as mcolors
-def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(10,5),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
+def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
             LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0,AnnotFontSize = 12 ):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.

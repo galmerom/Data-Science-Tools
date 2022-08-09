@@ -39,6 +39,9 @@ def ReadCsvDirectory2Pandas(DirectoryPath,**kwargs):
     if DirectoryPath[-1]!="/":
         DirectoryPath = DirectoryPath+"/"
     First_Flag=True
+    if len(os.listdir(DirectoryPath))==0:
+        print('Empty directory')
+        return
     for f in os.listdir(DirectoryPath):
         if os.path.isfile(DirectoryPath+f):
             if First_Flag:

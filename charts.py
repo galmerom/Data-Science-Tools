@@ -1010,6 +1010,8 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     yfields = ['Param1','Param2','Param3','Param4']
     charts.BuildMuliLineChart(tempdf, yfields,XField='Param5',linewidth=1,LegendBboxCorr=(0.8,0.75))
     """
+
+    warnings.filterwarnings('ignore')
     NumOfLines = len(YFields)
     lines = []
     # create figure and axis objects with subplots()
@@ -1097,9 +1099,17 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
       plt.show()
     if SavePath is not None:
       fig.savefig(SavePath, dpi=300)
+    
     if showTable:
-        print(df[YFields].to_markdown())
+        if XField =='dataframe_Index':
+            Field2show=yfields.copy()
+        else:
+            Field2show=yfields.copy()
+            Field2show.insert(0, XField)
+
+        print(df[Field2show].to_markdown())
     return fig,ax,ax2
+
 
 ##### start PolyFitResults ##########
 

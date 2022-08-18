@@ -1102,9 +1102,9 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     
     if showTable:
         if XField =='dataframe_Index':
-            Field2show=yfields.copy()
+            Field2show=YFields.copy()
         else:
-            Field2show=yfields.copy()
+            Field2show=YFields.copy()
             Field2show.insert(0, XField)
 
         print(df[Field2show].to_markdown())

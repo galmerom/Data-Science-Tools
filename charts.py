@@ -960,7 +960,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16),
-                       marker="o",ReturnArtistOnly=False):
+                       marker="o",ReturnArtistOnly=False, SavePath=None):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -1001,6 +1001,8 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             check marker types in the following link: https://matplotlib.org/stable/api/markers_api.html
         ReturnArtistOnly=   bool. If False  (default) then  show the chart before the end of the function. If True then don't show the chart and only return the
                             artist that can be used to add more lines to the chart.
+        SavePath =          str. If the path is different than None then save the chart as an image (png format). The SavePath contains the path and the file name
+                            of the image
     return: fig, ax1,ax2
     code example:
     tempdf=df[(df['Param1']=='xxx')&(df['Param2']>0)]
@@ -1092,6 +1094,9 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     fig.suptitle(title[0], fontsize=title[1])
     if not ReturnArtistOnly:
       plt.show()
+    if SavePath is not None:
+      fig.savefig(SavePath, dpi=300)
+      
     return fig,ax,ax2
 
 ##### start PolyFitResults ##########

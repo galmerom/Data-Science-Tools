@@ -960,7 +960,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16),
-                       marker="o",ReturnArtistOnly=False, SavePath=None):
+                       marker="o",ReturnArtistOnly=False, SavePath=None, showTable=False):
     """
     Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
     Input:
@@ -1003,6 +1003,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             artist that can be used to add more lines to the chart.
         SavePath =          str. If the path is different than None then save the chart as an image (png format). The SavePath contains the path and the file name
                             of the image
+        showTable =         bool. If true than show a table with the values from the dataframe. Show only YFields.
     return: fig, ax1,ax2
     code example:
     tempdf=df[(df['Param1']=='xxx')&(df['Param2']>0)]
@@ -1096,7 +1097,8 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
       plt.show()
     if SavePath is not None:
       fig.savefig(SavePath, dpi=300)
-      
+    if showTable:
+        print(df[YFields].to_markdown())
     return fig,ax,ax2
 
 ##### start PolyFitResults ##########

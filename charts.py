@@ -1349,8 +1349,10 @@ def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine
 
   plt.figure(figsize=figsize)
   scatter=plt.scatter(x=df[x],y=df[y],c=ColorInput ,label = ColorInput,s=markersize)
-  markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorDic.values()]
-  plt.legend(markers,colorDic.keys(),loc='best', numpoints=1)
+  if not isinstance(ClrSeries, type(None)):
+    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorDic.values()]
+    plt.legend(markers,colorDic.keys(),loc='best', numpoints=1)
+
   if ShowEqualLine:
       plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
@@ -1380,5 +1382,7 @@ def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine
       titlestr='Scatter of '+str(x)+ ' (x) against ' + str(y) + ' (y)'
 
   plt.title(titlestr, fontsize=TitleFontSize)
+
+  plt.show()
 
   plt.show()

@@ -16,6 +16,8 @@ Show_AucAndROC - Show AUC value and if a classifier model is given it also show 
 BuildMuliLineChart - Built a chart with 2 or more lines. First line is on the left axis and the rest on the right axis
 PolyFitResults - Build ski-learn curve fit for polynoms until the 5th degree with intercept and without.
                 (no intercept means that when x=0 also y=0)
+dfScatter - Used for creating a scatter that uses x and y as the location of the point. It also uses DBSCAN to show 
+            outliars values.
 """
 
 # Imports
@@ -28,7 +30,9 @@ import sklearn
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
-from matplotlib import colors
+import matplotlib.colors as mcolors
+from matplotlib.colors import colorConverter
+from sklearn.cluster import DBSCAN
 
 from pandas.api.types import is_string_dtype, is_numeric_dtype, is_bool_dtype
 
@@ -1189,7 +1193,7 @@ def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5),ColorSeries=N
 
   #find colors
   if isinstance(ColorSeries, pd.Series):
-    colorlist = list(colors.ColorConverter.colors.keys())
+    colorlist = list(mcolors.ColorConverter.colors.keys())
     colorDic = dict(zip(ColorSeries.unique(),colorlist[0:len(ColorSeries.unique())])) # create a dictionary with unique values and colors
     ColorInput = ColorSeries.map(colorDic)
     print(str(colorDic))
@@ -1296,3 +1300,80 @@ def _Scoring(df,y_true,y_pred):
     return 'R-squared: '+str(r2)+'   RMSE:'+str(rmse)
 
 
+  
+  def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine=False,markersize=40,ShowOutliar=False,OutFont=8,
+            figsize=(20,7), DBSCAN_Parm = {'eps':5,'min_samples':5} ,TitleFontSize=20  ):
+    """
+    Show a scatter chart from dataframe that can also show outliars using the DBSCAN model.
+    df              dataframe. The input dataframe
+    x               string. The name of the series that should be in the x-axis
+    y               string. The name of the series that should be in the y-axis
+    ClrSeries       string. The name of the series that will be used for different colors for each unique value
+    Title           string. The chart title
+    equalAxis       bool. If True then both axis will have the same min and max values. For example it can be used
+                          when comparing y_true and y_pred
+    markersize      int. The scale of the marker
+    ShowOutliar     bool. If True then use DBSCAN model to find outliars and show the outliar values and index.
+    OutFont         int. If ShowOutliar=True then this parameter is the font size that shows the outliar values
+    figsize         tupple. A tupple that describes the chart size in inches. (x in inches, y in inches)
+    DBSCAN_Parm     dictionary. Used as the parameters for the DBSCAN model
+    TitleFontSize   int. The title's fonts size
+
+    return nothing
+    """
+    if not isinstance(ClrSeries, type(None)):
+        ClrSer=df[ClrSeries]
+        UnqVal = ClrSer.unique()
+        if len(UnqVal) >=10:
+            colorlist =list(colorConverter.colors.keys())
+        else:
+            colorlist = list(mcolors.TABLEAU_COLORS) # This list contains only 10 colors with big contrast
+        colorDic = dict(zip(ClrSer.unique(),colorlist[0:len(ClrSer.unique())])) # create a dictionary with unique values and colors
+        ColorInput = ClrSer.map(colorDic)
+    else:
+        ColorInput = None
+
+    MaxValue=max(max(df[x]),max(df[y]))
+    MinValue=min(min(df[x]),min(df[y]))
+
+    diffMaxMin = MaxValue - MinValue
+    MaxValue = MaxValue+0.05*(diffMaxMin)# add a little to the right so the max point will not be on the end of the chart
+    
+
+            ###### start plotting ######
+    
+    plt.figure(figsize=figsize)
+    scatter=plt.scatter(x=df[x],y=df[y],c=ColorInput ,label = ColorInput,s=markersize)
+    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorDic.values()]
+    plt.legend(markers,colorDic.keys(),loc='best', numpoints=1)
+    if ShowEqualLine:
+        plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
+
+    if ShowOutliar:
+        dbs = DBSCAN(**DBSCAN_Parm)
+        
+        cluster = pd.Series(dbs.fit_predict(df[[x,y]]))
+        Outliar = cluster[cluster==-1]
+        df2 = df.iloc[Outliar.index.tolist()]
+        SmallChangeInY=(df[y].max()-df[y].min())*0.03
+        SmallChangeInX=(df[x].max()-df[x].min())*0.03
+        
+        for indx in df2.index:
+            txt= "(" + str(indx) + "," + str(df2.loc[indx][x].round(1)) + "," + str(df2.loc[indx][y].round(1))+")"
+            plt.annotate(txt, (df2.loc[indx][x]-SmallChangeInX, df2.loc[indx][y]-SmallChangeInY),fontsize=OutFont)
+
+    # Set x and y axes labels
+    plt.ylabel(y)
+    plt.xlabel(x)
+
+    if ShowEqualLine:
+        plt.xlim(MinValue,MaxValue)
+        plt.ylim(MinValue,MaxValue)
+
+    titlestr=Title
+    if Title=='Default':
+        titlestr='Scatter of '+str(x)+ ' (x) against ' + str(y) + ' (y)'
+        
+    plt.title(titlestr, fontsize=TitleFontSize)
+    
+    plt.show()

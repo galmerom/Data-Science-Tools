@@ -1320,6 +1320,11 @@ def _Scoring(df,y_true,y_pred):
     TitleFontSize   int. The title's fonts size
 
     return nothing
+    
+    Example of how to use:
+    
+    Scatter(df,'weight','height','gender',ShowOutliar=True,DBSCAN_Parm = {'eps':2,'min_samples':5},markersize=40)
+    
     """
     if not isinstance(ClrSeries, type(None)):
         ClrSer=df[ClrSeries]

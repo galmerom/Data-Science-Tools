@@ -1308,7 +1308,7 @@ def _Scoring(df,y_true,y_pred):
 
   
 def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine=False,markersize=40,ShowOutliar=False,OutFont=8,
-          figsize=(20,7), DBSCAN_Parm = {'eps':5,'min_samples':5} ,TitleFontSize=20,XAxisLimit=None,YAxisLimit=None  ):
+          figsize=(20,7), DBSCAN_Parm = {'eps':5,'min_samples':5} ,TitleFontSize=20,XAxisLimit=None,YAxisLimit=None,LegendFontSize=14  ):
   """
   Show a scatter chart from dataframe that can also show outliars using the DBSCAN model.
   df              dataframe. The input dataframe
@@ -1326,7 +1326,8 @@ def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine
   TitleFontSize   int. The title's fonts size
   XAxisLimit      tuple. (Minumum X axis value, Maximum X axis value)
   YAxisLimit      tuple. (Minumum Y axis value, Maximum Y axis value) 
-    
+  LegendFontSize  int. The font size of the legend. It also changes the marker next to the text in the legend
+                       with the same proportions   
   return nothing
 
   Example of how to use:
@@ -1358,8 +1359,8 @@ def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine
   plt.figure(figsize=figsize)
   scatter=plt.scatter(x=df[x],y=df[y],c=ColorInput ,label = ColorInput,s=markersize)
   if not isinstance(ClrSeries, type(None)):
-    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorDic.values()]
-    plt.legend(markers,colorDic.keys(),loc='best', numpoints=1)
+    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='',markersize=10*(LegendFontSize/14)) for color in colorDic.values()]
+    plt.legend(markers,colorDic.keys(),loc='best', numpoints=1,fontsize=LegendFontSize)
 
   if ShowEqualLine:
       plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')

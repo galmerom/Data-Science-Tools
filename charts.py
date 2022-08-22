@@ -1308,7 +1308,7 @@ def _Scoring(df,y_true,y_pred):
 
   
 def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine=False,markersize=40,ShowOutliar=False,OutFont=8,
-          figsize=(20,7), DBSCAN_Parm = {'eps':5,'min_samples':5} ,TitleFontSize=20  ):
+          figsize=(20,7), DBSCAN_Parm = {'eps':5,'min_samples':5} ,TitleFontSize=20,XAxisLimit=None,YAxisLimit=None  ):
   """
   Show a scatter chart from dataframe that can also show outliars using the DBSCAN model.
   df              dataframe. The input dataframe
@@ -1324,7 +1324,9 @@ def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine
   figsize         tupple. A tupple that describes the chart size in inches. (x in inches, y in inches)
   DBSCAN_Parm     dictionary. Used as the parameters for the DBSCAN model
   TitleFontSize   int. The title's fonts size
-
+  XAxisLimit      tuple. (Minumum X axis value, Maximum X axis value)
+  YAxisLimit      tuple. (Minumum Y axis value, Maximum Y axis value) 
+    
   return nothing
 
   Example of how to use:
@@ -1382,13 +1384,14 @@ def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine
   if ShowEqualLine:
       plt.xlim(MinValue,MaxValue)
       plt.ylim(MinValue,MaxValue)
-
+  if not isinstance(XAxisLimit, type(None)):
+      plt.xlim(XAxisLimit[0],XAxisLimit[1]) 
+  if not isinstance(YAxisLimit, type(None)):
+      plt.ylim(YAxisLimit[0],YAxisLimit[1])      
   titlestr=Title
   if Title=='Default':
       titlestr='Scatter of '+str(x)+ ' (x) against ' + str(y) + ' (y)'
 
   plt.title(titlestr, fontsize=TitleFontSize)
-
-  plt.show()
 
   plt.show()

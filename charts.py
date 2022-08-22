@@ -1033,7 +1033,10 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         x = df[XField]
         xLabel = XField
     if yLabels == ('FirstField', 'SecondLabel'):
-        y_labels = (YFields[0], YFields[1])
+        if NumOfLines >1:
+            y_labels = (YFields[0], YFields[1])
+        else:
+            y_labels = (YFields[0])
     else:
         y_labels = yLabels
 
@@ -1091,8 +1094,8 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                 for i, txt in enumerate(AnnotLst[Inx][0]):
                     sizeOfFonts=AnnotLst[Inx][1]
                     plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]),fontsize=sizeOfFonts)
-
-    ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
+    if NumOfLines>1:
+        ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
     
  
     
@@ -1112,7 +1115,10 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
             Field2show.insert(0, XField)
 
         print(df[Field2show].to_markdown())
-    return fig,ax,ax2
+    if NumOfLines==1:
+        return fig,ax
+    else:
+        return fig,ax,ax2
 
 
 ##### start PolyFitResults ##########

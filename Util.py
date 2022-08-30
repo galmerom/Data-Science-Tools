@@ -67,8 +67,6 @@ def NoNegative(Inpseries):
 
 
 
-from matplotlib import colors
-import matplotlib.colors as mcolors
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
             LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0,AnnotFontSize = 12 ):
     '''
@@ -151,7 +149,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
                 print("show only the first 10 outliers")
                 OulierSeiries = TempDF[TempDF['Outlier']].iloc[:20]
                 
-            for indx in TempDF[TempDF['Outlier']].index:
+            for indx in OulierSeiries.index:
                 txt= "(" + str(indx) + "," + str(TempDF.loc[indx].y_true.round(1)) + "," + str(TempDF.loc[indx].y_pred.round(1))+")"
                 plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=AnnotFontSize)
         

@@ -146,9 +146,12 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         if ShowOutliertxtFrom != 9999:
-            for indx in TempDF[TempDF['Outlier']].index:
-                txt= "(" + str(indx) + "," + str(TempDF.loc[indx].y_true.round(1)) + "," + str(TempDF.loc[indx].y_pred.round(1))+")"
-                plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=AnnotFontSize)
+            if len(TempDF[TempDF['Outlier']])>100:
+                print("Too many outliers change the threshold")
+            else:
+                for indx in TempDF[TempDF['Outlier']].index:
+                    txt= "(" + str(indx) + "," + str(TempDF.loc[indx].y_true.round(1)) + "," + str(TempDF.loc[indx].y_pred.round(1))+")"
+                    plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=AnnotFontSize)
         
         # Set x and y axes labels
         plt.ylabel(ylabel)

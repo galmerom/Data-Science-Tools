@@ -67,8 +67,9 @@ def NoNegative(Inpseries):
 
 
 
+
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
-            LOD=0.00001,ShowOutliertxtFrom=9999,YtrueOutlierMin=0,AnnotFontSize = 12 ):
+            LOD=0.00001,ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -86,15 +87,16 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
                                             The second is a dictionary that maps values (unique values in the series) to colors.
     ShowOutliertxtFrom float. : Show annotation text to outlier point if the value of (y_true/y_pred) is greater than 1+ ShowOutliertxtFrom
                                or smaller than 1 - ShowOutliertxtFrom. To avoid showing very small outliars we filter out any true values that
-                               are less than YtrueOutlierMin.
+                               are between min and max given in the OutlierXMinMax parameter.
                                The annotation text includes (index,true value, pred value)
-    YtrueOutlierMin float. : Used with ShowOutliertxtFrom to filter out small outliers
+    OutlierXMinMax tuple.  : (Min_Value,Max_value)Used with ShowOutliertxtFrom to filter out only outliers that their x value
+                             is between the min and max value.
     AnnotFontSize int.     : The font size of the annotation
-    Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if colors were used then it returns a dictionary
-                    between unique series values and the colors that were picked auto.)
-                    The result string includes r^2, rmse, Percent scoring (if shows the average for all records of abs(y_true-y_pred)/y_pred
-                    when ever the values of each series is under the LOD barrier it takes either zero or LOD value. check __ErorCalc function
-                    for exact algorithm
+    MaxOutlier int.        : Max number of outliers to show
+    Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if ShowOutliertxtFromis mot default then it return the
+                     ourliers dataframe ) The result string includes r^2, rmse, Percent scoring (if shows the average for all records
+                     of abs(y_true-y_pred)/y_pred when ever the values of each series is under the LOD barrier it takes either zero or LOD value.
+                     check __ErorCalc function for exact algorithm
     '''
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
@@ -115,16 +117,18 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         
         ###### Find Outlier #######
         if ShowOutliertxtFrom != 9999:
-            MaxLimit = pd.Series((1+ShowOutliertxtFrom), index=y_true[y_true>YtrueOutlierMin].index) 
-            MinLimit = pd.Series((1-ShowOutliertxtFrom), index=y_true[y_true>YtrueOutlierMin].index)
+            Mask = (y_true >= OutlierXMinMax[0]) & (y_true <= OutlierXMinMax[1])
+            MaxLimit = pd.Series((1+ShowOutliertxtFrom), index=y_true[Mask].index) 
+            MinLimit = pd.Series((1-ShowOutliertxtFrom), index=y_true[Mask].index) 
             TempDF = pd.DataFrame()
-            TempDF['y_pred'] = y_pred[y_true>YtrueOutlierMin]
-            TempDF['y_true'] = y_true[y_true>YtrueOutlierMin]
+            TempDF['y_pred'] = y_pred[Mask]
+            TempDF['y_true'] = y_true[Mask]
             TempDF['TrueOverPred'] = np.where (TempDF['y_pred']!=0,TempDF['y_true']/TempDF['y_pred'],0)
             TempDF['Outlier'] = (~(TempDF['TrueOverPred'].between(MinLimit, MaxLimit)))
             TempDF['Max'] = MaxLimit
             TempDF['Min'] = MinLimit
-            print(TempDF[TempDF['Outlier']])
+            print('First 5 outliers')
+            print(TempDF[TempDF['Outlier']].head(5).to_markdown())
         ####### find and deal with colors ########
         if isinstance(colorSer, pd.Series):
             if len(colorSer.unique())>=10:
@@ -144,14 +148,9 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
 
         if ShowOutliertxtFrom != 9999:
-            OulierSeiries = TempDF[TempDF['Outlier']]
-            if len(TempDF[TempDF['Outlier']])>10: # show no more than 10 values 
-                print("show only the first 10 outliers")
-                OulierSeiries = TempDF[TempDF['Outlier']].iloc[:20]
-                
-            for indx in OulierSeiries.index:
-                txt= "(" + str(indx) + "," + str(TempDF.loc[indx].y_true.round(1)) + "," + str(TempDF.loc[indx].y_pred.round(1))+")"
-                plt.annotate(txt, (TempDF.loc[indx].y_true*1.015, TempDF.loc[indx].y_pred*1.015),fontsize=AnnotFontSize)
+            for indx in range(0,len(TempDF[TempDF['Outlier']].iloc[0:MaxOutlier])):
+                txt= "(" + str(indx) + "," + str(TempDF.iloc[indx].y_true.round(1)) + "," + str(TempDF.iloc[indx].y_pred.round(1))+")"
+                plt.annotate(txt, (round(TempDF.iloc[indx].y_true*1.015,3), round(TempDF.iloc[indx].y_pred*1.015,3)),fontsize=AnnotFontSize)
         
         # Set x and y axes labels
         plt.ylabel(ylabel)
@@ -163,7 +162,10 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         plt.title(Title+'\n'+ReturnStr)
         
         plt.show()
-    return ( ReturnStr,float(r2),float(rmse),str(colorDic))
+    if ShowOutliertxtFrom != 9999:
+        return ( ReturnStr,float(r2),float(rmse),TempDF[TempDF['Outlier']])
+    else:
+        return ( ReturnStr,float(r2),float(rmse))
 
 def __ErorCalc(y_true,y_pred,LOD):
     """

@@ -147,8 +147,8 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
 
         if ShowOutliertxtFrom != 9999:
             OulierSeiries = TempDF[TempDF['Outlier']]
-            if len(TempDF[TempDF['Outlier']])>20: # show no more than 20 values 
-                print("show only the first 20 outliers")
+            if len(TempDF[TempDF['Outlier']])>10: # show no more than 10 values 
+                print("show only the first 10 outliers")
                 OulierSeiries = TempDF[TempDF['Outlier']].iloc[:20]
                 
             for indx in TempDF[TempDF['Outlier']].index:

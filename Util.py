@@ -68,6 +68,7 @@ def NoNegative(Inpseries):
 
 
 
+
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
             LOD=0.00001,ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
     '''
@@ -117,7 +118,10 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         
         ###### Find Outlier #######
         if ShowOutliertxtFrom != 9999:
-            Mask = (y_true >= OutlierXMinMax[0]) & (y_true <= OutlierXMinMax[1])
+            if OutlierXMinMax is None:
+                Mask=[True] * len(y_true.index)
+            else:
+                Mask = (y_true >= OutlierXMinMax[0]) & (y_true <= OutlierXMinMax[1])
             MaxLimit = pd.Series((1+ShowOutliertxtFrom), index=y_true[Mask].index) 
             MinLimit = pd.Series((1-ShowOutliertxtFrom), index=y_true[Mask].index) 
             TempDF = pd.DataFrame()

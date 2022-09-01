@@ -69,8 +69,10 @@ def NoNegative(Inpseries):
 
 
 
+
+
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
-            LOD=0.00001,ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
+            LOD=0.00001,OutLierType='Manual',DBSCAN_Parm = {'eps':5,'min_samples':5},ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
     '''
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -117,6 +119,8 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         MaxValue = MaxValue+0.05*(MaxValue-MinValue)# add a little to the right so the max point will not be on the end of the chart
         
         ###### Find Outlier #######
+
+
         if ShowOutliertxtFrom != 9999:
             if OutlierXMinMax is None:
                 Mask=[True] * len(y_true.index)
@@ -156,6 +160,21 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
                 txt= "(" + str(indx) + "," + str(TempDF.iloc[indx].y_true.round(1)) + "," + str(TempDF.iloc[indx].y_pred.round(1))+")"
                 plt.annotate(txt, (round(TempDF.iloc[indx].y_true*1.015,3), round(TempDF.iloc[indx].y_pred*1.015,3)),fontsize=AnnotFontSize)
         
+        if OutLierType=='DBSCAN':
+            dbs = DBSCAN(**DBSCAN_Parm)
+            df = pd.DataFrame()
+            df['x'] = y_true
+            df['y'] = y_pred
+            cluster = pd.Series(dbs.fit_predict(df[['x','y']]))
+            Outliar = cluster[cluster==-1]
+            df2 = df.iloc[Outliar.index.tolist()]
+            SmallChangeInY=(df['y'].max()-df['y'].min())*0.03
+            SmallChangeInX=(df['x'].max()-df['x'].min())*0.03
+
+            for indx in df2.index:
+                txt= "(" + str(indx) + "," + str(df2.loc[indx]['x'].round(1)) + "," + str(df2.loc[indx]['y'].round(1))+")"
+                plt.annotate(txt, (df2.loc[indx]['x']-SmallChangeInX, df2.loc[indx]['y']-SmallChangeInY),fontsize=AnnotFontSize)
+            print (df2.to_markdown())
         # Set x and y axes labels
         plt.ylabel(ylabel)
         plt.xlabel(xlabel)

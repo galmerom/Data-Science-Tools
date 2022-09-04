@@ -2,23 +2,25 @@
 """
 This model helps to build complicated charts. It contains the following functions:
 
-BarCharts - Used for building bar charts. The bar charts can be build as one or more charts in sub plots.
-StackBarCharts - Used to build a stack bar chart.
-HistCharts - Used for building a histogram charts
-pairplotVerCol - Used for comparing each 2 features against the target feature. Return a grid of scatter charts
+BarCharts - Used for building bar charts. The bar charts can be built as one or more charts in subplots.
+StackBarCharts - Used to build a stacked bar chart.
+HistCharts - Used for creating histogram charts
+pairplotVerCol - Used for comparing every 2 features against the target feature. Return a grid of scatter charts
                  with X and y as the features and the value as the target features. Charts are made by matplotlib
 pairplotVerColSNS - The same as pairplotVerCol but charts made with seaborn library
-AnomalyChart - Use this chart for showing inertia when using k - means
-plotCM - Plotting graphical confusion matrix, can also shows classification report
-ClassicGraphicCM - like plotCM except it does not get a model and perform a predict (gets y_pred and classes instead)
+AnomalyChart - Use this chart to show inertia when using k - means
+plotCM - Plotting graphical confusion matrix can also show classification report
+ClassicGraphicCM - like plotCM, except it does not get a model and perform a predict (gets y_pred and classes instead)
 PlotFeatureImportance - Plot feature importance and return a dataframe
-Show_AucAndROC - Show AUC value and if a classifier model is given it also show the ROC chart
-BuildMuliLineChart - Built a chart with 2 or more lines. First line is on the left axis and the rest on the right axis
-PolyFitResults - Build ski-learn curve fit for polynoms until the 5th degree with intercept and without.
+Show_AucAndROC - Show AUC value, and if a classifier model is given, it also shows the ROC chart
+BuildMuliLineChart - Built a chart with two or more lines. The first line is on the left axis, the rest are on the
+                        right axis
+PolyFitResults - Build ski-learn curve fit for polynomials until the 5th degree with intercept and without.
                 (no intercept means that when x=0 also y=0)
-dfScatter - Used for creating a scatter that uses x and y as the location of the point. It also uses DBSCAN to show 
-            outliars values.
+Scatter - Used for creating a scatter that uses x and y as the location of the point. It also uses DBSCAN to show
+            outliers values.
 """
+
 
 # Imports
 import pandas as pd
@@ -43,7 +45,7 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
               WithPerc=0, XtickFontSize=15, Colorcmap='plasma', Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
               LabelPrecision=0, txt2show=[("", 10)], RotAngle=45, SaveCharts=False):
     """
-    Builds a one or more bar charts (use the NumRows and NumCol to determine the grid)
+    Builds one or more bar charts (use the NumRows and NumCol to determine the grid)
     The charts can be customized using the following parameters:
 
 
@@ -64,18 +66,19 @@ def BarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSiz
     :param XtickFontSize: The size of the fonts of the x ticks labels
     :param Colorcmap: The color scheme used. Schemas can be found here:
                       https://matplotlib.org/examples/color/named_colors.html
-    :param Xlabelstr: Gets a list. First element is the X axis label and the second element is the font size
-    :param Ylabelstr: Gets a list. First element is the Y axis label and the second element is the font size
-    :param PadValue: Float. the amount of empty space to put around the value label
+    :param Xlabelstr: Gets a list. The first element is the X-axis label and the second element is the font size
+    :param Ylabelstr: Gets a list. The first element is the Y-axis label and the second element is the font size
+    :param PadValue: Float. the amount of space to put around the value label
     :param LabelPrecision: integer. The number of digits after the period in the label value
     :param txt2show: Gets a list of tuples. Each tuple is for each chart. Every tuple must have 4 values:
                      (string to show, font size,position correction of x,position correction of y) for example:
                      txt2show=[('50% of people are men',10,0.1,-0.1)]
-                     The position correction values are in percentage of the chart.
-                     So if we want to move the textbox 20% (of the chart length) to the right lets put in
+                     The position correction values are in the percentage of the chart.
+                     So if we want to move the textbox 20% (of the chart length) to the right let's put in
                      the third place the value 0.2
-    :param RotAngle: The angle for the x axis labels
-    :param SaveCharts: If True then every time this function is called the chart is also saved as jpeg
+    :param RotAngle: The angle for the x-axis labels
+    :param SaveCharts: If True, then every time this function is called, the chart is also saved as a jpeg
+
   """
 
     i = 0
@@ -206,8 +209,7 @@ def __add_Horizontal_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=
     """
     Add labels to the end of each bar in a bar chart. For horizontal bars
 
-    :param ax (matplotlib.axes.Axes):   The matplotlib object containing the axes
-                                        of the plot to annotate.
+    :param ax (matplotlib.axes.Axes):   The matplotlib object containing the plot's axes to annotate.
     :param spacing (int): The distance between the labels and the bars.
     :param PadValue (float): The amount of space around the text
     """
@@ -266,39 +268,41 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
                    WithPerc=0, XtickFontSize=15, ColorInt=0, Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
                    StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False):
     """
-  Parameters:
-      :param InpList =  List of tuples.Dataframes to show. Each element in the list is a tuple.
-                        The tuple looks like this (df,xCol,LegendCol,ValueCol):
-                        df=dataframes
-                        xCol = The name of the column we want to use for the X axis
-                        LegendCol = The name of the column we want to use as a LegendCol
-                        ValueCol = The name of the column we want to use as the values
+      Parameters:
+        :param InpList =  List of tuples.Dataframes to show. Each element in the list is a tuple.
+                          The tuple looks like this (df,xCol,LegendCol,ValueCol):
+                          df=dataframes
+                          xCol = The name of the column we want to use for the X axis
+                          LegendCol = The name of the column we want to use as a LegendCol
+                          ValueCol = The name of the column we want to use as the values
 
-      :param TitleList = List of titles to appear on the top of the charts
-      :param NumRows = Number of rows of charts
-      :param NumCol = Number of columns of charts
-      :param ChartType = chart type to show default = bar
-      :param ChartSize = The size of each chart
-      :param Fsize =  Font size of the data labels
-      :param TitleSize = Font size of the title
-      :param WithPerc =
-                        0 or default = data labels + Percentage
-                        1 = Only percentage
-                        2= Only values
-      :param XtickFontSize = The size of the fonts of the x ticks labels
-      :param ColorInt =Currently there are 5 color pallets use (0,1,2,3,4) to run them
-      :param Xlabelstr = Gets a list. First element is the X axis label and the second
-                         element is the font size
-      :param Ylabelstr = Gets a list. First element is the Y axis label and the second element is the font size
-      :param PadValue = The padding of the data labels bbox
-      :param StackBarPer =  If true then the stack bar is showing 100% stack bar.
-                            If false then it is a regular values stack bar
-      :param txt2show = List of tuples. Each tuple contains (string,integer,integer,integer).
-                        The text will show on the chart in a box. The second parameter (integer)
-                         is the font size. The third parameter is the correction in the location
-                          of the box in the X-axis. The last integer is the correction on the y-axis.
-      :param TopValFactor: float. The max value of the y-axis is determined by the max value in the chart * TopValFactor
-      :param SaveCharts = Bool. If True then it will save the chart as a jpeg file (use for presentations)
+        :param TitleList = List of titles to appear on the top of the charts
+        :param NumRows = Number of rows of charts
+        :param NumCol = Number of columns of charts
+        :param ChartType = chart type to show default = bar
+        :param ChartSize = The size of each chart
+        :param Fsize =  Font size of the data labels
+        :param TitleSize = Font size of the title
+        :param WithPerc =
+                          0 or default = data labels + Percentage
+                          1 = Only percentage
+                          2= Only values
+        :param XtickFontSize = The size of the fonts of the x ticks labels
+        :param ColorInt =Currently there are 5 color pallets use (0,1,2,3,4) to run them
+        :param Xlabelstr = Gets a list. The first element is the X-axis label and the second
+                           element is the font size
+        :param Ylabelstr = Gets a list. The first element is the Y-axis label and the second element is the font size
+        :param PadValue = The padding of the data labels bbox
+        :param StackBarPer =  If true, the stack bar is showing 100%.
+                              If false, then it is a regular values stack bar
+        :param txt2show = List of tuples. Each tuple contains (string,integer,integer,integer).
+                          The text will show on the chart in a box. The second parameter (integer)
+                           is the font size. The third parameter is the correction in the box's location on the X-axis.
+                           The last integer is the correction on the y-axis.
+        :param TopValFactor: float. The max value of the y-axis is determined by the max value
+                                    in the chart * TopValFactor
+        :param SaveCharts = Bool. If True, then it will save the chart as a jpeg file (use for presentations)
+
 
     """
 
@@ -358,10 +362,10 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
 def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, StackBarPer=False, ChartSizeVal=(10, 7),
                             FsizeVal=10, WithPerc=0, ColorInt=0):
     """
-    xCol = The column we want to be in x axis
+    xCol = The column we want to be in the x-axis
     LegendCol = The column that we want to be the legend
     ValueCol  = The column that we want to be the values
-  """
+    """
     DataLabelLocation = []
     dfOriginal, xCol, LegendCol, ValueCol = tupleParam
 
@@ -443,11 +447,11 @@ def __ReArrangeStackBar2percent(ax):
 
 
 def __add_value_labels2StackBar(ax, Fsize=12, WithPerc=0, spacing=2, PadValue=0.3, StackBarPer=False):
-    """Add labels to the end of each bar in a bar chart.
+    """
+    Add labels to the end of each bar in a bar chart.
 
     Arguments:
-        ax (matplotlib.axes.Axes): The matplotlib object containing the axes
-            of the plot to annotate.
+        ax (matplotlib.axes.Axes): The matplotlib object containing the plot's axes to annotate.
         spacing (int): The distance between the labels and the bars.
     """
 
@@ -508,7 +512,7 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
                SaveCharts=False):
     """
     Parameters:
-      InpList = list of dataframes to show
+      InpList = List of dataframes to show
       TitleList = List of titles to appear on the top of the charts
       NumRows = Number of rows of charts
       NumCol = Number of columns of charts
@@ -520,7 +524,8 @@ def HistCharts(InpList, TitleList, NumRows, NumCol, ChartSize=(25, 15), Fsize=15
                 1 = Only percentage
                 2= Only values
       binSize = int. How many bins to use for the histogram
-      SaveCharts = Bool. If True then it will save the chart as a jpeg file (use for presentations)
+      SaveCharts = Bool. If True, then it will save the chart as a jpeg file (use for presentations)
+
   """
 
     i = 0
@@ -573,11 +578,12 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
     :param Figsize: tuple, The figure size.
     :param Xlabelstr: string. The label of the x-axis.
     :param Ylabelstr: string. The label of the y-axis.
-    :param RotAngle: integer. The rotation of the labels in the x-axis.
-    :param  C:  In case of a scatter plot. Color of data points. Can get a name of color, an RGB or even a column name.
+    :param RotAngle: integer. The rotation of the labels on the x-axis.
+    :param  C:  In case of a scatter plot. Color of data points. Can get a name of color, an RGB, or even a column name.
                 See scatter matplotlib documentation
-    :param S: In case of a scatter plot how big should be the points. See scatter matplotlib documentation
+    :param S: In the case of a scatter plot, how big should the points be. See scatter matplotlib documentation
     :return: nothing
+
     """
     warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
 
@@ -605,7 +611,7 @@ def pairplotVerCol(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, R
 
 
 def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15, RotAngle=45, S=50,
-                      UseTargetAsHue=False, ChangeAxis=False,Savepng=False):
+                      UseTargetAsHue=False, ChangeAxis=False, Savepng=False):
     """
     Show a chart for each feature against the target column. Using matplotlib.
 
@@ -614,13 +620,15 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     :param Figsize: tuple, The figure size.
     :param Xlabelstr: string. The label of the x-axis.
     :param Ylabelstr: string. The label of the y-axis.
-    :param RotAngle: integer. The rotation of the labels in the x-axis.
-    :param S: In case of a scatter plot: how big should be the points.
-    :param UseTargetAsHue: bool. If true then use the target column value also as the hue value of the chart.
+    :param RotAngle: integer. The rotation of the labels on the x-axis.
+    :param S: In the case of a scatter plot: how big should the points be.
+    :param UseTargetAsHue: bool. If true, then use the target column value as the chart's hue value.
                            (determine the colors based on the values)
-    :param ChangeAxis: bool. If false then f(x) is on the y asix (default) if true then change the axis so f(x)is on the x-axis
-    :param Savepng: bool. If True then every chart will be saved in png format
+    :param ChangeAxis: bool. If false, then f(x) is on the y axis (default) if true, then change the axis so f(x)
+                             is on the x-axis
+    :param Savepng: bool. If True, then every chart will be saved in png format
     :return: nothing
+
     """
     warnings.filterwarnings("ignore", message="More than 20 figures have been opened")
 
@@ -628,12 +636,12 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
         plt.figure(figsize=Figsize)
         plt.title(col + ' ver. ' + TargetCol)
         # Find out which column should be on which axis
-        X=col
-        Y=TargetCol
+        X = col
+        Y = TargetCol
         if ChangeAxis:
-          Y=col
-          X=TargetCol
-          
+            Y = col
+            X = TargetCol
+
         # noinspection PyBroadException
         try:
             tempDF = DF[[col, TargetCol]]
@@ -647,7 +655,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
             elif is_string_dtype(DF[col].dtype):
                 ax = sns.boxplot(x=X, y=Y, data=tempDF)
             if Savepng:
-              plt.savefig(col+' ver ' + TargetCol + '.png')
+                plt.savefig(col + ' ver ' + TargetCol + '.png')
         except:
             print('Not able to show a chart for column: ' + str(col) + '\t Data type:' + str(DF[col].dtype))
 
@@ -662,7 +670,7 @@ def AnomalyChart(X, model):
    Local Outlier Factor (LOF)
    One-Class Svm
 
-   It draws a contour chart with the outliers as a black dots
+   It draws a contour chart with the outliers as  black dots.
   """
     n = int(model.get_params()['contamination'] * len(X))
     xx1, xx2 = np.meshgrid(np.linspace(-7, 7, 100),
@@ -697,11 +705,27 @@ plt.show()
 
 
 def __calc_inertia(k, model, data):
+    """
+    Used for fit the model to k clusters
+    k       int. The number of clusters to use by the model
+    model   model. The inertia model
+    data    dataframe. The input dataframe
+    Returns the odel.inertia_ for each k input
+    """
     model = model(n_clusters=k).fit(data)
     return model.inertia_
 
 
 def InertiaElbow(data, model, StartFrom=1, EndAt=10, AddLabels=False):
+    """
+    Gets a dataframe and the inertia modeland create a chart to help find where the "elbow" is.
+    data        dataframe. The input dataframe
+    model       model. The inertia model
+    StartFrom   int. This is the minimum k value
+    EndAt       int. This is the maximum k value
+    AddLabels   bool. If true, then add labels for each point
+    Returns nothing
+    """
     inertias = [(k, __calc_inertia(k, model, data)) for k in range(StartFrom, EndAt)]
     plt.figure(figsize=(10, 5))
     plt.plot(*zip(*inertias), linewidth=3, marker='*', markersize=15, markerfacecolor='red', markeredgecolor='#411a20')
@@ -714,27 +738,17 @@ def InertiaElbow(data, model, StartFrom=1, EndAt=10, AddLabels=False):
 
 
 # Confusion matrix
-def plotCM(X, y_true, modelName,
-           normalize=False,
-           title=None,
-           cmap=plt.cm.Blues,
-           precisionVal=2,
-           titleSize=15,
-           fig_size=(7, 5),
-           InFontSize=15,
-           LabelSize=15,
-           ClassReport=True,
-           RemoveColorBar=False,
-           ShowAUCVal=False,
+def plotCM(X, y_true, modelName, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2, titleSize=15,
+           fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, RemoveColorBar=False,  ShowAUCVal=False,
            pos_label=1):
     """
-    This function prints and plots the confusion matrix.
+     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     Input:
       X:            The input dataframe
       y_true:       Target column
       modelName:    The model used to predict AFTER FIT
-      normalize:    If True then normalize the by row
+      normalize:    If True, then normalize the by row
       title:        string. Chart title
       cmap:         color map
       precisionVal: Precision values (0.00 = 2)
@@ -742,9 +756,9 @@ def plotCM(X, y_true, modelName,
       fig_size:     Figure size
       InFontSize:   The font of the values inside the table
       LabelSize:    Label font size (the classes names on the axes)
-      ClassReport:  If true add a classification report at the bottom
-      RemoveColorBar: bool. If True then don't show the color bar
-      ShowAUCVal: bool. If true then show the auc value and ROC chart
+      ClassReport:  If true, add a classification report at the bottom
+      RemoveColorBar: bool. If True, then don't show the color bar
+      ShowAUCVal: bool. If true, then show the AUC value and ROC chart
       pos_label: str. The positive value for calculating the AUC
     """
 
@@ -805,20 +819,20 @@ def plotCM(X, y_true, modelName,
         print(classification_report(y_true=y_true,
                                     y_pred=y_pred))
     if ShowAUCVal:
-        Show_AucAndROC(y_true, y_pred, pos_label, modelName,X)
+        Show_AucAndROC(y_true, y_pred, pos_label, modelName, X)
 
 
 def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2,
                      titleSize=15, fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, ReturnAx=False,
                      RemoveColorBar=False, ShowAUCVal=False, pos_label=1):
     """
-    This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
+     This function prints and plots the confusion matrix. WITHOUT using the model (no prediction needed)
     Normalization can be applied by setting `normalize=True`.
     Input:
         y_Pred:         Prediction array
         y_true:         Target array
         ModelClasses:   A list of classes as they appear in model.classes_
-        normalize:      If True then normalize the by row
+        normalize:      If True, then normalize the by row
         title:          Chart title
         cmap:           color map
         precisionVal:   Precision values (0.00 = 2)
@@ -826,11 +840,13 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
         fig_size:       Figure size
         InFontSize:     The font of the values inside the table
         LabelSize:      Label font size (the classes names on the axes)
-        ClassReport:    If true add a classification report at the bottom
-        ReturnAx: Bool. If true then don't show the confusion matrix and return the figure
-        RemoveColorBar: bool. If True then don't show the color bar
-        ShowAUCVal: bool. If true then show the auc value
+        ClassReport:    If true, add a classification report at the bottom
+        ReturnAx: Bool. If true, then don't show the confusion matrix and return the figure
+        RemoveColorBar: bool. If True, then don't show the color bar
+        ShowAUCVal: bool. If true, then show the AUC value
         pos_label: str. The positive value for calculating the AUC
+
+
 
     """
 
@@ -898,16 +914,17 @@ def ClassicGraphicCM(y_pred, y_true, ModelClasses, normalize=False, title=None, 
 
 def Show_AucAndROC(y_true, y_pred, pos_label=1, cls=None, X=None):
     """
-    Shows the AUC value, and if a classification model is given, it also offers a plot of the ROC curve
+    It shows the AUC value, and if a classification model is given, it also offers a plot of the ROC curve.
     Source code: https://medium.com/@kunanba/what-is-roc-auc-and-how-to-visualize-it-in-python-f35708206663
 
 
-    :param cls: classifier model. If no classifier is given then it will only show the AUC value
+    :param cls: classifier model. If no classifier is given, then it will only show the AUC value
     :param y_true: The actual values (ground true)
     :param y_pred: The predicted values
     :param pos_label: The label that is considered a positive value
-    :param X: array. Used for predict proba
+    :param X: array. Used to predict proba
     :return: nothing
+
 
     """
     fpr, tpr, thresholds = roc_curve(y_true, y_pred, pos_label=pos_label)
@@ -944,10 +961,11 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
     Show feature importance as a chart and returns a dataframe
     :param X: dataframe. The dataframe used for the fitting
     :param model: classifier. The model used for the fitting
-    :param TopFeatures: int. The number of features to show in the chart
+    :param TopFeatures: int. The number of features shown in the chart
     :param ShowChart: bool. If true, then show the chart
     :param Label_Precision: int. The number of digits after the period in the value label
     :return: Dataframe and show chart
+
     """
     FI = model.feature_importances_
     featuresDic = {}  # a dict to hold feature_name: feature_importance
@@ -961,58 +979,66 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
     BarCharts([pltDf], ['Feature importance'], WithPerc=3, LabelPrecision=Label_Precision)
     return FI_DF
 
+
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
-                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965),AnnotLst={},MarkerWidth=2,title=("",16),
-                       marker="o",ReturnArtistOnly=False, SavePath=None, showTable=False):
+                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965), AnnotLst={}, MarkerWidth=2,
+                       title=("", 16),
+                       marker="o", ReturnArtistOnly=False, SavePath=None, showTable=False):
     """
-    Build a chart with 1 or more lines where the first line gets the left axis and the rest gets the right axis
+    Build a chart with 1 or more lines where the first line gets the left axis, and the rest gets the right axis
     Input:
         df = dataframe. The dataframe
         YFields =           List of strings. List of all the fields in the dataframe that we want to see as lines
-        FieldDescription =  List of strings. List of descriptions for each field used in the legend. If None then use
+        FieldDescription =  List of strings. List of descriptions for each field used in the legend. If None, then use
                             the name of the fields instead.
         rollinWindow =      integer. The rolling window is used for calculating moving averages. The integer is the
-                            number of periods to do the average on.The default is 1 which means no moving average
-        FirstAxisLimit =    List. A list of 2 units for the first Y axis. The first is the minimum and the second
-                            is the maximum. The default none means no limits
-        SecondAxisLimit =   List. A list of 2 units for the first Y axis. The first is the minimum and the second
-                            is the maximum. The default none means no limits
-        XField =            string. The name of the field to use as the X-axis. If none then use the index.
+                            number of periods to do the average on. The default is 1, which means no moving average
+        FirstAxisLimit =    List. A list of 2 units for the first Y axis. The first is the minimum, and the second
+                            is the maximum. The default none means no limits.
+        SecondAxisLimit =   List. A list of 2 units for the first Y axis. The first is the minimum, and the second
+                            is the maximum. The default none means no limits.
+        XField =            string. The name of the field to use as the X-axis. If none, then use the index.
         figsize =           tuple with a pair of int. Used as the figure size in inches
         linewidth =         integer. The line width. Default =  no line only dots
         colors =            List of strings. List of names allowed by mathplotlib to be line colors.
-                            The default allows 6 lines with 6 colors
-        LabelSizes =        tuple with a couple of integer. First element is the font size of the x-label.
+                            The default allows 6 lines with 6 colors.
+        LabelSizes =        tuple with a couple of integers. The first element is the font size of the x-label.
                             The second is for the y-axis
-        yLabels =           tuple with a couple of integer. First elemnt = left y axis label,
-                            second  = right y axis label
+        yLabels =           tuple with a couple of integers. First element = left y-axis label,
+                            second  = right y-axis label
         LegendBboxCorr =    tuple with a couple of floats. Used to correct the legend label to place it in the
                             right position
-        AnnotLst =          Dictionary with a tuple as values and integer as keys. Show strings next to the points of a specific line.
+        AnnotLst =          Dictionary with a tuple as values and integer as keys. Show strings next to the points of a
+                            specific line.
                             The general form: {Line number: ([List of strings], Font size)}
-                            First element of a tupple is a list of strings and the second is an integer.
-                            It looks like this {0:['Point1,'Point2],20}. The keys of the dictionary refer to the line index
-                            in the YFields list. So, the first line gets a value of zero.
-                            The values of the dictionary: First elemnt is the list of strings to show
-                            second element is the font size.
-                            If AnnotLst is empty then nothing will happen
-        MarkerWidth =       int or list of int.The size of the marker (usually the size of the point). If int then the size will be the same for all lines.
-                            If list then the first element will get the first value and so on.
-        title =             tuple. First element is a string that will be the figure title. The second element is the font size.
-        marker =            string or a list of string that define the way the marker of the point will look like. if there is only one string then all lines will
-                            get the same marker. If not then first line will get the first element in the list and so on.
+                            The first element of a tuple is a list of strings, and the second is an integer.
+                            It looks like this {0:['Point1,'Point2],20}. The dictionary's keys refer to the line
+                            index in the YFields list. So, the first line gets a value of zero.
+                            The values of the dictionary: The first element is the list of strings to show
+                            the second element is the font size.
+                            If AnnotLst is empty, then nothing will happen.
+        MarkerWidth =       int or list of int.The size of the marker (usually the size of the point). If int, then the
+                            size will be the same for all lines. If list, then the first element will get the first
+                             value, and so on.
+        title =             tuple. The first element is a string that will be the figure title. The second element is
+                            the font size.
+        marker =            string or a list of strings that define how the marker of the point will look.
+                            If there is only one string, all lines will
+                            get the same marker. If not, then the first line gets the 1st element in the list and so on.
                             check marker types in the following link: https://matplotlib.org/stable/api/markers_api.html
-        ReturnArtistOnly=   bool. If False  (default) then  show the chart before the end of the function. If True then don't show the chart and only return the
+        ReturnArtistOnly=   bool. If False  (default), show the chart before the end of the function. If True, then
+                            don't show the chart and only return the
                             artist that can be used to add more lines to the chart.
-        SavePath =          str. If the path is different than None then save the chart as an image (png format). The SavePath contains the path and the file name
-                            of the image
-        showTable =         bool. If true than show a table with the values from the dataframe. Show only YFields.
+        SavePath =          str. If the path is different from None, save the chart as an image (png format).
+                            The SavePath contains the path and the file name of the image
+        showTable =         bool. If true, then show a table with the values from the dataframe. Show only YFields.
     return: fig, ax1,ax2
     code example:
     tempdf=df[(df['Param1']=='xxx')&(df['Param2']>0)]
     yfields = ['Param1','Param2','Param3','Param4']
     charts.BuildMuliLineChart(tempdf, yfields,XField='Param5',linewidth=1,LegendBboxCorr=(0.8,0.75))
+
     """
 
     warnings.filterwarnings('ignore')
@@ -1026,14 +1052,14 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     if XField == 'dataframe_Index':
         x = df.index
         xLabel = 'index'
-        if not df.index.name is None:
+        if df.index.name is not None:
             if len(df.index.name) > 0:
                 xLabel = df.index.name
     else:
         x = df[XField]
         xLabel = XField
     if yLabels == ('FirstField', 'SecondLabel'):
-        if NumOfLines >1:
+        if NumOfLines > 1:
             y_labels = (YFields[0], YFields[1])
         else:
             y_labels = (YFields[0])
@@ -1041,23 +1067,23 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         y_labels = yLabels
 
     if colors == ['none']:
-        colors = ['red', 'blue','black' , 'green', 'yellow', 'pink']
-    
+        colors = ['red', 'blue', 'black', 'green', 'yellow', 'pink']
+
     # make a plot of the first line
     # Find the type and size of the marker for the first line
     if isinstance(marker, list):
-      currMarker=marker[0]
+        currMarker = marker[0]
     else:
-      currMarker=marker
+        currMarker = marker
     if isinstance(MarkerWidth, list):
-      currMarWdth=MarkerWidth[0]
+        currMarWdth = MarkerWidth[0]
     else:
-      currMarWdth = MarkerWidth
+        currMarWdth = MarkerWidth
 
     # draw the actual first line
     lines.append(
         ax.plot(x, df[YFields[0]].rolling(rollinWindow).mean(), color=colors[0], marker=currMarker, linewidth=linewidth,
-                label=FieldDescription[0],markeredgewidth=currMarWdth))
+                label=FieldDescription[0], markeredgewidth=currMarWdth))
     # set x-axis label
     ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
 
@@ -1066,333 +1092,488 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
 
     # set y-axis limits
     ax.set_ylim(FirstAxisLimit)
-    if len(AnnotLst)>0:
+    if len(AnnotLst) > 0:
         if 0 in AnnotLst.keys():
             for i, txt in enumerate(AnnotLst[0][0]):
-                sizeOfFonts=AnnotLst[0][1]
-                plt.annotate(txt, (x[i], df[YFields[0]].iloc[i]),fontsize=sizeOfFonts)
+                sizeOfFonts = AnnotLst[0][1]
+                plt.annotate(txt, (x[i], df[YFields[0]].iloc[i]), fontsize=sizeOfFonts)
     # Add lines from the second line
     for DrawLine in range(NumOfLines - 1):
         Inx = DrawLine + 1
-        
+
         # Find the type and size of the marker for the first line
         if isinstance(marker, list):
-          currMarker=marker[Inx]
+            currMarker = marker[Inx]
         else:
-          currMarker=marker
+            currMarker = marker
         if isinstance(MarkerWidth, list):
-          currMarWdth=MarkerWidth[Inx]
+            currMarWdth = MarkerWidth[Inx]
         else:
-          currMarWdth = MarkerWidth
+            currMarWdth = MarkerWidth
 
         ax2 = ax.twinx()
         lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker=currMarker,
-                              linewidth=linewidth, label=FieldDescription[Inx],markeredgewidth=currMarWdth))
+                              linewidth=linewidth, label=FieldDescription[Inx], markeredgewidth=currMarWdth))
         ax2.set_ylim(SecondAxisLimit)
-        if len(AnnotLst)>0:
+        if len(AnnotLst) > 0:
             if Inx in AnnotLst.keys():
                 for i, txt in enumerate(AnnotLst[Inx][0]):
-                    sizeOfFonts=AnnotLst[Inx][1]
-                    plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]),fontsize=sizeOfFonts)
-    if NumOfLines>1:
+                    sizeOfFonts = AnnotLst[Inx][1]
+                    plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]), fontsize=sizeOfFonts)
+    if NumOfLines > 1:
         ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
-    
- 
-    
+
     fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
                bbox_to_anchor=LegendBboxCorr, shadow=True)
     fig.suptitle(title[0], fontsize=title[1])
     if not ReturnArtistOnly:
-      plt.show()
+        plt.show()
     if SavePath is not None:
-      fig.savefig(SavePath, dpi=300)
-    
+        fig.savefig(SavePath, dpi=300)
+
     if showTable:
-        if XField =='dataframe_Index':
-            Field2show=YFields.copy()
+        if XField == 'dataframe_Index':
+            Field2show = YFields.copy()
         else:
-            Field2show=YFields.copy()
+            Field2show = YFields.copy()
             Field2show.insert(0, XField)
 
         print(df[Field2show].to_markdown())
-    if NumOfLines==1:
-        return fig,ax
+    if NumOfLines == 1:
+        return fig, ax
     else:
-        return fig,ax,ax2
+        return fig, ax, ax2
 
 
 ##### start PolyFitResults ##########
 
 #### possibe fit functions #####
-  #line
+# line
 
 
 def __poly_1(x, a, b):
-    return a + b*x
-#parabola
+    return a + b * x
+
+
+# parabola
 def __poly_2(x, a, b, c):
-    return a + b*x + c*(x**2)
+    return a + b * x + c * (x ** 2)
+
+
 def __poly_3(x, a, b, c, d):
-    return a + b*x + c*(x**2) + d*(x**3)
+    return a + b * x + c * (x ** 2) + d * (x ** 3)
+
+
 def __poly_4(x, a, b, c, d, e):
-    return a + b*x + c*(x**2) + d*(x**3) + e*(x**4)
-def __poly_5(x, a, b, c, d, e,f):
-    return a + b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
+    return a + b * x + c * (x ** 2) + d * (x ** 3) + e * (x ** 4)
+
+
+def __poly_5(x, a, b, c, d, e, f):
+    return a + b * x + c * (x ** 2) + d * (x ** 3) + e * (x ** 4) + f * (x ** 5)
+
+
 def __poly_1_no_inter(x, b):
-    return  b*x
-#parabola
+    return b * x
+
+
+# parabola
 def __poly_2_no_inter(x, b, c):
-    return b*x + c*(x**2)
+    return b * x + c * (x ** 2)
+
+
 def __poly_3_no_inter(x, b, c, d):
-    return  b*x + c*(x**2) + d*(x**3)
+    return b * x + c * (x ** 2) + d * (x ** 3)
+
+
 def __poly_4_no_inter(x, b, c, d, e):
-    return  b*x + c*(x**2) + d*(x**3) + e*(x**4)
-def __poly_5_no_inter(x, b, c, d, e,f):
-    return  b*x + c*(x**2) + d*(x**3) + e*(x**4)+f*(x**5)
+    return b * x + c * (x ** 2) + d * (x ** 3) + e * (x ** 4)
+
+
+def __poly_5_no_inter(x, b, c, d, e, f):
+    return b * x + c * (x ** 2) + d * (x ** 3) + e * (x ** 4) + f * (x ** 5)
+
 
 ##### start main function followed by scoring function #####
-def PolyFitResults(XInput,yInput,showCharts=True,figureSize=(25,5),ColorSeries=None):
-  '''
-  Takes X series and Y series and try to find the coefficients that can adopt X to y using polynoms regression.
-  The output is 10 charts that try to fit the polynom regression.
-  Inputs: XInput,yInput both are pandas series that we are looking for the coefficients that by given XInput we will get yInput.
-  showCharts bool or string. Supports the following:
-                             True(default) bool. = Show all charts
-                             False bool. = Don't show charts,
-                             'Include_inter' string. = Show only charts with intercept,
-                             'No_inter' string. = Show only charts without intercept (if x=0 then y=0)
-  Figsize tupple. Gets tupple like this: (x,y) where x is the width of the figure (in inches) and y is the length (in inches)
-  Returns:
-  The function returns a tuple of 3 objects:
-  Curves dataframe = for each record in x and y we get the values of the 10 polynoms that tried to fit and "connect the dots".
-                     This is a dataframe that summeriaze the results
-  curvesDic dictionary = A dictionary of all the coefficients of all 10 polynoms, so the user can pick the best one.
-  BestOpt string = The string of the best result (that gives the least RMSE). This string can be used to get the values
-                    from the curvesDic dictionary
-  '''
-  X = XInput
-  y = yInput
-  boundsVal=(0,np.inf)
-  popt1, _ = curve_fit(__poly_1, X, y)
-  popt2, _ = curve_fit(__poly_2, X, y)
-  popt3, _ = curve_fit(__poly_3, X, y)
-  popt4, _ = curve_fit(__poly_4, X, y)
-  popt5, _ = curve_fit(__poly_5, X, y)
-  popt1_no_inter, _ = curve_fit(__poly_1_no_inter, X, y)
-  popt2_no_inter, _ = curve_fit(__poly_2_no_inter, X, y)
-  popt3_no_inter, _ = curve_fit(__poly_3_no_inter, X, y)
-  popt4_no_inter, _ = curve_fit(__poly_4_no_inter, X, y)
-  popt5_no_inter, _ = curve_fit(__poly_5_no_inter, X, y)
-  # popspecial = curve_fit(poly_special, X, y)
-  curves=pd.DataFrame(X.apply(__poly_1,a=popt1[0],b=popt1[1]))
-  curves.rename({curves.columns[0]:'CF1'},axis=1,inplace=True)
-  curves['CF2'] = X.apply(__poly_2,a=popt2[0],b=popt2[1],c=popt2[2])
-  curves['CF3'] = X.apply(__poly_3,a=popt3[0],b=popt3[1],c=popt3[2],d=popt3[3])
-  curves['CF4'] = X.apply(__poly_4,a=popt4[0],b=popt4[1],c=popt4[2],d=popt4[3],e=popt4[4])
-  curves['CF1_no_inter'] = X.apply(__poly_1_no_inter,b=popt1_no_inter[0])
-  curves['CF2_no_inter'] = X.apply(__poly_2_no_inter,b=popt2_no_inter[0],c=popt2_no_inter[1])
-  curves['CF3_no_inter'] = X.apply(__poly_3_no_inter,b=popt3_no_inter[0],c=popt3_no_inter[1],d=popt3_no_inter[2])
-  curves['CF4_no_inter'] = X.apply(__poly_4_no_inter,b=popt4_no_inter[0],c=popt4_no_inter[1],d=popt4_no_inter[2],e=popt4_no_inter[3])
-  curves['X_Input'] = XInput
-  curves['y_Input'] = yInput
-  curves=curves.sort_values('X_Input')
+def PolyFitResults(XInput, yInput, showCharts=True, figureSize=(25, 5), ColorSeries=None):
+    """
+    Takes the X,Y series and tries to find the coefficients that can adopt X to y using polynomial regression.
+    The output is 10 charts that try to fit the polynomial regression.
+    Inputs: XInput,yInput both are pandas series that we are looking for the coefficients that by given XInput we will
+            get yInput.
+    showCharts bool or string. It supports the following:
+                               True(default) bool. = Show all charts
+                               False bool. = Don't show charts,
+                               'Include_inter' string. = Show only charts with intercept,
+                               'No_inter' string. = Show only charts without intercept (if x=0, then y=0)
+    Figsize tuple. It gets a tuple like this: (x,y), where x is the width of the figure (in inches), and y is the length
+                    (in inches)
+    Returns:
+    The function returns a tuple of 3 objects:
+    Curves dataframe = for each record in x and y, we get the values of the 10 polynomials that tried to fit and
+                        "connect the dots." This is a dataframe that summarizes the results
+    curvesDic dictionary = A dictionary of all the coefficients of all 10 polynomials. The user can pick the best one.
+    BestOpt string = The string of the best result (that gives the least RMSE). This string can be used to get
+                     the values from the curvesDic dictionary
 
-  #find colors
-  if isinstance(ColorSeries, pd.Series):
-    colorlist = list(mcolors.ColorConverter.colors.keys())
-    colorDic = dict(zip(ColorSeries.unique(),colorlist[0:len(ColorSeries.unique())])) # create a dictionary with unique values and colors
-    ColorInput = ColorSeries.map(colorDic)
-    print(str(colorDic))
-  else:
-    ColorInput = 'xkcd:black'
+    """
+    X = XInput
+    y = yInput
+    boundsVal = (0, np.inf)
+    popt1, _ = curve_fit(__poly_1, X, y)
+    popt2, _ = curve_fit(__poly_2, X, y)
+    popt3, _ = curve_fit(__poly_3, X, y)
+    popt4, _ = curve_fit(__poly_4, X, y)
+    popt5, _ = curve_fit(__poly_5, X, y)
+    popt1_no_inter, _ = curve_fit(__poly_1_no_inter, X, y)
+    popt2_no_inter, _ = curve_fit(__poly_2_no_inter, X, y)
+    popt3_no_inter, _ = curve_fit(__poly_3_no_inter, X, y)
+    popt4_no_inter, _ = curve_fit(__poly_4_no_inter, X, y)
+    popt5_no_inter, _ = curve_fit(__poly_5_no_inter, X, y)
+    # popspecial = curve_fit(poly_special, X, y)
+    curves = pd.DataFrame(X.apply(__poly_1, a=popt1[0], b=popt1[1]))
+    curves.rename({curves.columns[0]: 'CF1'}, axis=1, inplace=True)
+    curves['CF2'] = X.apply(__poly_2, a=popt2[0], b=popt2[1], c=popt2[2])
+    curves['CF3'] = X.apply(__poly_3, a=popt3[0], b=popt3[1], c=popt3[2], d=popt3[3])
+    curves['CF4'] = X.apply(__poly_4, a=popt4[0], b=popt4[1], c=popt4[2], d=popt4[3], e=popt4[4])
+    curves['CF1_no_inter'] = X.apply(__poly_1_no_inter, b=popt1_no_inter[0])
+    curves['CF2_no_inter'] = X.apply(__poly_2_no_inter, b=popt2_no_inter[0], c=popt2_no_inter[1])
+    curves['CF3_no_inter'] = X.apply(__poly_3_no_inter, b=popt3_no_inter[0], c=popt3_no_inter[1], d=popt3_no_inter[2])
+    curves['CF4_no_inter'] = X.apply(__poly_4_no_inter, b=popt4_no_inter[0], c=popt4_no_inter[1], d=popt4_no_inter[2],
+                                     e=popt4_no_inter[3])
+    curves['X_Input'] = XInput
+    curves['y_Input'] = yInput
+    curves = curves.sort_values('X_Input')
 
-  #find the figure size
-  if showCharts==True and figureSize==(25,5):
-    figureSize=(25,10)
+    # find colors
+    if isinstance(ColorSeries, pd.Series):
+        colorlist = list(mcolors.ColorConverter.colors.keys())
+        colorDic = dict(zip(ColorSeries.unique(), colorlist[0:len(
+            ColorSeries.unique())]))  # create a dictionary with unique values and colors
+        ColorInput = ColorSeries.map(colorDic)
+        print(str(colorDic))
+    else:
+        ColorInput = 'xkcd:black'
 
-  #Create charts  
-  if showCharts != False:
-    if showCharts == True or showCharts =='Include_inter': 
-      if showCharts =='Include_inter':
-        fig, axs = plt.subplots(1,4,figsize=figureSize)
-        axs[0].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
-        axs[0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
-        axs[0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
-        axs[1].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
-        axs[1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
-        axs[1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
-        axs[2].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
-        axs[2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
-        axs[2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
-        axs[3].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
-        axs[3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
-        axs[3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')
-      else:
-        fig, axs = plt.subplots(2,4,figsize=figureSize)
-        axs[0, 0].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
-        axs[0, 0].set_title('\n'+'CF1'+'\n'+_Scoring(curves,'y_Input','CF1'))
-        axs[0, 0].legend(['y_true','CF1: ${:.2f}+{:.2f}x$'.format(*popt1)],loc='best')
-        axs[0, 1].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
-        axs[0, 1].set_title('\n'+'CF2'+'\n'+_Scoring(curves,'y_Input','CF2'))
-        axs[0, 1].legend(['y_true','CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)],loc='best')
-        axs[0, 2].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
-        axs[0, 2].set_title('\n'+'CF3'+'\n'+_Scoring(curves,'y_Input','CF3'))
-        axs[0, 2].legend(['y_true','CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)],loc='best')
-        axs[0, 3].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
-        axs[0, 3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
-        axs[0, 3].set_title('\n'+'CF4'+'\n'+_Scoring(curves,'y_Input','CF4'))
-        axs[0, 3].legend(['y_true','CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],loc='best')        
+    # find the figure size
+    if showCharts is True and figureSize == (25, 5):
+        figureSize = (25, 10)
 
-    if showCharts == True or showCharts =='No_inter':
-      if showCharts =='No_inter':
-        fig, axs = plt.subplots(1,4,figsize=figureSize)
-        axs[0].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
-        axs[0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
-        axs[0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
-        axs[1].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
-        axs[1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
-        axs[1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
-        axs[2].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
-        axs[2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
-        axs[2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
-        axs[3].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
-        axs[3].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
-        axs[3].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
-      else:
-        axs[1, 0].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
-        axs[1, 0].set_title('\n'+'CF1_no_inter'+'\n'+_Scoring(curves,'y_Input','CF1_no_inter'))
-        axs[1, 0].legend(['y_true','CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)],loc='best')
-        axs[1, 1].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
-        axs[1, 1].set_title('\n'+'CF2_no_inter'+'\n'+_Scoring(curves,'y_Input','CF2_no_inter'))
-        axs[1, 1].legend(['y_true','CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)],loc='best')
-        axs[1, 2].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
-        axs[1, 2].set_title('\n'+'CF3_no_inter'+'\n'+_Scoring(curves,'y_Input','CF3_no_inter'))
-        axs[1, 2].legend(['y_true','CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],loc='best')
-        axs[1, 3].scatter(curves.X_Input, curves.y_Input,  c=ColorInput)
-        axs[1, 3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
-        axs[1, 3].set_title('\n'+'CF4_no_inter'+'\n'+_Scoring(curves,'y_Input','CF4_no_inter'))
-        axs[1, 3].legend(['y_true','CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],loc='best')
-  
-  
-  curvesDic={'CF1':popt1,'CF2':popt2,'CF3':popt3,'CF4':popt4,'CF1_no_inter':popt1_no_inter,
-             'CF2_no_inter':popt2_no_inter,'CF3_no_inter':popt3_no_inter,'CF4_no_inter':popt4_no_inter}
-  BestR2=0
-  BestCol='CF1' # as default take the first column as best column
-  for col in  curvesDic.keys():
-      tmp = r2_score(curves['y_Input'], curves[col])
-      if tmp>BestR2:
-          BestR2=tmp
-          BestCol=col
-  
-  return  (curves,curvesDic,BestCol)
+    # Create charts
+    if showCharts is False:
+        if showCharts is True or showCharts == 'Include_inter':
+            if showCharts == 'Include_inter':
+                fig, axs = plt.subplots(1, 4, figsize=figureSize)
+                axs[0].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
+                axs[0].set_title('\n' + 'CF1' + '\n' + _Scoring(curves, 'y_Input', 'CF1'))
+                axs[0].legend(['y_true', 'CF1: ${:.2f}+{:.2f}x$'.format(*popt1)], loc='best')
+                axs[1].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
+                axs[1].set_title('\n' + 'CF2' + '\n' + _Scoring(curves, 'y_Input', 'CF2'))
+                axs[1].legend(['y_true', 'CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)], loc='best')
+                axs[2].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
+                axs[2].set_title('\n' + 'CF3' + '\n' + _Scoring(curves, 'y_Input', 'CF3'))
+                axs[2].legend(['y_true', 'CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)], loc='best')
+                axs[3].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
+                axs[3].set_title('\n' + 'CF4' + '\n' + _Scoring(curves, 'y_Input', 'CF4'))
+                axs[3].legend(['y_true', 'CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],
+                              loc='best')
+            else:
+                fig, axs = plt.subplots(2, 4, figsize=figureSize)
+                axs[0, 0].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[0, 0].plot(curves.X_Input, curves['CF1'], linewidth=3, color='green')
+                axs[0, 0].set_title('\n' + 'CF1' + '\n' + _Scoring(curves, 'y_Input', 'CF1'))
+                axs[0, 0].legend(['y_true', 'CF1: ${:.2f}+{:.2f}x$'.format(*popt1)], loc='best')
+                axs[0, 1].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[0, 1].plot(curves.X_Input, curves['CF2'], linewidth=3, color='green')
+                axs[0, 1].set_title('\n' + 'CF2' + '\n' + _Scoring(curves, 'y_Input', 'CF2'))
+                axs[0, 1].legend(['y_true', 'CF2: ${:.2f}+{:.2f}x+{:.2f}x^2$'.format(*popt2)], loc='best')
+                axs[0, 2].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[0, 2].plot(curves.X_Input, curves['CF3'], linewidth=3, color='green')
+                axs[0, 2].set_title('\n' + 'CF3' + '\n' + _Scoring(curves, 'y_Input', 'CF3'))
+                axs[0, 2].legend(['y_true', 'CF3: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3)], loc='best')
+                axs[0, 3].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[0, 3].plot(curves.X_Input, curves['CF4'], linewidth=3, color='green')
+                axs[0, 3].set_title('\n' + 'CF4' + '\n' + _Scoring(curves, 'y_Input', 'CF4'))
+                axs[0, 3].legend(['y_true', 'CF4: ${:.2f}+{:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4)],
+                                 loc='best')
 
-def _Scoring(df,y_true,y_pred):
-    r2='{:.3f}'.format(r2_score(df[y_true], df[y_pred]))
+        if showCharts is True or showCharts == 'No_inter':
+            if showCharts == 'No_inter':
+                fig, axs = plt.subplots(1, 4, figsize=figureSize)
+                axs[0].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
+                axs[0].set_title('\n' + 'CF1_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF1_no_inter'))
+                axs[0].legend(['y_true', 'CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)], loc='best')
+                axs[1].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
+                axs[1].set_title('\n' + 'CF2_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF2_no_inter'))
+                axs[1].legend(['y_true', 'CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)], loc='best')
+                axs[2].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
+                axs[2].set_title('\n' + 'CF3_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF3_no_inter'))
+                axs[2].legend(['y_true', 'CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],
+                              loc='best')
+                axs[3].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
+                axs[3].set_title('\n' + 'CF4_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF4_no_inter'))
+                axs[3].legend(
+                    ['y_true', 'CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],
+                    loc='best')
+            else:
+                axs[1, 0].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[1, 0].plot(curves.X_Input, curves['CF1_no_inter'], linewidth=3, color='green')
+                axs[1, 0].set_title('\n' + 'CF1_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF1_no_inter'))
+                axs[1, 0].legend(['y_true', 'CF1_no_inter: {:.2f}x$'.format(*popt1_no_inter)], loc='best')
+                axs[1, 1].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[1, 1].plot(curves.X_Input, curves['CF2_no_inter'], linewidth=3, color='green')
+                axs[1, 1].set_title('\n' + 'CF2_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF2_no_inter'))
+                axs[1, 1].legend(['y_true', 'CF2_no_inter: {:.2f}x+{:.2f}x^2$'.format(*popt2_no_inter)], loc='best')
+                axs[1, 2].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[1, 2].plot(curves.X_Input, curves['CF3_no_inter'], linewidth=3, color='green')
+                axs[1, 2].set_title('\n' + 'CF3_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF3_no_inter'))
+                axs[1, 2].legend(['y_true', 'CF3_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3$'.format(*popt3_no_inter)],
+                                 loc='best')
+                axs[1, 3].scatter(curves.X_Input, curves.y_Input, c=ColorInput)
+                axs[1, 3].plot(curves.X_Input, curves['CF4_no_inter'], linewidth=3, color='green')
+                axs[1, 3].set_title('\n' + 'CF4_no_inter' + '\n' + _Scoring(curves, 'y_Input', 'CF4_no_inter'))
+                axs[1, 3].legend(
+                    ['y_true', 'CF4_no_inter: {:.2f}x+{:.2f}x^2+{:.2f}x^3+{:.2f}x^4$'.format(*popt4_no_inter)],
+                    loc='best')
+
+    curvesDic = {'CF1': popt1, 'CF2': popt2, 'CF3': popt3, 'CF4': popt4, 'CF1_no_inter': popt1_no_inter,
+                 'CF2_no_inter': popt2_no_inter, 'CF3_no_inter': popt3_no_inter, 'CF4_no_inter': popt4_no_inter}
+    BestR2 = 0
+    BestCol = 'CF1'  # as default take the first column as best column
+    for col in curvesDic.keys():
+        tmp = r2_score(curves['y_Input'], curves[col])
+        if tmp > BestR2:
+            BestR2 = tmp
+            BestCol = col
+
+    return (curves, curvesDic, BestCol)
+
+
+def _Scoring(df, y_true, y_pred):
+    r2 = '{:.3f}'.format(r2_score(df[y_true], df[y_pred]))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(df[y_true], df[y_pred])))
-    return 'R-squared: '+str(r2)+'   RMSE:'+str(rmse)
+    return 'R-squared: ' + str(r2) + '   RMSE:' + str(rmse)
 
 
-  
-def Scatter(df,x,y,ClrSeries=None, Title='Default',equalAxis=False,ShowEqualLine=False,markersize=40,ShowOutliar=False,OutFont=8,
-          figsize=(20,7), DBSCAN_Parm = {'eps':5,'min_samples':5} ,TitleFontSize=20,XAxisLimit=None,YAxisLimit=None,LegendFontSize=14  ):
-  """
-  Show a scatter chart from dataframe that can also show outliars using the DBSCAN model.
-  df              dataframe. The input dataframe
-  x               string. The name of the series that should be in the x-axis
-  y               string. The name of the series that should be in the y-axis
-  ClrSeries       string. The name of the series that will be used for different colors for each unique value
-  Title           string. The chart title
-  equalAxis       bool. If True then both axis will have the same min and max values. For example it can be used
-                        when comparing y_true and y_pred
-  markersize      int. The scale of the marker
-  ShowOutliar     bool. If True then use DBSCAN model to find outliars and show the outliar values and index.
-  OutFont         int. If ShowOutliar=True then this parameter is the font size that shows the outliar values
-  figsize         tupple. A tupple that describes the chart size in inches. (x in inches, y in inches)
-  DBSCAN_Parm     dictionary. Used as the parameters for the DBSCAN model
-  TitleFontSize   int. The title's fonts size
-  XAxisLimit      tuple. (Minumum X axis value, Maximum X axis value)
-  YAxisLimit      tuple. (Minumum Y axis value, Maximum Y axis value) 
-  LegendFontSize  int. The font size of the legend. It also changes the marker next to the text in the legend
-                       with the same proportions   
-  return nothing
+def Scatter(df, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
+            ShowOutliar=False, OutFont=8,
+            figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 5}, TitleFontSize=20, XAxisLimit=None,
+            YAxisLimit=None, LegendFontSize=14,
+            FindBoundries=False, BoundriesBins=20, Bound_SD_max=1, Bound_SD_min=1, BoundryPolyLevel=3):
+    """
+   Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
+and lower boundaries.
+How does the boundaries algorithm work?
+It divides the x-axis into bins (BoundriesBins) and takes the mean x for every bin. The ymin and max are calculated
+as the mean y of each bin plus or minus the SD (standard deviation)*factors
+factors=(Bound_SD_max for max line and Bound_SD_min for min line)
+Then using the points, we use curve fit to find the equation of each line. The polynomial level is determined by
+BoundryPolyLevel parameter (Maximum value is 5)
 
-  Example of how to use:
-
-  Scatter(df,'weight','height','gender',ShowOutliar=True,DBSCAN_Parm = {'eps':2,'min_samples':5},markersize=40)
-
-  """
-  if not isinstance(ClrSeries, type(None)):
-      ClrSer=df[ClrSeries]
-      UnqVal = ClrSer.unique()
-      if len(UnqVal) >=10:
-          colorlist =list(colorConverter.colors.keys())
-      else:
-          colorlist = list(mcolors.TABLEAU_COLORS) # This list contains only 10 colors with big contrast
-      colorDic = dict(zip(ClrSer.unique(),colorlist[0:len(ClrSer.unique())])) # create a dictionary with unique values and colors
-      ColorInput = ClrSer.map(colorDic)
-  else:
-      ColorInput = None
-
-  MaxValue=max(max(df[x]),max(df[y]))
-  MinValue=min(min(df[x]),min(df[y]))
-
-  diffMaxMin = MaxValue - MinValue
-  MaxValue = MaxValue+0.05*(diffMaxMin)# add a little to the right so the max point will not be on the end of the chart
+Parameters:
+df              dataframe. The input dataframe
+x               string. The name of the series that should be on the x-axis
+y               string. The name of the series that should be on the y-axis
+ClrSeries       string. The name of the series that will be used for different colors for each unique value
+Title           string. The chart title
+equalAxis       bool. If True, both axes will have the same minimum and maximum values. For example, it can be used
+                    when comparing y_true and y_pred
+markersize      int. The scale of the marker
+ShowOutliar     bool. If True, use the DBSCAN model to find outliers and show the outlier values and index.
+OutFont         int. If ShowOutliar=True, this parameter is the font size that shows the outlier values
+figsize         tuple. A tuple that describes the chart size in inches. (x in inches, y in inches)
+DBSCAN_Parm     dictionary. Used as the parameters for the DBSCAN model
+TitleFontSize   int. The title's fonts size
+XAxisLimit      tuple. (Minumum X-axis value, Maximum X-axis value)
+YAxisLimit      tuple. (Minumum Y axis value, Maximum Y axis value)
+LegendFontSize  int. The font size of the legend. It also changes the marker next to the text in the legend
+                    with the same proportions.
 
 
-          ###### start plotting ######
+FindBoundries    bool. If true, then it will show upper and lower boundaries.
+BoundriesBins    int. The number of bins that the x-axis should divide to.
+Bound_SD_max     float. The factor to multiply the SD for the MAX boundary line
+Bound_SD_min     float. The factor to multiply the SD for the MIN boundary line
+BoundryPolyLevel int. The level of the polynomial that is used to curve fit the boundaries
 
-  plt.figure(figsize=figsize)
-  scatter=plt.scatter(x=df[x],y=df[y],c=ColorInput ,label = ColorInput,s=markersize)
-  if not isinstance(ClrSeries, type(None)):
-    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='',markersize=10*(LegendFontSize/14)) for color in colorDic.values()]
-    plt.legend(markers,colorDic.keys(),loc='best', numpoints=1,fontsize=LegendFontSize)
+return nothing if FindBoundries=False
+return BoundDF,minEquation,maxEquation if FindBoundries=True
+BoundDF is a dataframe that shows for each bin the x mean and for the y: max, min, mean, and the calculated value
+            of y_mean+factor*SD and  y_mean-factor*SD
+minEquation is a six position list that includes the factors of the equation of the minimum line
+maxEquation is a six position list that includes the factors of the equation of the maximum line
+the list looks like this[x**0,x**1,x**2,x**3,x**4,x**5].
+For example if the equation is y=ax+b then the list will look like [b,a,0,0,0,0]
 
-  if ShowEqualLine:
-      plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color = 'r')
+Example of how to use:
 
-  if ShowOutliar:
-      dbs = DBSCAN(**DBSCAN_Parm)
+Scatter(df,'weight','height','gender',ShowOutliar=True,DBSCAN_Parm = {'eps':2,'min_samples':5},markersize=40)
 
-      cluster = pd.Series(dbs.fit_predict(df[[x,y]]))
-      Outliar = cluster[cluster==-1]
-      df2 = df.iloc[Outliar.index.tolist()]
-      SmallChangeInY=(df[y].max()-df[y].min())*0.03
-      SmallChangeInX=(df[x].max()-df[x].min())*0.03
 
-      for indx in df2.index:
-          txt= "(" + str(indx) + "," + str(df2.loc[indx][x].round(1)) + "," + str(df2.loc[indx][y].round(1))+")"
-          plt.annotate(txt, (df2.loc[indx][x]-SmallChangeInX, df2.loc[indx][y]-SmallChangeInY),fontsize=OutFont)
+    """
+    if not isinstance(ClrSeries, type(None)):
+        ClrSer = df[ClrSeries]
+        UnqVal = ClrSer.unique()
+        if len(UnqVal) >= 10:
+            colorlist = list(colorConverter.colors.keys())
+        else:
+            colorlist = list(mcolors.TABLEAU_COLORS)  # This list contains only 10 colors with big contrast
+        colorDic = dict(zip(ClrSer.unique(),
+                            colorlist[0:len(ClrSer.unique())]))  # create a dictionary with unique values and colors
+        ColorInput = ClrSer.map(colorDic)
+    else:
+        ColorInput = None
 
-  # Set x and y axes labels
-  plt.ylabel(y)
-  plt.xlabel(x)
+    MaxValue = max(max(df[x]), max(df[y]))
+    MinValue = min(min(df[x]), min(df[y]))
 
-  if ShowEqualLine:
-      plt.xlim(MinValue,MaxValue)
-      plt.ylim(MinValue,MaxValue)
-  if not isinstance(XAxisLimit, type(None)):
-      plt.xlim(XAxisLimit[0],XAxisLimit[1]) 
-  if not isinstance(YAxisLimit, type(None)):
-      plt.ylim(YAxisLimit[0],YAxisLimit[1])      
-  titlestr=Title
-  if Title=='Default':
-      titlestr='Scatter of '+str(x)+ ' (x) against ' + str(y) + ' (y)'
+    diffMaxMin = MaxValue - MinValue
+    MaxValue = MaxValue + 0.05 * (
+        diffMaxMin)  # add a little to the right so the max point will not be on the end of the chart
 
-  plt.title(titlestr, fontsize=TitleFontSize)
+    ###### start plotting ######
 
-  plt.show()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax = plt.scatter(x=df[x], y=df[y], c=ColorInput, label=ColorInput, s=markersize)
+    if not isinstance(ClrSeries, type(None)):
+        markers = [
+            plt.Line2D([0, 0], [0, 0], color=color, marker='o', linestyle='', markersize=10 * (LegendFontSize / 14)) for
+            color in colorDic.values()]
+        plt.legend(markers, colorDic.keys(), loc='best', numpoints=1, fontsize=LegendFontSize)
+
+    if ShowEqualLine:
+        plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color='r')
+
+    if ShowOutliar:
+        dbs = DBSCAN(**DBSCAN_Parm)
+
+        cluster = pd.Series(dbs.fit_predict(df[[x, y]]))
+        Outliar = cluster[cluster == -1]
+        df2 = df.iloc[Outliar.index.tolist()]
+        SmallChangeInY = (df[y].max() - df[y].min()) * 0.03
+        SmallChangeInX = (df[x].max() - df[x].min()) * 0.03
+
+        for indx in df2.index:
+            txt = "(" + str(indx) + "," + str(df2.loc[indx][x].round(1)) + "," + str(df2.loc[indx][y].round(1)) + ")"
+            plt.annotate(txt, (df2.loc[indx][x] - SmallChangeInX, df2.loc[indx][y] - SmallChangeInY), fontsize=OutFont)
+
+    # Set x and y axes labels
+    plt.ylabel(y)
+    plt.xlabel(x)
+
+    if ShowEqualLine:
+        plt.xlim(MinValue, MaxValue)
+        plt.ylim(MinValue, MaxValue)
+    if not isinstance(XAxisLimit, type(None)):
+        plt.xlim(XAxisLimit[0], XAxisLimit[1])
+    if not isinstance(YAxisLimit, type(None)):
+        plt.ylim(YAxisLimit[0], YAxisLimit[1])
+    titlestr = Title
+    if Title == 'Default':
+        titlestr = 'Scatter of ' + str(x) + ' (x) against ' + str(y) + ' (y)'
+    if FindBoundries:
+        BoundDF, minEquation, maxEquation = __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm,
+                                                            Bound_SD_max, Bound_SD_min, BoundryPolyLevel)
+        xBound = BoundDF['X_mean']
+        plt.plot(xBound, __CalibList(xBound, minEquation), color='red')
+        plt.plot(xBound, __CalibList(xBound, maxEquation), color='red')
+        # plt.scatter(x=BoundDF['X_mean'],y=BoundDF['Y_Min'],label = 'Minimum y',s=200,c='black')
+        # plt.scatter(x=BoundDF['X_mean'],y=BoundDF['Y_max'],label = 'Minimum y',s=200,c='black')
+    plt.title(titlestr, fontsize=TitleFontSize)
+
+    plt.show()
+    if FindBoundries:
+        return BoundDF, minEquation, maxEquation
+
+
+def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD_min, BoundPolyLvl):
+    """
+Gets dataframe and the x and y + numbers of bins and finds the maximum and minimum boundaries
+param: df:            dataframe. The dataframe that is the input
+param: x:             string. The x column
+param y:              string. The y column
+param BoundriesBins: int. The number of bins to use for the line
+param DBSCAN_Parm:   tuple. The parameters used for the DBSCAN model that removes outliers
+param Bound_SD_max:  float. The upper boundary  = y mean per bin + Bound_SD_max * SD of each bin
+param Bound_SD_min:  float. The lower boundary  = y mean per bin - Bound_SD_min * SD of each bin
+param BoundPolyLvl:  int. The level of the polynomial used to draw the boundaries
+                          The higher the level, the curve becomes more fit.
+                           MAX level=5
+return Dataframe. Dataframe with x mean for every bin and y min and y max + a column with the bin tuple
+
+    """
+    # Find relevant points only
+    dbs = DBSCAN(**DBSCAN_Parm)
+    cluster = pd.Series(dbs.fit_predict(df[[x, y]]))
+    RelevPoints = df[cluster != -1]
+
+    # Find bins from max and min of the x-axis
+    Bins = []
+    CurrVal = RelevPoints[x].min()
+    while CurrVal <= RelevPoints[x].max():
+        Bins.append(CurrVal)
+        CurrVal += (RelevPoints[x].max() - RelevPoints[x].min()) / BoundriesBins
+    TupleBins = [(Bins[i], Bins[i + 1]) for i in range(0, len(Bins) - 1)]
+    # Find min and max point for every bin
+    OutDF = pd.DataFrame(columns=['Bin', 'Y_Min', 'Y_max', 'X_mean', 'Y_Mean_Less_x_SD', 'Y_Mean_plus_x_SD'])
+    for bin in TupleBins:
+        CurrDF = df[(df[x] >= bin[0]) & (df[x] <= bin[1])]
+        if len(CurrDF) > 0:
+            currYMax = CurrDF[y].max()
+            currYMin = CurrDF[y].min()
+            currXavg = CurrDF[x].mean()
+            currYMean = CurrDF[y].mean()
+            currYSd = CurrDF[y].std()
+            currYminWithSD = currYMean - Bound_SD_min * currYSd
+            currYmaxWithSD = currYMean + Bound_SD_max * currYSd
+            OutDF = OutDF.append({'Bin': bin, 'Y_Min': currYMin, 'Y_max': currYMax, 'X_mean': currXavg,
+                                  'Y_Mean': currYMean, 'Y_Sd': currYSd, 'Y_Mean_Less_x_SD': currYminWithSD,
+                                  'Y_Mean_plus_x_SD': currYmaxWithSD}, ignore_index=True)
+    curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean_Less_x_SD'], showCharts=False)
+    minEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
+    curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean_plus_x_SD'], showCharts=False)
+    maxEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
+    return OutDF, minEquation, maxEquation
+
+
+def __CalibList(x, CalbList, MustBePositive=False):
+    """
+    Gets alist of polynomial parameters (CalibList) that is used for calibration. Also gets the X value and
+    returns the f(x) value of the calibration.
+    :param x: double/int. The X value in the calibration polynom
+    :param CalbList:list. The list that contains the polynomial parameters
+    :param MustBePositive: in case the f(x) should only be positive then it transforms the negative values to zero
+    :return: f(x)
+    """
+    reslt = CalbList[0] * (x ** 0) + CalbList[1] * (x ** 1) + CalbList[2] * (x ** 2) \
+            + CalbList[3] * (x ** 3) + CalbList[4] * (x ** 4) + CalbList[5] * (x ** 5)
+    if MustBePositive:
+        reslt = np.where(reslt < 0, 0, reslt)
+    return reslt
+
+
+def __CompleteSet(Title, ParamList):
+    """
+     This function takes a list of values and return a 6 values list putting
+     zeroes in "empty places. Also, if the title say "no_inter" then
+     it adds a zero at the beggining of the list.
+     Input: Title string. - The title of the parameters list
+            ParamList list. - The parameters list
+     returns list with 6 parameters that represent X at the power of zero
+                                                 untill the power of 5
+    """
+    OutList = []
+    if 'no_inter' in Title:
+        OutList = [0]
+
+    OutList.extend(ParamList)
+    for x in range(len(OutList), 6):
+        OutList.append(0)
+    return OutList

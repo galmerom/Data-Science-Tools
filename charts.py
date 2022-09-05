@@ -1368,56 +1368,57 @@ def Scatter(df, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqua
             YAxisLimit=None, LegendFontSize=14,
             FindBoundries=False, BoundriesBins=20, Bound_SD_max=1, Bound_SD_min=1, BoundryPolyLevel=3):
     """
-   Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
-and lower boundaries.
-How does the boundaries algorithm work?
-It divides the x-axis into bins (BoundriesBins) and takes the mean x for every bin. The ymin and max are calculated
-as the mean y of each bin plus or minus the SD (standard deviation)*factors
-factors=(Bound_SD_max for max line and Bound_SD_min for min line)
-Then using the points, we use curve fit to find the equation of each line. The polynomial level is determined by
-BoundryPolyLevel parameter (Maximum value is 5)
+    Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
+    and lower boundaries.
+    How does the boundaries algorithm work?
+    It divides the x-axis into bins (BoundriesBins) and takes the mean x for every bin. The ymin and max are calculated
+    as the mean y of each bin plus or minus the SD (standard deviation)*factors
+    factors=(Bound_SD_max for max line and Bound_SD_min for min line)
+    Then using the points, we use curve fit to find the equation of each line. The polynomial level is determined by
+    BoundryPolyLevel parameter (Maximum value is 5)
 
-Parameters:
-df              dataframe. The input dataframe
-x               string. The name of the series that should be on the x-axis
-y               string. The name of the series that should be on the y-axis
-ClrSeries       string. The name of the series that will be used for different colors for each unique value
-Title           string. The chart title
-equalAxis       bool. If True, both axes will have the same minimum and maximum values. For example, it can be used
-                    when comparing y_true and y_pred
-markersize      int. The scale of the marker
-ShowOutliar     bool. If True, use the DBSCAN model to find outliers and show the outlier values and index.
-OutFont         int. If ShowOutliar=True, this parameter is the font size that shows the outlier values
-figsize         tuple. A tuple that describes the chart size in inches. (x in inches, y in inches)
-DBSCAN_Parm     dictionary. Used as the parameters for the DBSCAN model
-TitleFontSize   int. The title's fonts size
-XAxisLimit      tuple. (Minumum X-axis value, Maximum X-axis value)
-YAxisLimit      tuple. (Minumum Y axis value, Maximum Y axis value)
-LegendFontSize  int. The font size of the legend. It also changes the marker next to the text in the legend
-                    with the same proportions.
+    Parameters:
+    df              dataframe. The input dataframe
+    x               string. The name of the series that should be on the x-axis
+    y               string. The name of the series that should be on the y-axis
+    ClrSeries       string. The name of the series that will be used for different colors for each unique value
+    Title           string. The chart title
+    equalAxis       bool. If True, both axes will have the same minimum and maximum values. For example, it can be used
+                        when comparing y_true and y_pred
+    markersize      int. The scale of the marker
+    ShowOutliar     bool. If True, use the DBSCAN model to find outliers and show the outlier values and index.
+    OutFont         int. If ShowOutliar=True, this parameter is the font size that shows the outlier values
+    figsize         tuple. A tuple that describes the chart size in inches. (x in inches, y in inches)
+    DBSCAN_Parm     dictionary. Used as the parameters for the DBSCAN model
+    TitleFontSize   int. The title's fonts size
+    XAxisLimit      tuple. (Minumum X-axis value, Maximum X-axis value)
+    YAxisLimit      tuple. (Minumum Y axis value, Maximum Y axis value)
+    LegendFontSize  int. The font size of the legend. It also changes the marker next to the text in the legend
+                        with the same proportions.
 
 
-FindBoundries    bool. If true, then it will show upper and lower boundaries.
-BoundriesBins    int. The number of bins that the x-axis should divide to.
-Bound_SD_max     float. The factor to multiply the SD for the MAX boundary line
-Bound_SD_min     float. The factor to multiply the SD for the MIN boundary line
-BoundryPolyLevel int. The level of the polynomial that is used to curve fit the boundaries
+    FindBoundries    bool. If true, then it will show upper and lower boundaries.
+    BoundriesBins    int. The number of bins that the x-axis should divide to.
+    Bound_SD_max     float. The factor to multiply the SD for the MAX boundary line
+    Bound_SD_min     float. The factor to multiply the SD for the MIN boundary line
+    BoundryPolyLevel int. The level of the polynomial that is used to curve fit the boundaries
 
-return nothing if FindBoundries=False
-return BoundDF,minEquation,maxEquation if FindBoundries=True
-BoundDF is a dataframe that shows for each bin the x mean and for the y: max, min, mean, and the calculated value
-            of y_mean+factor*SD and  y_mean-factor*SD
-minEquation is a six position list that includes the factors of the equation of the minimum line
-maxEquation is a six position list that includes the factors of the equation of the maximum line
-the list looks like this[x**0,x**1,x**2,x**3,x**4,x**5].
-For example if the equation is y=ax+b then the list will look like [b,a,0,0,0,0]
+    return nothing if FindBoundries=False
+    return BoundDF,minEquation,maxEquation if FindBoundries=True
+    BoundDF is a dataframe that shows for each bin the x mean and for the y: max, min, mean, and the calculated value
+                of y_mean+factor*SD and  y_mean-factor*SD
+    minEquation is a six position list that includes the factors of the equation of the minimum line
+    maxEquation is a six position list that includes the factors of the equation of the maximum line
+    the list looks like this[x**0,x**1,x**2,x**3,x**4,x**5].
+    For example if the equation is y=ax+b then the list will look like [b,a,0,0,0,0]
 
-Example of how to use:
+    Example of how to use:
 
-Scatter(df,'weight','height','gender',ShowOutliar=True,DBSCAN_Parm = {'eps':2,'min_samples':5},markersize=40)
+    Scatter(df,'weight','height','gender',ShowOutliar=True,DBSCAN_Parm = {'eps':2,'min_samples':5},markersize=40)
 
 
     """
+    warnings.filterwarnings('ignore')
     if not isinstance(ClrSeries, type(None)):
         ClrSer = df[ClrSeries]
         UnqVal = ClrSer.unique()

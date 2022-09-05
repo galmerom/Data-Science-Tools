@@ -1485,7 +1485,7 @@ def Scatter(dframe, x, y, ClrSeries=None, Title='Default', equalAxis=False, Show
         BoundDF, minEquation, maxEquation = __findBoundries(df, x, y,
                                                             BoundriesBins, DBSCAN_Parm,
                                                             Bound_SD_max, Bound_SD_min, BoundryPolyLevel,BinsType)
-        xBound = BoundDF['X_mean'].append(pd.Series(dfNo3.NO3.max())) # add the last point
+        xBound = BoundDF['X_mean'].append(pd.Series(df[x].max())) # add the last point
         plt.plot(xBound, __CalibList(xBound, minEquation), color='red')
         plt.plot(xBound, __CalibList(xBound, maxEquation), color='red')
         df['MinBound'] = df[x].apply(lambda w:  __CalibList(w, minEquation))

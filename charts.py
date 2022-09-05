@@ -1362,11 +1362,12 @@ def _Scoring(df, y_true, y_pred):
     return 'R-squared: ' + str(r2) + '   RMSE:' + str(rmse)
 
 
-def Scatter(df, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
+
+def Scatter(dframe, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
             ShowOutliar=False, OutFont=8,
-            figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 5}, TitleFontSize=20, XAxisLimit=None,
+            figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20, XAxisLimit=None,
             YAxisLimit=None, LegendFontSize=14,
-            FindBoundries=False, BoundriesBins=20, Bound_SD_max=1, Bound_SD_min=1, BoundryPolyLevel=3):
+            FindBoundries=False, BoundriesBins=20, Bound_SD_max=1, Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints'):
     """
     Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
     and lower boundaries.
@@ -1378,7 +1379,7 @@ def Scatter(df, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqua
     BoundryPolyLevel parameter (Maximum value is 5)
 
     Parameters:
-    df              dataframe. The input dataframe
+    dframe              dataframe. The input dataframe
     x               string. The name of the series that should be on the x-axis
     y               string. The name of the series that should be on the y-axis
     ClrSeries       string. The name of the series that will be used for different colors for each unique value
@@ -1418,6 +1419,7 @@ def Scatter(df, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqua
 
 
     """
+    df=dframe.copy()
     warnings.filterwarnings('ignore')
     if not isinstance(ClrSeries, type(None)):
         ClrSer = df[ClrSeries]
@@ -1480,58 +1482,76 @@ def Scatter(df, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqua
     if Title == 'Default':
         titlestr = 'Scatter of ' + str(x) + ' (x) against ' + str(y) + ' (y)'
     if FindBoundries:
-        BoundDF, minEquation, maxEquation = __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm,
-                                                            Bound_SD_max, Bound_SD_min, BoundryPolyLevel)
-        xBound = BoundDF['X_mean']
+        BoundDF, minEquation, maxEquation = __findBoundries(df, x, y,
+                                                            BoundriesBins, DBSCAN_Parm,
+                                                            Bound_SD_max, Bound_SD_min, BoundryPolyLevel,BinsType)
+        xBound = BoundDF['X_mean'].append(pd.Series(dfNo3.NO3.max())) # add the last point
         plt.plot(xBound, __CalibList(xBound, minEquation), color='red')
         plt.plot(xBound, __CalibList(xBound, maxEquation), color='red')
-        # plt.scatter(x=BoundDF['X_mean'],y=BoundDF['Y_Min'],label = 'Minimum y',s=200,c='black')
-        # plt.scatter(x=BoundDF['X_mean'],y=BoundDF['Y_max'],label = 'Minimum y',s=200,c='black')
+        df['MinBound'] = df[x].apply(lambda w:  __CalibList(w, minEquation))
+        df['MaxBound'] = df[x].apply(lambda w:  __CalibList(w, maxEquation))
+        df['InBound'] = df[y].between(df['MinBound'],df['MaxBound'])
+        OutOfBound = df[~df['InBound']]
+        if len(OutOfBound)>0:
+            # print('Points out of boundries:\n\n')
+            # print(OutOfBound[[x,y,'MinBound','MaxBound','InBound']].reset_index().to_markdown(index=False,tablefmt="grid"))
+            plt.scatter(OutOfBound[x], OutOfBound[y],marker='o', s=markersize*4, facecolors='none', edgecolors='r')
     plt.title(titlestr, fontsize=TitleFontSize)
 
     plt.show()
     if FindBoundries:
-        return BoundDF, minEquation, maxEquation
+        return BoundDF, minEquation, maxEquation,OutOfBound
 
 
-def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD_min, BoundPolyLvl):
+def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD_min, BoundPolyLvl,BinsType):
     """
-Gets dataframe and the x and y + numbers of bins and finds the maximum and minimum boundaries
-param: df:            dataframe. The dataframe that is the input
-param: x:             string. The x column
-param y:              string. The y column
-param BoundriesBins: int. The number of bins to use for the line
-param DBSCAN_Parm:   tuple. The parameters used for the DBSCAN model that removes outliers
-param Bound_SD_max:  float. The upper boundary  = y mean per bin + Bound_SD_max * SD of each bin
-param Bound_SD_min:  float. The lower boundary  = y mean per bin - Bound_SD_min * SD of each bin
-param BoundPolyLvl:  int. The level of the polynomial used to draw the boundaries
-                          The higher the level, the curve becomes more fit.
-                           MAX level=5
-return Dataframe. Dataframe with x mean for every bin and y min and y max + a column with the bin tuple
+    Gets dataframe and the x and y + numbers of bins and finds the maximum and minimum boundaries
+    param: df:            dataframe. The dataframe that is the input
+    param: x:             string. The x column
+    param y:              string. The y column
+    param BoundriesBins: int. The number of bins to use for the line
+    param DBSCAN_Parm:   tuple. The parameters used for the DBSCAN model that removes outliers
+    param Bound_SD_max:  float. The upper boundary  = y mean per bin + Bound_SD_max * SD of each bin
+    param Bound_SD_min:  float. The lower boundary  = y mean per bin - Bound_SD_min * SD of each bin
+    param BoundPolyLvl:  int. The level of the polynomial used to draw the boundaries
+                            The higher the level, the curve becomes more fit.
+                            MAX level=5
+    return Dataframe. Dataframe with x mean for every bin and y min and y max + a column with the bin tuple
 
     """
     # Find relevant points only
-    dbs = DBSCAN(**DBSCAN_Parm)
-    cluster = pd.Series(dbs.fit_predict(df[[x, y]]))
-    RelevPoints = df[cluster != -1]
-
+    # dbs = DBSCAN(**DBSCAN_Parm)
+    # cluster = pd.Series(dbs.fit_predict(df[[x]],df[[y]]))
+    # RelevPoints = df[cluster != -1]
+    # notRelevantPoints=df[cluster == -1]
+    # print(notRelevantPoints[[x,y]].to_markdown())
+    RelevPoints=df
     # Find bins from max and min of the x-axis
-    Bins = []
-    CurrVal = RelevPoints[x].min()
-    while CurrVal <= RelevPoints[x].max():
-        Bins.append(CurrVal)
-        CurrVal += (RelevPoints[x].max() - RelevPoints[x].min()) / BoundriesBins
-    TupleBins = [(Bins[i], Bins[i + 1]) for i in range(0, len(Bins) - 1)]
+    TupleBins = FindBins(df,x,y,BoundriesBins,BinsType)
     # Find min and max point for every bin
     OutDF = pd.DataFrame(columns=['Bin', 'Y_Min', 'Y_max', 'X_mean', 'Y_Mean_Less_x_SD', 'Y_Mean_plus_x_SD'])
+    
+    #initiate CurrDF so that prevDF can get a value
+    if BinsType == 'Linear':
+        CurrDF=df[(df[x] >= TupleBins[0][0]) & (df[x] <= TupleBins[0][1])]
+    else:
+        CurrDF=df.sort_values(by=x).reset_index().iloc[TupleBins[0][0]:TupleBins[0][1]]
+    
+    # Start moving accross all bins
     for bin in TupleBins:
-        CurrDF = df[(df[x] >= bin[0]) & (df[x] <= bin[1])]
+        prevDF=CurrDF
+        if BinsType == 'Linear':
+            CurrDF = df[(df[x] >= bin[0]) & (df[x] <= bin[1])]
+        else:
+            CurrDF=df.sort_values(by=x).reset_index().iloc[bin[0]:bin[1]]
         if len(CurrDF) > 0:
             currYMax = CurrDF[y].max()
             currYMin = CurrDF[y].min()
             currXavg = CurrDF[x].mean()
             currYMean = CurrDF[y].mean()
             currYSd = CurrDF[y].std()
+            if  np.isnan(currYSd):
+                currYSd=prevDF[y].std()
             currYminWithSD = currYMean - Bound_SD_min * currYSd
             currYmaxWithSD = currYMean + Bound_SD_max * currYSd
             OutDF = OutDF.append({'Bin': bin, 'Y_Min': currYMin, 'Y_max': currYMax, 'X_mean': currXavg,
@@ -1543,7 +1563,30 @@ return Dataframe. Dataframe with x mean for every bin and y min and y max + a co
     maxEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
     return OutDF, minEquation, maxEquation
 
+def FindBins(df,x,y,BoundriesBins,BinsType):
+    df2=df.copy()
+    Bins = []
+    if BinsType=='Linear':
+        CurrVal = df2[x].min()
+        while CurrVal <= df2[x].max():
+            Bins.append(CurrVal)
+            CurrVal += (df2[x].max() - df2[x].min()) / BoundriesBins
+        Bins.append(df2[x].max())
+        TupleBins = [(Bins[i], Bins[i + 1]) for i in range(0, len(Bins) - 1)]
+    elif BinsType=='EqualPoints':
+        df2 = df.sort_values(by=x).reset_index().drop(['index'],axis=1)
+        NumberOfPoints = len(df2)
+        binSize= NumberOfPoints / BoundriesBins
+        df2['Group'] = (df2.index / binSize).astype(int)
+        df2.reset_index(inplace=True)
+        df2 = df2.rename(columns = {'index':'counter'})
+        DF = df2.groupby(['Group']).counter.agg(['min','max']).reset_index()
+        Bins = list([(DF[DF['Group']==i]['min'].iloc[0],DF[DF['Group']==i]['max'].iloc[0]) for i in range(0,DF.Group.max()+1)])
 
+        TupleBins=Bins
+    return  TupleBins  
+
+    
 def __CalibList(x, CalbList, MustBePositive=False):
     """
     Gets alist of polynomial parameters (CalibList) that is used for calibration. Also gets the X value and

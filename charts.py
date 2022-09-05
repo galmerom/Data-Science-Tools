@@ -1259,7 +1259,7 @@ def PolyFitResults(XInput, yInput, showCharts=True, figureSize=(25, 5), ColorSer
         figureSize = (25, 10)
 
     # Create charts
-    if showCharts is False:
+    if showCharts is True:
         if showCharts is True or showCharts == 'Include_inter':
             if showCharts == 'Include_inter':
                 fig, axs = plt.subplots(1, 4, figsize=figureSize)

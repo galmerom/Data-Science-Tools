@@ -663,7 +663,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
 """# Anomaly chart"""
 
 
-def AnomalyChart(X, model):
+def AnomalyChart(X, model,ylim=(-7, 7),xlim=(-7, 7),FigSize=(10,10)):
     """
   The function gets a np array X and an outlier model, AFTER FITTING, such as:
    Isolation forest
@@ -671,12 +671,18 @@ def AnomalyChart(X, model):
    One-Class Svm
 
    It draws a contour chart with the outliers as  black dots.
+   Parameters:
+   X            dataframe. The input dataframe
+   model        model. one of the 3 models above, alreadt fitted.
+   ylim,xlim    tuple. The axis limitation for y and x
+   FigSize      tuple. The figure size in inches
   """
     n = int(model.get_params()['contamination'] * len(X))
-    xx1, xx2 = np.meshgrid(np.linspace(-7, 7, 100),
-                           np.linspace(-7, 7, 100))
+    xx1, xx2 = np.meshgrid(np.linspace(xlim[0], xlim[1], 100),
+                           np.linspace(ylim[0], ylim[1], 100))
     Z = model.decision_function(np.c_[xx1.ravel(), xx2.ravel()]).reshape(xx1.shape)
-    ax = plt.subplot(1, 1, 1)
+    fig, ax = plt.subplots(1,1, figsize=FigSize)
+
     # Background colors
     ax.contourf(xx1, xx2, Z,
                 levels=np.linspace(Z.min(), 0, 6),
@@ -690,16 +696,15 @@ def AnomalyChart(X, model):
                 levels=[0, Z.max()],
                 colors='orange')
     # Inliers scatter
-    b = ax.scatter(X[:-n, 0], X[:-n, 1],
+    b = ax.scatter(X.iloc[:-n, 0], X.iloc[:-n, 1],
                    c='white', s=30, edgecolor='k')
     # Outliers scatter
-    c = ax.scatter(X[-n:, 0], X[-n:, 1],
+    c = ax.scatter(X.iloc[-n:, 0], X.iloc[-n:, 1],
                    c='black', s=30, edgecolor='k')
-    ax.set_xlim((-7, 7))
-    ax.set_ylim((-7, 7))
-
-
-plt.show()
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    plt.show()
+    
 
 """# Inertia elbow chart"""
 

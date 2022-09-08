@@ -1487,9 +1487,11 @@ def Scatter(dframe, x, y, ClrSeries=None, Title='Default', equalAxis=False, Show
     if Title == 'Default':
         titlestr = 'Scatter of ' + str(x) + ' (x) against ' + str(y) + ' (y)'
     if FindBoundries:
-        BoundDF, minEquation, maxEquation = __findBoundries(df, x, y,
+        BoundDF, EquationsDic = __findBoundries(df, x, y,
                                                             BoundriesBins, DBSCAN_Parm,
                                                             Bound_SD_max, Bound_SD_min, BoundryPolyLevel,BinsType)
+        minEquation=EquationsDic['Min']
+        maxEquation=EquationsDic['Max']
         xBound = BoundDF['X_mean'].append(pd.Series(df[x].max())) # add the last point
         plt.plot(xBound, __CalibList(xBound, minEquation), color='red')
         plt.plot(xBound, __CalibList(xBound, maxEquation), color='red')
@@ -1505,7 +1507,7 @@ def Scatter(dframe, x, y, ClrSeries=None, Title='Default', equalAxis=False, Show
 
     plt.show()
     if FindBoundries:
-        return BoundDF, minEquation, maxEquation,OutOfBound
+        return BoundDF, EquationsDic,OutOfBound
 
 
 def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD_min, BoundPolyLvl,BinsType):
@@ -1566,7 +1568,11 @@ def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD
     minEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
     curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean_plus_x_SD'], showCharts=False)
     maxEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
-    return OutDF, minEquation, maxEquation
+    curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean'], showCharts=False)
+    MeanEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
+    EquationsDic={'Max':maxEquation,'Min':minEquation,'Mean':MeanEquation}
+    
+    return OutDF, EquationsDic
 
 def FindBins(df,x,y,BoundriesBins,BinsType):
     df2=df.copy()

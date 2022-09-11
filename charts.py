@@ -1369,8 +1369,7 @@ def _Scoring(df, y_true, y_pred):
 
 
 def Scatter(dframe, x, y, ClrSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
-            ShowOutliar=False, OutFont=8,
-            figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20, XAxisLimit=None,
+            ShowOutliar=False, OutFont=8,figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20, XAxisLimit=None,
             YAxisLimit=None, LegendFontSize=14,
             FindBoundries=False, BoundriesBins=20, Bound_SD_max=1, Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints'):
     """
@@ -1438,13 +1437,13 @@ def Scatter(dframe, x, y, ClrSeries=None, Title='Default', equalAxis=False, Show
         ColorInput = ClrSer.map(colorDic)
     else:
         ColorInput = None
+    if equalAxis:
+        MaxValue = max(max(df[x]), max(df[y]))
+        MinValue = min(min(df[x]), min(df[y]))
 
-    MaxValue = max(max(df[x]), max(df[y]))
-    MinValue = min(min(df[x]), min(df[y]))
-
-    diffMaxMin = MaxValue - MinValue
-    MaxValue = MaxValue + 0.05 * (
-        diffMaxMin)  # add a little to the right so the max point will not be on the end of the chart
+        diffMaxMin = MaxValue - MinValue
+        MaxValue = MaxValue + 0.05 * (
+            diffMaxMin)  # add a little to the right so the max point will not be on the end of the chart
 
     ###### start plotting ######
 

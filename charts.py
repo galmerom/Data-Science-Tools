@@ -1445,7 +1445,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     else:
         SizeSer = markersize
     ##### In case the user wants equal axis (x and y the same max and min)#########    
-    if equalAxis:
+    if equalAxis or ShowEqualLine::
         MaxValue = max(max(df[x]), max(df[y]))
         MinValue = min(min(df[x]), min(df[y]))
 

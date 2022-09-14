@@ -67,7 +67,28 @@ def NoNegative(Inpseries):
 
 
 
+def ConcatDataFrameDict(DFdic,AddOriginCol=True):
+    """
+    Gets a dictionary of dataframes and perform a concat (on the index axis)
 
+    :param DFdic dictionary. Dictionary with dataframes as the values
+    :param AddOriginCol bool. If true then add 'OriginalKey' column that
+                             contains the key of each dataframe from the dict.
+    Return dataframe. Dataframe that concat all the dictionary dataframes
+    """
+    FirstFlag = True
+    for key in DFdic.keys():
+        if FirstFlag:
+            OutDf = DFdic[key]
+            if AddOriginCol:
+                OutDf['OriginalKey'] = key
+            FirstFlag = False
+        else:
+            tempdf = DFdic[key]
+            if AddOriginCol:
+                tempdf['OriginalKey'] = key
+            OutDf = pd.concat([OutDf,tempdf])
+    return OutDf
 
 
 

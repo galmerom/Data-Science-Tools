@@ -257,16 +257,19 @@ def ConcatDataFrameDict(DFdic,AddOriginCol=True):
 def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
     """
     This function gets a series and a list of values and returns a series with categories.
-    (if the value is equal to an element in the bucket list then it will get the bucket of the smaller one)
+    (if the value is equal to an element in the bucket list, then it will get the bucket of the smaller one)
     Example:
     Input series = [-10,0,12,13,25,10,3,60]
     BucketList = [0,10,20,30]
     The output will be:
     Output series = ['Less than -10','0-10','10-20','10-20','20-30','10-20','0-10','30+']
     :param InputSer     pd.series  The input series
-    :param BucketList   list. A list that define the buckets limits
+    :param BucketList   list. A list that defines the buckets limits
     :param NewSeriesName string. The name of the new series
     return pd.series
+    
+    Example of use:
+    train_df['Param_categ'] = CategValueSeries(train_df['Param'],[0,10,20,30,40,60])
 
     """
     Bucklst = sorted(BucketList)

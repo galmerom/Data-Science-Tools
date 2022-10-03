@@ -1,4 +1,4 @@
-#####################################################################################################
+###################################################################################################################################
 # This module includes all kind of codes snippets that we use often. 
 # The following functions are available:
 # 
@@ -7,7 +7,9 @@
 #
 # Scoring:
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
-#####################################################################################################
+# Column manipulation:
+#   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
+#####################################################################################################################################
 
 #Imports
 import os
@@ -250,3 +252,33 @@ def ConcatDataFrameDict(DFdic,AddOriginCol=True):
                 tempdf['OriginalKey'] = key
             OutDf = pd.concat([OutDf,tempdf])
     return OutDf
+
+
+def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
+    """
+    This function gets a series and a list of values and returns a series with categories.
+    (if the value is equal to an element in the bucket list then it will get the bucket of the smaller one)
+    Example:
+    Input series = [-10,0,12,13,25,10,3,60]
+    BucketList = [0,10,20,30]
+    The output will be:
+    Output series = ['Less than -10','0-10','10-20','10-20','20-30','10-20','0-10','30+']
+    :param InputSer     pd.series  The input series
+    :param BucketList   list. A list that define the buckets limits
+    :param NewSeriesName string. The name of the new series
+    return pd.series
+
+    """
+    Bucklst = sorted(BucketList)
+    # Build a dataframe to use for calculations
+    Outdf = pd.DataFrame()
+    Outdf['Original'] = InputSer
+    Outdf[NewSeriesName] = ""
+    # Deal with the values BEFORE the first element and AFTER the last element in the bucket list
+    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = 'Less than ' + str(Bucklst[0])
+    Outdf.loc[Outdf['Original']>Bucklst[-1],NewSeriesName] = str(Bucklst[-1]) + '+'
+    # Deal with the values BETWEEN the first element and the last
+    for i in range(0,len(Bucklst)-1):
+        Outdf.loc[Outdf['Original'].between(Bucklst[i],Bucklst[i+1],inclusive='left'),NewSeriesName] = str(Bucklst[i]) + '-' + str(Bucklst[i+1])
+    return Outdf[NewSeriesName]
+

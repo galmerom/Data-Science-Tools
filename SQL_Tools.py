@@ -13,6 +13,7 @@
 ####################################
 
 # Imports
+import pandas as pd
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_datetime64_any_dtype

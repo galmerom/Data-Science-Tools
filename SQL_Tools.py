@@ -78,7 +78,7 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
         GenerType,DBType = __findGenericType(df2[OriginalColName])
         # Check if the column exists in the table
         if col not in TableColumnsLower:
-            SQL = 'ALTER TABLE ' + str(DB_tableName) + ' ADD ' + str(OriginalColName) + ' ' + str(DBType)
+            SQL = 'ALTER TABLE ' + str(DB_tableName) + ' ADD `' + str(OriginalColName) + '` ' + str(DBType)
             connection.execute(SQL)
             print('Column: "' + str(OriginalColName)+ '" added to table: ' + str(DB_tableName))
         else:

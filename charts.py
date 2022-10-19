@@ -987,7 +987,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
-                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=(0.96, 0.965), AnnotLst={}, MarkerWidth=2,
+                       yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=None, AnnotLst={}, MarkerWidth=2,
                        title=("", 16),
                        marker="o", ReturnArtistOnly=False, SavePath=None, showTable=False):
     """
@@ -1127,9 +1127,17 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                     plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]), fontsize=sizeOfFonts)
     if NumOfLines > 1:
         ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
-
-    fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
-               bbox_to_anchor=LegendBboxCorr, shadow=True)
+    print('lines:'+str(lines))
+    print('/nlabels:'+str(FieldDescription))
+    colorsUsedList = colors[0:len(lines)]
+    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorsUsedList]
+    if LegendBboxCorr is None:
+        fig.legend(markers,YFields,loc='upper right', numpoints=1, borderaxespad=0.1, title="Legend",shadow=True)
+    else:
+        fig.legend(markers,YFields, numpoints=1,bbox_to_anchor=LegendBboxCorr, shadow=True)
+        (0.96, 0.965)
+    # fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
+    #            bbox_to_anchor=LegendBboxCorr, shadow=True)
     fig.suptitle(title[0], fontsize=title[1])
     if not ReturnArtistOnly:
         plt.show()

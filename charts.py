@@ -1127,17 +1127,18 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                     plt.annotate(txt, (x[i], df[YFields[Inx]].iloc[i]), fontsize=sizeOfFonts)
     if NumOfLines > 1:
         ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
-    print('lines:'+str(lines))
-    print('/nlabels:'+str(FieldDescription))
-    colorsUsedList = colors[0:len(lines)]
-    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorsUsedList]
+
+    colorsUsedList = colors[0:len(lines)] # List of all colors used
+    # Building the markers for the legend
+    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorsUsedList] 
+    # LegendBboxCorr indicates where to move the legend by percentage of the  xaxis and yaxis of the figure
+    # If it is None then it will put 
     if LegendBboxCorr is None:
         fig.legend(markers,YFields,loc='upper right', numpoints=1, borderaxespad=0.1, title="Legend",shadow=True)
     else:
         fig.legend(markers,YFields, numpoints=1,bbox_to_anchor=LegendBboxCorr, shadow=True)
         (0.96, 0.965)
-    # fig.legend(lines, labels=FieldDescription, loc="upper right", borderaxespad=0.1, title="Legend",
-    #            bbox_to_anchor=LegendBboxCorr, shadow=True)
+
     fig.suptitle(title[0], fontsize=title[1])
     if not ReturnArtistOnly:
         plt.show()

@@ -988,8 +988,7 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=None, AnnotLst={}, MarkerWidth=2,
-                       title=("", 16),
-                       marker="o", ReturnArtistOnly=False, SavePath=None, showTable=False):
+                       title=("", 16), marker="o",SameAxis = 'None' , ReturnArtistOnly=False, SavePath=None, showTable=False):
     """
     Build a chart with 1 or more lines where the first line gets the left axis, and the rest gets the right axis
     Input:
@@ -1032,6 +1031,10 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             If there is only one string, all lines will
                             get the same marker. If not, then the first line gets the 1st element in the list and so on.
                             check marker types in the following link: https://matplotlib.org/stable/api/markers_api.html
+        SameAxis =          string. Adjust the axis to be on the same scale. It will look for the max and min value.
+                            Then it will add 10% of (max-min) to max value and reduce the same amount from  min value.
+                            Can get values of: 'Right' or 'Both'. 
+                            If 'Right' then it adjust only the right axis. If both then it adjust both axis 
         ReturnArtistOnly=   bool. If False  (default), show the chart before the end of the function. If True, then
                             don't show the chart and only return the
                             artist that can be used to add more lines to the chart.
@@ -1049,6 +1052,24 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     warnings.filterwarnings('ignore')
     NumOfLines = len(YFields)
     lines = []
+    # Deal with same axis parameter if equal to 1 or 2
+    if SameAxis == 'Right':
+        maxVal = df[YFields[1:]].max().max()
+        minVal = df[YFields[1:]].min().min()
+        ExtraVal = (maxVal-minVal)*0.1
+        if SecondAxisLimit is None:
+            SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
+            print('SecondAxisLimit: ' +str(SecondAxisLimit))
+    if SameAxis == 'Both':
+        maxVal = df[YFields].max().max()
+        minVal = df[YFields].min().min()
+        ExtraVal = (maxVal-minVal)*0.1
+        if SecondAxisLimit is None:
+            SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal) 
+            print('SecondAxisLimit: ' +str(SecondAxisLimit))
+        if FirstAxisLimit is None:
+            FirstAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
+            print('FirstAxisLimit: ' +str(FirstAxisLimit))
     # create figure and axis objects with subplots()
     fig, ax = plt.subplots(figsize=figsize)
     if FieldDescription is None:

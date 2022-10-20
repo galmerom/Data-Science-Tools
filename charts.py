@@ -1053,23 +1053,24 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     NumOfLines = len(YFields)
     lines = []
     # Deal with same axis parameter if equal to 1 or 2
-    if SameAxis == 'Right':
-        maxVal = df[YFields[1:]].max().max()
-        minVal = df[YFields[1:]].min().min()
-        ExtraVal = (maxVal-minVal)*0.1
-        if SecondAxisLimit is None:
-            SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
-            print('SecondAxisLimit: ' +str(SecondAxisLimit))
-    if SameAxis == 'Both':
-        maxVal = df[YFields].max().max()
-        minVal = df[YFields].min().min()
-        ExtraVal = (maxVal-minVal)*0.1
-        if SecondAxisLimit is None:
-            SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal) 
-            print('SecondAxisLimit: ' +str(SecondAxisLimit))
-        if FirstAxisLimit is None:
-            FirstAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
-            print('FirstAxisLimit: ' +str(FirstAxisLimit))
+    if SameAxis is not None:
+        if SameAxis.lower() == 'right':
+            maxVal = df[YFields[1:]].max().max()
+            minVal = df[YFields[1:]].min().min()
+            ExtraVal = (maxVal-minVal)*0.1
+            if SecondAxisLimit is None:
+                SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
+
+        if SameAxis.lower() == 'both':
+            maxVal = df[YFields].max().max()
+            minVal = df[YFields].min().min()
+            ExtraVal = (maxVal-minVal)*0.1
+            if SecondAxisLimit is None:
+                SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal) 
+
+            if FirstAxisLimit is None:
+                FirstAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
+
     # create figure and axis objects with subplots()
     fig, ax = plt.subplots(figsize=figsize)
     if FieldDescription is None:

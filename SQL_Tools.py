@@ -10,7 +10,9 @@
 #                   1. If the record key already exists then it only UPDATEs the record. If not then it INSERT a new record.
 #                   2. If the record is existed and a table with the same name and the word archieve exists in the database, then it saves
 #                      the existing record to the archieve table and only then it updates the record 
-####################################
+# FindProc          - show the process table of the database (processes from the same user)
+# KillDBProc        - kil a specific process from the database
+########################################################
 
 # Imports
 import pandas as pd
@@ -88,9 +90,9 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
                 DBColindx = [i for i,x in enumerate(TableColumnsLower) if x == col][0]
                 DBOriginalColName = TableColumns[DBColindx]
                 df2 = df2.rename({OriginalColName:DBOriginalColName},axis=1)
-                OriginalColName=DBOriginalColName
                 print ('Dataframe column: "' +str(OriginalColName)+'" changed to "' + str(DBOriginalColName) + 
                        '" to fit database table column name')
+                OriginalColName=DBOriginalColName
             # column exist. If asked adjust the type
             if adjustFieldType:
                 colType = DBtable[DBtable['COLUMN_NAME'].str.lower()==col]['DATA_TYPE'].iloc[0]
@@ -161,9 +163,30 @@ def __FindTablColGenType(col,colType,ConvTypeDic,DB_tableName):
               str(colType) +' that is not supported.')
         return 'Other'
     else:
-        return  ConvTypeDic[colType]   
+        return  ConvTypeDic[colType] 
+    
+    
+#### Use the following 2 functions to read processes on the database (originaly made for Mysql) and kill them
 
+def FindProc(conn):
+    """
+    Find running processes from the current user. The ID allows us to use kill to remove the process
+    conn  - engine connection to the database
+    returns dataframe with the processes
+    """
+    SQL='SELECT *  FROM information_schema.processlist  ORDER BY time'
+    return pd.read_sql(SQL,conn)
 
+def KillDBProc(ProcID,conn,showProcList=True):
+    """
+    Get a process ID and a connection and kill the process in the database
+    ProcID          string or number that is the process id
+    conn            database connection
+    showProcList    bool. If True then show the remaining processes
+    """
+    conn.execute('kill ' +str(ProcID))
+    if showProcList:
+        return FindProc(conn)
 
 ##################################################################################################################
 # The following functions are used for sending SQL messages to update dada tables in a database.

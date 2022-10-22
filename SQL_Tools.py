@@ -11,7 +11,8 @@
 #                   2. If the record is existed and a table with the same name and the word archieve exists in the database, then it saves
 #                      the existing record to the archieve table and only then it updates the record 
 # FindProc          - show the process table of the database (processes from the same user)
-# KillDBProc        - kil a specific process from the database
+# KillDBProc        - kill a specific process from the database
+# GetSQLasDict      - Gets an SQL statement and returns the output as dictionary.
 ########################################################
 
 # Imports
@@ -187,6 +188,26 @@ def KillDBProc(ProcID,conn,showProcList=True):
     conn.execute('kill ' +str(ProcID))
     if showProcList:
         return FindProc(conn)
+
+################ Get table from database and change it to dictionary #############
+def GetSQLasDict(SQL,conn):
+    """
+    Gets an SQL statement and returns the output as dictionary. Any rowin the table is a dictionary
+    In each dictionary(row) contains header names as keys and values as dictionary values
+    SQL - string The SQL string
+    conn - DB connection
+    Example:
+    GetSQLasDict('select * from YourTable',conn)
+    """
+    Result=conn.execute(SQL)
+    d, a = {}, []
+    for rowproxy in Result:
+        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+        for column, value in rowproxy.items():
+            # build up the dictionary
+            d = {**d, **{column: value}}
+        a.append(d)
+    return a
 
 ##################################################################################################################
 # The following functions are used for sending SQL messages to update dada tables in a database.

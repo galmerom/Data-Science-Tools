@@ -986,9 +986,10 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 
 
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
-                       XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], LabelSizes=(14, 14),
+                       XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], 
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=None, AnnotLst={}, MarkerWidth=2,
-                       title=("", 16), marker="o",SameAxis = 'None' , ReturnArtistOnly=False, SavePath=None, showTable=False):
+                       title=("", 16), marker="o",SameAxis = 'None',LegFontSize=10, AxisFontSize=None,LabelSizes=(14, 14),
+                       ReturnArtistOnly=False, SavePath=None, showTable=False):
     """
     Build a chart with 1 or more lines where the first line gets the left axis, and the rest gets the right axis
     Input:
@@ -1007,8 +1008,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         linewidth =         integer. The line width. Default =  no line only dots
         colors =            List of strings. List of names allowed by mathplotlib to be line colors.
                             The default allows 6 lines with 6 colors.
-        LabelSizes =        tuple with a couple of integers. The first element is the font size of the x-label.
-                            The second is for the y-axis
+
         yLabels =           tuple with a couple of integers. First element = left y-axis label,
                             second  = right y-axis label
         LegendBboxCorr =    tuple with a couple of floats. Used to correct the legend label to place it in the
@@ -1035,6 +1035,10 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             Then it will add 10% of (max-min) to max value and reduce the same amount from  min value.
                             Can get values of: 'Right' or 'Both'. 
                             If 'Right' then it adjust only the right axis. If both then it adjust both axis 
+        LegFontSize =       int. The legend font size 
+        AxisFontSize =      tuple,  2 integers. The font size of the axis values in this order:(x-axis,y-axis)
+        LabelSizes =        tuple with a couple of integers. The first element is the font size of the x-label.
+                            The second is for the y-axis        
         ReturnArtistOnly=   bool. If False  (default), show the chart before the end of the function. If True, then
                             don't show the chart and only return the
                             artist that can be used to add more lines to the chart.
@@ -1113,10 +1117,13 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                 label=FieldDescription[0], markeredgewidth=currMarWdth))
     # set x-axis label
     ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
+        
 
     # set y-axis label
     ax.set_ylabel(y_labels[0], fontsize=LabelSizes[1], color="red")
-
+    if AxisFontSize is not None:
+        ax.tick_params(axis='x', labelsize= AxisFontSize[0])
+        ax.tick_params(axis='y', labelsize= AxisFontSize[1]) 
     # set y-axis limits
     ax.set_ylim(FirstAxisLimit)
     if len(AnnotLst) > 0:
@@ -1142,6 +1149,8 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
         lines.append(ax2.plot(x, df[YFields[Inx]].rolling(rollinWindow).mean(), color=colors[Inx], marker=currMarker,
                               linewidth=linewidth, label=FieldDescription[Inx], markeredgewidth=currMarWdth))
         ax2.set_ylim(SecondAxisLimit)
+        if AxisFontSize is not None:
+            ax2.tick_params(axis='y', labelsize= AxisFontSize[1]) 
         if len(AnnotLst) > 0:
             if Inx in AnnotLst.keys():
                 for i, txt in enumerate(AnnotLst[Inx][0]):
@@ -1156,11 +1165,11 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     # LegendBboxCorr indicates where to move the legend by percentage of the  xaxis and yaxis of the figure
     # If it is None then it will put 
     if LegendBboxCorr is None:
-        fig.legend(markers,YFields,loc='upper right', numpoints=1, borderaxespad=0.1, title="Legend",shadow=True)
+        fig.legend(markers,YFields,loc='upper right', numpoints=1, borderaxespad=0.1,
+                   title="Legend",shadow=True,fontsize=LegFontSize)
     else:
-        fig.legend(markers,YFields, numpoints=1,bbox_to_anchor=LegendBboxCorr, shadow=True)
-        (0.96, 0.965)
-
+        fig.legend(markers,YFields, numpoints=1,bbox_to_anchor=LegendBboxCorr, shadow=True,fontsize=LegFontSize)
+        
     fig.suptitle(title[0], fontsize=title[1])
     if not ReturnArtistOnly:
         plt.show()

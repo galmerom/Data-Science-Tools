@@ -988,8 +988,9 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
                        XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], 
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=None, AnnotLst={}, MarkerWidth=2,
-                       title=("", 16), marker="o",SameAxis = 'None',LegFontSize=10, AxisFontSize=None,LabelSizes=(14, 14),
-                       ReturnArtistOnly=False, SavePath=None, showTable=False):
+                       title=("", 16), marker="o", SameAxis = 'None', AllFontSize = 14, LegFontSize=None,
+                       AxisFontSize=None,LabelSizes=None, ReturnArtistOnly=False, SavePath=None,
+                       showTable=False):
     """
     Build a chart with 1 or more lines where the first line gets the left axis, and the rest gets the right axis
     Input:
@@ -1035,10 +1036,18 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             Then it will add 10% of (max-min) to max value and reduce the same amount from  min value.
                             Can get values of: 'Right' or 'Both'. 
                             If 'Right' then it adjust only the right axis. If both then it adjust both axis 
-        LegFontSize =       int. The legend font size 
+        ######## Fonts ######
+        AllFontSize =       int. The font size for all the following elements
+                            (unless they are defined in another parameter) :
+                            Legend font, axis fonts, axis labels (axis labels size = AllFontSize+5)
+        LegFontSize =       int. The legend font size.
+                            (will overide the AllFontSize only for the axis tick legend fontsize)
         AxisFontSize =      tuple,  2 integers. The font size of the axis values in this order:(x-axis,y-axis)
+                            (will overide the AllFontSize only for the axis tick labels fontsize)
         LabelSizes =        tuple with a couple of integers. The first element is the font size of the x-label.
-                            The second is for the y-axis        
+                            The second is for the y-axis
+                            (will overide the AllFontSize only for the axis labels fontsize)
+        #####################
         ReturnArtistOnly=   bool. If False  (default), show the chart before the end of the function. If True, then
                             don't show the chart and only return the
                             artist that can be used to add more lines to the chart.
@@ -1056,6 +1065,13 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     warnings.filterwarnings('ignore')
     NumOfLines = len(YFields)
     lines = []
+    # Deal with fonts
+    if LegFontSize is None: 
+        LegFontSize = AllFontSize
+    if AxisFontSize is None: 
+        AxisFontSize = (AllFontSize,AllFontSize)
+    if LabelSizes is None: 
+        LabelSizes = (AllFontSize+5,AllFontSize+5)        
     # Deal with same axis parameter if equal to 1 or 2
     if SameAxis is not None:
         if SameAxis.lower() == 'right':

@@ -210,7 +210,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
         
         plt.show()
     if ShowOutliertxtFrom != 9999:
-        return ( ReturnStr,float(r2),float(rmse),TempDF[TempDF['Outlier']],float(PercScore))
+        return ( ReturnStr,float(r2),float(rmse),float(PercScore),TempDF[TempDF['Outlier']])
     else:
         return ( ReturnStr,float(r2),float(rmse),float(PercScore))
 

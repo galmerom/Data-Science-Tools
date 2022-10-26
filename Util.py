@@ -7,7 +7,7 @@
 #
 # Scoring:
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
-    ErrScoreSlicer - show the perentage score with LOT (limit of detection) by category
+#   ErrScoreSlicer - show the perentage score with LOT (limit of detection) by category
 # Column manipulation:
 #   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
 #####################################################################################################################################

@@ -7,6 +7,7 @@
 #
 # Scoring:
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
+    ErrScoreSlicer - show the perentage score with LOT (limit of detection) by category
 # Column manipulation:
 #   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
 #####################################################################################################################################
@@ -285,3 +286,53 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
         Outdf.loc[Outdf['Original'].between(Bucklst[i],Bucklst[i+1],inclusive='left'),NewSeriesName] = str(Bucklst[i]) + '-' + str(Bucklst[i+1])
     return Outdf[NewSeriesName]
 
+
+def ErrScoreSlicer(df,TrueField,PredField,CutByCategory,LOD=0):
+    """
+    Takes True and pred series and give them a score then find the mean values per category.
+    The category can be given as another series if: 
+    CutByCategory is a string (The category column name in the dataframe) or
+    CutByCategory is a list of values and the list will be use to make the category
+    Parameters:
+    df              dataframe. The input dataframe
+    TrueField       string. The true value column name
+    PredField       string. The Predicted value column name
+    CutByCategory  string or a list. This is the category that the algorithm will group by.
+                    if a string is given, then the string is a column name with categories values
+                    if a list is given then the values in the list will become the category
+                    for example: [0,10,30] The categories will be: less than 0,0-10,10-30,30+
+    LOD             double. LOD=Limit of detection that will be the smallest number that we suppose
+                    to detect. Smaller numbers will get the values of LOD for scoring
+    Returns (dataframe with the results, dataframe with the ungroup values)
+
+    """
+    if isinstance(CutByCategory, str):
+        df2 = df[[TrueField,PredField,CutByCategory]].copy()
+    else: # If it is alist
+        df2 = df[[TrueField,PredField]].copy()
+        df2['Category'] = CategValueSeries(df[TrueField],CutByCategory)
+        CutByCategory = 'Category'
+    
+    df2['Score'] = df2.apply(lambda x: __ErorCalc(x[TrueField],x[PredField],LOD),axis=1)
+    df2['LOD'] = LOD
+
+    # summerize
+    df2['Diff'] = df2[TrueField]-df2[PredField]
+    OutDF = pd.DataFrame(df2.groupby(CutByCategory).mean()[['Score','Diff']])
+    return OutDF,df2
+
+def __ErorCalc(y_true,y_pred,LOD):
+    """
+    Gets one value y_true and one y_pred and LOD value.
+    The result usually is abs(y_pred-y_true)/y_pred.
+    sometimes one of the values is less than LOD and the we 
+    change the algorithm a bit.
+    """
+    if y_true >= LOD and y_pred < LOD:
+        return (abs(LOD-y_true)/y_true)
+    elif y_true < LOD and y_pred < LOD:
+        return 0
+    elif y_true < LOD and y_pred >=LOD:
+        return (abs(y_pred-LOD)/LOD)
+    else:
+        return (abs(y_pred-y_true)/y_pred)

@@ -290,44 +290,55 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
     return Outdf[NewSeriesName]
 
 
-def ErrScoreSlicer(df,TrueField,PredField,CutByCategory,LOD=0):
+def ErrScoreSlicer(df,TrueSer,PredSer,SliceDic,LOD=0):
     """
     Takes True and pred series and give them a score then find the mean values per category.
     The category can be given as another series if: 
     CutByCategory is a string (The category column name in the dataframe) or
     CutByCategory is a list of values and the list will be use to make the category
     Parameters:
-    df              dataframe. The input dataframe
-    TrueField       string. The true value column name
-    PredField       string. The Predicted value column name
-    CutByCategory  string or a list. This is the category that the algorithm will group by.
-                    if a string is given, then the string is a column name with categories values
-                    if a list is given then the values in the list will become the category
-                    for example: [0,10,30] The categories will be: less than 0,0-10,10-30,30+
+    df             dataframe. The input dataframe
+    TrueSer        string. The true value column name
+    PredSer        string. The Predicted value column name
+    SliceDic       dict. {series,list of values} get a dictionary with column name and a list 
+                   that indicates how to slice 
+                   for example: [0,10,30] The categories will be: less than 0,0-10,10-30,30+
     LOD             double. LOD=Limit of detection that will be the smallest number that we suppose
                     to detect. Smaller numbers will get the values of LOD for scoring
     Returns (dataframe with the results, dataframe with the ungroup values)
-
+    example how to use:
+    Slicer = {'Param1':[0,10,20,40],'Param2':[0,5,10,20,40,60]}
+    Sumdf,df2 = ErrScoreSlicer(test_df,'TrueCol','Pred_col',Slicer,LOD)
     """
-    if isinstance(CutByCategory, str):
-        df2 = df[[TrueField,PredField,CutByCategory]].copy()
-    else: # If it is alist
-        df2 = df[[TrueField,PredField]].copy()
-        df2['Category'] = CategValueSeries(df[TrueField],CutByCategory)
-        CutByCategory = 'Category'
-    
-    df2['Score'] = df2.apply(lambda x: __ErorCalc(x[TrueField],x[PredField],LOD),axis=1)
+    GroupByList=[]
+    df2 = df.copy()
+    for col in SliceDic.keys():
+        catgName = col+'_Category'
+        df2[catgName] = CategValueSeries(df2[col],SliceDic[col])
+        GroupByList.append(catgName)
+    df2['Score'] = df2.apply(lambda x: __ErorCalc(x[TrueSer],x[PredSer],LOD),axis=1)
     df2['LOD'] = LOD
+    df2['Diff'] = abs(df2[TrueSer] -df2[PredSer])
 
-    # summerize
-    df2['Diff'] = df2[TrueField]-df2[PredField]
-    OutDF = pd.DataFrame(df2.groupby(CutByCategory).mean()[['Score','Diff']])
+    RelvFields = [col for col in GroupByList]
+    RelvFields.extend([TrueSer,PredSer,'Score','LOD','Diff'])
+    df2 = df2[RelvFields]
+
+    
+   # summerize
+    OutDF = df2.groupby(GroupByList).agg(['count','mean'])
+    OutDF.columns = [''.join(col).strip() for col in OutDF.columns.values]
+    OutDF = OutDF.rename({'Scoremean':'Score','Diffmean':'Rmse','Diffcount':'NumOfElements'},axis=1)
+    OutDF = OutDF[['Score','Rmse','NumOfElements']]
+    OutDF['Score'] = OutDF['Score'].astype(float).map("{:.2%}".format)
+    OutDF = OutDF.sort_index()
+    df2['Score_perc'] = df2['Score'].astype(float).map("{:.2%}".format)
     return OutDF,df2
 
 def __ErorCalc(y_true,y_pred,LOD):
     """
     Gets one value y_true and one y_pred and LOD value.
-    The result usually is abs(y_pred-y_true)/y_pred.
+    The result usually is abs(y_pred-y_true)/y_true.
     sometimes one of the values is less than LOD and the we 
     change the algorithm a bit.
     """
@@ -338,4 +349,4 @@ def __ErorCalc(y_true,y_pred,LOD):
     elif y_true < LOD and y_pred >=LOD:
         return (abs(y_pred-LOD)/LOD)
     else:
-        return (abs(y_pred-y_true)/y_pred)
+        return (abs(y_pred-y_true)/y_true)

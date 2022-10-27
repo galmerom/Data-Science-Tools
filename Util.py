@@ -218,7 +218,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
 def __ErorCalc(y_true,y_pred,LOD):
     """
     Gets one value y_true and one y_pred and LOD value.
-    The result usually is abs(y_pred-y_true)/y_pred.
+    The result usually is abs(y_pred-y_true)/y_true.
     sometimes one of the values is less than LOD and the we 
     change the algorithm a bit.
     """
@@ -229,7 +229,7 @@ def __ErorCalc(y_true,y_pred,LOD):
     elif y_true < LOD and y_pred >=LOD:
         return (abs(y_pred-LOD)/LOD)
     else:
-        return (abs(y_pred-y_true)/y_pred)
+        return (abs(y_pred-y_true)/y_true)
     
 def ConcatDataFrameDict(DFdic,AddOriginCol=True):
     """
@@ -335,18 +335,4 @@ def ErrScoreSlicer(df,TrueSer,PredSer,SliceDic,LOD=0):
     df2['Score_perc'] = df2['Score'].astype(float).map("{:.2%}".format)
     return OutDF,df2
 
-def __ErorCalc(y_true,y_pred,LOD):
-    """
-    Gets one value y_true and one y_pred and LOD value.
-    The result usually is abs(y_pred-y_true)/y_true.
-    sometimes one of the values is less than LOD and the we 
-    change the algorithm a bit.
-    """
-    if y_true >= LOD and y_pred < LOD:
-        return (abs(LOD-y_true)/y_true)
-    elif y_true < LOD and y_pred < LOD:
-        return 0
-    elif y_true < LOD and y_pred >=LOD:
-        return (abs(y_pred-LOD)/LOD)
-    else:
-        return (abs(y_pred-y_true)/y_true)
+

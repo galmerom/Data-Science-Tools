@@ -279,11 +279,14 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
     Outdf['Original'] = InputSer
     Outdf[NewSeriesName] = ""
     # Deal with the values BEFORE the first element and AFTER the last element in the bucket list
-    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = 'Less than ' + str(Bucklst[0])
+    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = ' Less than ' + str(Bucklst[0])
     Outdf.loc[Outdf['Original']>Bucklst[-1],NewSeriesName] = str(Bucklst[-1]) + '+'
     # Deal with the values BETWEEN the first element and the last
     for i in range(0,len(Bucklst)-1):
-        Outdf.loc[Outdf['Original'].between(Bucklst[i],Bucklst[i+1],inclusive='left'),NewSeriesName] = str(Bucklst[i]) + '-' + str(Bucklst[i+1])
+        FirstElem = str(Bucklst[i])
+        if len(FirstElem)==1 and FirstElem!='0':
+            FirstElem = '0'+FirstElem 
+        Outdf.loc[Outdf['Original'].between(Bucklst[i],Bucklst[i+1],inclusive='left'),NewSeriesName] = FirstElem + '-' + str(Bucklst[i+1])
     return Outdf[NewSeriesName]
 
 

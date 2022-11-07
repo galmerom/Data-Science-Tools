@@ -335,4 +335,11 @@ def ErrScoreSlicer(df,TrueSer,PredSer,SliceDic,LOD=0):
     df2['Score_perc'] = df2['Score'].astype(float).map("{:.2%}".format)
     return OutDF,df2
 
+def PandasIf(whereCond,IfTrue,IfFalse):
+    """
+    Simple if statement using pandas
+    Example: PandasIf(df[A]==0,0,df2[B]/df[A] )
+    """
+    return IfFalse.where(whereCond,IfTrue)
+
 

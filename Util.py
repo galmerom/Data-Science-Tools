@@ -10,6 +10,9 @@
 #   ErrScoreSlicer - show the perentage score with LOT (limit of detection) by category
 # Column manipulation:
 #   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
+#   AddBasicFeatures - Add difference and ratio columns between columns (from a given list)
+# Other:
+#   PandasIf - do a simple if with pandas series if(condition,TrueValue,FalseValue)
 #####################################################################################################################################
 
 #Imports
@@ -342,4 +345,18 @@ def PandasIf(whereCond,IfTrue,IfFalse):
     """
     return IfFalse.where(whereCond,IfTrue)
 
-
+def AddBasicFeatures(df,ListOfCol):
+    """
+    Gets a list of columns and adds columns with the difference and ration between each columns
+    df          dataframe. The dataframe to work on (returns a copy)
+    ListOfCol   List. List of columns to use
+    Return dataframe with the added columns
+    """
+    df2 = df.copy()
+    ColLeft = ListOfCol     # ColLeft contains the columns that where not used yet
+    for col in ListOfCol:
+        ColLeft.pop(0)
+        for SecondField in ColLeft:
+            df2[col+'_minus_'+SecondField] = df2[col]-df[SecondField]
+            df2[col+'_over_'+SecondField] = np.where(df[SecondField]==0,0,df2[col]/df[SecondField] )
+    return df2

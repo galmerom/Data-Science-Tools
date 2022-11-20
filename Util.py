@@ -353,7 +353,7 @@ def AddBasicFeatures(df,ListOfCol):
     Return dataframe with the added columns
     """
     df2 = df.copy()
-    ColLeft = ListOfCol     # ColLeft contains the columns that where not used yet
+    ColLeft = ListOfCol.copy()     # ColLeft contains the columns that where not used yet
     for col in ListOfCol:
         ColLeft.pop(0)
         for SecondField in ColLeft:

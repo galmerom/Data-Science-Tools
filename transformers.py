@@ -146,7 +146,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         """
         self.score_func = score_func
         self.k = k
-        self.Transformer_model = SelectKBest(self.score_func, self.k)
+        self.Transformer_model = SelectKBest(score_func =self.score_func, k=self.k)
         self.NegValueProcess = DealWithNegValues
 
     def fit(self, X, y=None, **kwargs):

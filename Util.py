@@ -131,6 +131,11 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
     '''
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
+    # In case the input is numpy instead of a series
+    if isinstance(y_true,np.ndarray):
+        y_true = pd.Series(y_true,name='y_true')
+    if isinstance(y_pred,np.ndarray):
+        y_pred = pd.Series(y_pred,name='y_pred')
     joinedDF = pd.concat([y_true, y_pred], axis=1)
     col1=joinedDF.columns[0]
     col2 = joinedDF.columns[1]

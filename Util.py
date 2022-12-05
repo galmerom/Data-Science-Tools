@@ -11,6 +11,8 @@
 # Column manipulation:
 #   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
 #   AddBasicFeatures - Add difference and ratio columns between columns (from a given list)
+# Model related:
+#   FindFeatureImportanceRMSE - Takes a model and the input and show the importance of the CHANGE in each feature in terms of RMSE
 # Other:
 #   PandasIf - do a simple if with pandas series if(condition,TrueValue,FalseValue)
 #####################################################################################################################################
@@ -365,3 +367,57 @@ def AddBasicFeatures(df,ListOfCol):
             df2[col+'_minus_'+SecondField] = df2[col]-df[SecondField]
             df2[col+'_over_'+SecondField] = np.where(df[SecondField]==0,0,df2[col]/df[SecondField] )
     return df2
+
+def FindFeatureImportanceRMSE(X,y,model,diffValinPercList,showchart=True,MaxFeatures=20):
+    """
+    This function shows the change of overall RMSE for every change of X percentage per feature.
+    It takes every feature and multiplies it by (1+perentage of change), runs predict, and shows the CHANGE in RMSE
+    compared to the base prediction (no change in values). Then it sorts the features by the change in RMSE
+    in absolute value in descending order.
+    The multiplication of features is done one by one. Between each prediction, we reset the features
+    to the original values.
+    For example, if there are 5 features and 2 values in the diffValinPercList, there will be 11 predictions.
+    The first for the base prediction(no change) and the rest=(num of features * num of diffValinPercList)
+
+    Parameters:
+    X,y                 Dataframe or series. X is used for the prediction, and y is used for calculating RMSE between
+                        y and the prediction
+    model               model. The model that we will run the command prediction on
+    diffValinPercList   list. A list of values to change the features by. For example: diffValinPercList=[0.01,0.1]
+                        every feature will multiply by 0.01 and then by 0.1
+    showchart           bool. If true, then a bar chart with results will show.
+    MaxFeatures         int. The number of features to show in the bar chart 
+    """
+    OutDF = pd.DataFrame(columns=['Feature','diff_Value_Perc','Base_RMSE','DiffVal_RMSE','DiffMaxBase',
+                                  'Abs_DiffMaxBase','ActualInpMaxOverMin'])
+    startTime = dt.datetime.now()
+    BaseRMSE = np.sqrt(mean_squared_error(y, model.predict(X).flatten()))
+    TimePerIterInMin = (dt.datetime.now()-startTime).total_seconds() / 60.0
+    NumOfIter = len(X.columns)*len(diffValinPercList)
+    print('Number of iterations: ' + str(NumOfIter) + ' expected time in min. :'+str(TimePerIterInMin*NumOfIter))
+    counter = 0
+    for diffValue in diffValinPercList:
+        for col in X.columns:
+            tempdf = X.copy()
+            tempdf[col] = (1+diffValue)*tempdf[col]
+            CurrRMSE = np.sqrt(mean_squared_error(y, model.predict(tempdf).flatten()))
+            counter += 1
+            ExpectedTimeLeftInMin = round((NumOfIter-counter)*(((dt.datetime.now()-startTime).total_seconds() / 60.0) / (counter+1)),1)
+            print('Iteration: '+str(counter) + ' out of : ' +str(NumOfIter)+' Curr Feature:' + col + ' Diff Value: '+
+                  str(diffValue) + ' Exp. Min. left: ' + str(ExpectedTimeLeftInMin))
+            OutDF = OutDF.append({'Feature':col,'diff_Value_Perc':diffValue,'Base_RMSE':BaseRMSE,
+                          'DiffVal_RMSE':CurrRMSE,'DiffMaxBase':(CurrRMSE-BaseRMSE),
+                          'Abs_DiffMaxBase':abs(CurrRMSE-BaseRMSE),
+                          'ActualInpMaxOverMin':abs(tempdf[col].max()/tempdf[tempdf[col]!=0][col].min())}, ignore_index=True)
+            OutDF = OutDF.sort_values(by='ActualInpMaxOverMin',ascending=False)
+    ### create charts to show the results ######
+    if showchart:
+        for diff in np.sort(OutDF.diff_Value_Perc.unique()):
+            mask = OutDF['diff_Value_Perc']==diff
+            fig = plt.figure()
+            ax=OutDF[mask].set_index(['Feature']).iloc[0:MaxFeatures].plot.bar(y='ActualInpMaxOverMin',
+                                                                figsize=(20,5), fontsize=16,legend= False)                         
+            title='Change of RMSE per a change of '+"{0:.1%}".format(diff)
+            ax.set_title(title,pad=20, fontdict={'fontsize':24})
+            ax.set_ylabel('Change of RMSE',fontdict={'fontsize':20})
+    return OutDF

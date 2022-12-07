@@ -4,6 +4,8 @@
 # 
 # File handlings:
 #   ReadCsvDirectory2Pandas - used for reading many csv files into one dataframe
+#   PickleSave - Save an object as pickle
+#   PickleLoad - Load object from pickle
 #
 # Scoring:
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
@@ -421,3 +423,39 @@ def FindFeatureImportanceRMSE(X,y,model,diffValinPercList,showchart=True,MaxFeat
             ax.set_title(title,pad=20, fontdict={'fontsize':24})
             ax.set_ylabel('Change of RMSE',fontdict={'fontsize':20})
     return OutDF
+
+def PickleSave(PathPlusName,Object,ShowSucc=True):
+    """
+    Save an object as pickle
+    Parameters:
+    PathPlusName    string. Include the path + file name
+    Object          object. The Object to pickle
+    ShowSucc        bool. If True then show success message
+
+    """
+    try:
+        with open(PathPlusName, 'wb') as f:
+            pickle.dump(Object, f)
+            if ShowSucc:
+                print('Pickle saved')
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        print (message)
+
+def PickleLoad(PathPlusName):
+    """
+    Load an object from pickled file
+    Parameters:
+    PathPlusName    string. Include the path + file name
+    
+    Returns the object
+    """
+    try:
+        with open(PathPlusName, 'rb') as f:
+            return pickle.load(f)
+
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        print (message)

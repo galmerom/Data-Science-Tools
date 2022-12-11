@@ -104,23 +104,23 @@ def ConcatDataFrameDict(DFdic,AddOriginCol=True):
 
 
 
-def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',Title='Actual ver. predicted',
-            LOD=0.00001,OutLierType='Manual',DBSCAN_Parm = {'eps':5,'min_samples':5},ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
-    '''
+def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',
+            Title='Actual ver. predicted',LOD=0.00001,OutLierType='Manual',DBSCAN_Parm = {'eps':5,'min_samples':5},
+            ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
+    """
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
     input parameters:
-    y_true series. The actual values
-    y_pred series. The predicted values
-    WithChart bool. Show a chart or not
-    In case there is a chart, then there are default parameters that can be changed:
-    Figsize tuple. chart size
-    ylabel string. y axis description
-    xlabel string. x axis description
-    Title string. Title of chart
-    LOD float. LOD = Limit of detection. Under this number we assume that the value that we got is zero
-    clrTpl tuple. (series,color dictionary) The first elemnent is the series to map. 
-                                            The second is a dictionary that maps values (unique values in the series) to colors.
+    y_true              series. The actual values
+    y_pred              series. The predicted values
+    WithChart           bool. Show a chart or not. If true, the following parameters that can be changed:
+        Figsize         tuple. chart size
+        ylabel          string. y axis description
+        xlabel          string. x axis description
+        Title           string. Title of chart
+    LOD                 float. LOD = Limit of detection. Under this number we assume that the value that we got is zero
+    OutLierType         string. Can get "DBSCAN" and then it will use DBSCAN algorithm to find outliers.
+    DBSCAN_Parm         dict. Get the input parameters for the DBSCAN model such as eps and min_samples
     ShowOutliertxtFrom float. : Show annotation text to outlier point if the value of (y_true/y_pred) is greater than 1+ ShowOutliertxtFrom
                                or smaller than 1 - ShowOutliertxtFrom. To avoid showing very small outliars we filter out any true values that
                                are between min and max given in the OutlierXMinMax parameter.
@@ -133,7 +133,7 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
                      ourliers dataframe ) The result string includes r^2, rmse, Percent scoring (if shows the average for all records
                      of abs(y_true-y_pred)/y_pred when ever the values of each series is under the LOD barrier it takes either zero or LOD value.
                      check __ErorCalc function for exact algorithm
-    '''
+    """
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
     # In case the input is numpy instead of a series

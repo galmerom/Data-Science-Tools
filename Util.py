@@ -104,18 +104,9 @@ def ConcatDataFrameDict(DFdic,AddOriginCol=True):
 
 
 
-import os
-import pandas as pd
-from sklearn.metrics import mean_squared_error , r2_score
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import colors
-import matplotlib.colors as mcolors
-from sklearn.cluster import DBSCAN
-import pickle
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',
             Title='Actual ver. predicted',LOD=0.00001,OutLierType='Manual',DBSCAN_Parm = {'eps':5,'min_samples':5},
-            ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12,PercThreshold = 0):
+            ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12,PercThreshold =0):
     """
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -161,13 +152,14 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
     joinedDFUnderThreshold = joinedDF[joinedDF['y_true']<PercThreshold]
     joinedDFOverThreshold = joinedDF[joinedDF['y_true']>=PercThreshold]
     PercScore = joinedDFOverThreshold.apply(lambda x: __ErorCalc(x[col1], x[col2],LOD),axis=1).mean()
+
     if len(joinedDFUnderThreshold)>0:
         RMSE_under_Threshold = '{:.3f}'.format(np.sqrt(mean_squared_error(joinedDFUnderThreshold['y_true'], joinedDFUnderThreshold['y_pred'])))
 
     Diff = y_true-y_pred
     if len(joinedDFUnderThreshold)>0:
-        ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + str('{:.1%}'.format(PercScore) +\
-                                                                                              '   RMSE under Threshold: '+RMSE_under_Threshold)
+        ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + \
+         str('{:.1%}'.format(PercScore) + '   RMSE under '+str(PercThreshold) + ': '+RMSE_under_Threshold)
     else:
         ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + str('{:.1%}'.format(PercScore)) 
     

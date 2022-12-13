@@ -104,9 +104,18 @@ def ConcatDataFrameDict(DFdic,AddOriginCol=True):
 
 
 
+import os
+import pandas as pd
+from sklearn.metrics import mean_squared_error , r2_score
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import colors
+import matplotlib.colors as mcolors
+from sklearn.cluster import DBSCAN
+import pickle
 def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='Predicted values',xlabel='Actual values',
             Title='Actual ver. predicted',LOD=0.00001,OutLierType='Manual',DBSCAN_Parm = {'eps':5,'min_samples':5},
-            ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12 ):
+            ShowOutliertxtFrom=9999,OutlierXMinMax=None,MaxOutlier=100,AnnotFontSize = 12,PercThreshold = 0):
     """
     This fucnction gets 2 series and compare them wirh the following scores: R^2 and RMSE.
     It can also draw a chart if needed.
@@ -121,18 +130,22 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
     LOD                 float. LOD = Limit of detection. Under this number we assume that the value that we got is zero
     OutLierType         string. Can get "DBSCAN" and then it will use DBSCAN algorithm to find outliers.
     DBSCAN_Parm         dict. Get the input parameters for the DBSCAN model such as eps and min_samples
-    ShowOutliertxtFrom float. : Show annotation text to outlier point if the value of (y_true/y_pred) is greater than 1+ ShowOutliertxtFrom
+    ShowOutliertxtFrom  float. Show annotation text to outlier point if the value of (y_true/y_pred) is greater than 1+ ShowOutliertxtFrom
                                or smaller than 1 - ShowOutliertxtFrom. To avoid showing very small outliars we filter out any true values that
                                are between min and max given in the OutlierXMinMax parameter.
                                The annotation text includes (index,true value, pred value)
-    OutlierXMinMax tuple.  : (Min_Value,Max_value)Used with ShowOutliertxtFrom to filter out only outliers that their x value
+    OutlierXMinMax      tuple.(Min_Value,Max_value)Used with ShowOutliertxtFrom to filter out only outliers that their x value
                              is between the min and max value.
-    AnnotFontSize int.     : The font size of the annotation
-    MaxOutlier int.        : Max number of outliers to show
-    Returns: tuple. (string that show the results, float.R^2 result,float RMSE result, if ShowOutliertxtFromis mot default then it return the
-                     ourliers dataframe ) The result string includes r^2, rmse, Percent scoring (if shows the average for all records
-                     of abs(y_true-y_pred)/y_pred when ever the values of each series is under the LOD barrier it takes either zero or LOD value.
-                     check __ErorCalc function for exact algorithm
+    AnnotFontSize       int. The font size of the annotation
+    MaxOutlier          int. Max number of outliers to show
+    PercThreshold       float. When using this parameter the Percent scoring will have 2 values one for an average of RMSE for y_true under
+                        this value+ another value for the average value of Percent scoring for y_true over this value.
+    Returns:            tuple. (string that show the results, float.R^2 result,float RMSE result, if ShowOutliertxtFromis mot default
+                         then it return the ourliers dataframe ) The result string includes r^2, rmse, 
+                         Percent scoring (if shows the average for all records of abs(y_true-y_pred)/y_pred when ever the values of each
+                          series is under the LOD barrier it takes either zero or LOD value.(check __ErorCalc function for exact algorithm)
+                         If PercThreshold is not zero then it also shows the average RMSE of scores upto the Threshold and an average 
+                         percentage of all values over that Threshold. The Threshold is defined by the True series.
     """
     r2='{:.3f}'.format(r2_score(y_true, y_pred))
     rmse = '{:.3f}'.format(np.sqrt(mean_squared_error(y_true, y_pred)))
@@ -142,14 +155,23 @@ def Scoring(y_true,y_pred,colorSer=None,WithChart=False,Figsize=(15,7),ylabel='P
     if isinstance(y_pred,np.ndarray):
         y_pred = pd.Series(y_pred,name='y_pred')
     joinedDF = pd.concat([y_true, y_pred], axis=1)
-    col1=joinedDF.columns[0]
+    joinedDF = joinedDF.rename(columns={ joinedDF.columns[0]: 'y_true',joinedDF.columns[1]: 'y_pred' })
+    col1 = joinedDF.columns[0]
     col2 = joinedDF.columns[1]
-    PercScore = joinedDF.apply(lambda x: __ErorCalc(x[col1], x[col2],LOD),axis=1).mean()
+    joinedDFUnderThreshold = joinedDF[joinedDF['y_true']<PercThreshold]
+    joinedDFOverThreshold = joinedDF[joinedDF['y_true']>=PercThreshold]
+    PercScore = joinedDFOverThreshold.apply(lambda x: __ErorCalc(x[col1], x[col2],LOD),axis=1).mean()
+    if len(joinedDFUnderThreshold)>0:
+        RMSE_under_Threshold = '{:.3f}'.format(np.sqrt(mean_squared_error(joinedDFUnderThreshold['y_true'], joinedDFUnderThreshold['y_pred'])))
 
     Diff = y_true-y_pred
-
-    ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + str('{:.1%}'.format(PercScore))   
-                                                                                  
+    if len(joinedDFUnderThreshold)>0:
+        ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + str('{:.1%}'.format(PercScore) +\
+                                                                                              '   RMSE under Threshold: '+RMSE_under_Threshold)
+    else:
+        ReturnStr = 'R-squared: '+str(r2)+'   RMSE:'+str(rmse) + '   Percent scoring: ' + str('{:.1%}'.format(PercScore)) 
+    
+                                               
     colorDic = {} # This dict. is only used if we use chart with colors
     if WithChart:
         MaxValue=max(max(y_true),max(y_pred))
@@ -232,7 +254,7 @@ def __ErorCalc(y_true,y_pred,LOD):
     """
     Gets one value y_true and one y_pred and LOD value.
     The result usually is abs(y_pred-y_true)/y_true.
-    sometimes one of the values is less than LOD and the we 
+    sometimes one of the values is less than LOD and then we 
     change the algorithm a bit.
     """
     if y_true >= LOD and y_pred < LOD:
@@ -243,6 +265,7 @@ def __ErorCalc(y_true,y_pred,LOD):
         return (abs(y_pred-LOD)/LOD)
     else:
         return (abs(y_pred-y_true)/y_true)
+    
     
 def ConcatDataFrameDict(DFdic,AddOriginCol=True):
     """

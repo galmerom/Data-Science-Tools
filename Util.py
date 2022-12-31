@@ -7,6 +7,7 @@
 #   PickleSave - Save an object as pickle
 #   PickleLoad - Load object from pickle
 #   OpenZipFilesInDirectory - Open all zip files in a directory to the same directory or to a new one
+#   MoveFilesWithSpecificExtention - Move files between directories that contains a specific extention.
 #
 # Scoring:
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
@@ -505,3 +506,17 @@ def OpenZipFilesInDirectory(DirectoryPath, DestinationPath=None):
                 item.extractall(DestinationPath)  # extract it in the working directory
     print(str(counter) + ' zip files extracted.')
     os.chdir(cwd)
+    
+def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension):
+    """
+    Move files between directories that contains a specific extention.
+    :param InDirectory:     string. The path to the input directory
+    :param OutDirectory:    string. The path to the Output directory 
+    :param Extension:       string. The extention to look for.
+    :return: none
+    """
+    if not os.path.isdir(OutDirectory):
+        os.mkdir(OutDirectory)
+    for file in os.listdir(InDirectory):
+        if file.endswith(Extension):
+            shutil.move(os.path.join(working_directory, file), os.path.join(destinationpath, file))

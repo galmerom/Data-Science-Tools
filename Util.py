@@ -6,6 +6,7 @@
 #   ReadCsvDirectory2Pandas - used for reading many csv files into one dataframe
 #   PickleSave - Save an object as pickle
 #   PickleLoad - Load object from pickle
+#   OpenZipFilesInDirectory - Open all zip files in a directory to the same directory or to a new one
 #
 # Scoring:
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
@@ -475,3 +476,22 @@ def PickleLoad(PathPlusName):
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
         message = template.format(type(ex).__name__, ex.args)
         print (message)
+
+
+def OpenZipFilesInDirectory(DirectoryPath, DestinationPath=None):
+    """
+    Get a directory with zip files and extract them. Ignore non zip files and directories.
+    The files opens to another directory if given. If not it extract to the same directory
+
+    :param DirectoryPath:       string. The path for the directory contaning the zip files
+    :param DestinationPath:     string. The path were the extracted files will be saved. If None then use DirectoryPath
+    :return: Nothing
+    """
+    counter = 0
+    os.chdir(DirectoryPath)
+    for file in os.listdir(DirectoryPath):  # get the list of files
+        if zipfile.is_zipfile(file):  # if it is a zipfile, extract it
+            with zipfile.ZipFile(file) as item:  # treat the file as a zip
+                counter += 1
+                item.extractall(DestinationPath)  # extract it in the working directory
+    print(str(counter) + ' zip files extracted.')

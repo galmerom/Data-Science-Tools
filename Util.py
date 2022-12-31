@@ -508,21 +508,28 @@ def OpenZipFilesInDirectory(DirectoryPath, DestinationPath=None):
     print(str(counter) + ' zip files extracted.')
     os.chdir(cwd)
     
-def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension):
+def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension, includePoint=True):
     """
     Move files between directories that contains a specific extention
     :param InDirectory:     string. The path to the input directory
     :param OutDirectory:    string. The path to the Output directory
     :param Extension:       string. The extention to look for.
+    :param includePoint:    bool. If true then the extention must include a point at the start of the extention
+                            if a point is not included then it is added. If False then an extention without point
+                            can be fetched.
     :return: none
-    Example how to use:
+    example how to use:
     Util.MoveFilesWithSpecificExtention(OutDirc,OutDirc+'/csvfiles','csv')
     """
+    if includePoint and not Extension.startswith("."):
+        actualExtention = '.' + Extension
+    else:
+        actualExtention = Extension
     if not os.path.isdir(OutDirectory):
         os.mkdir(OutDirectory)
     counter = 0
     for file in os.listdir(InDirectory):
-        if file.endswith(Extension):
+        if file.endswith(actualExtention):
             counter += 1
             shutil.move(os.path.join(InDirectory, file), os.path.join(OutDirectory, file))
     print(str(counter) + ' files copied to OutDirectory')

@@ -515,6 +515,8 @@ def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension):
     :param OutDirectory:    string. The path to the Output directory
     :param Extension:       string. The extention to look for.
     :return: none
+    Example how to use:
+    Util.MoveFilesWithSpecificExtention(OutDirc,OutDirc+'/csvfiles','csv')
     """
     if not os.path.isdir(OutDirectory):
         os.mkdir(OutDirectory)
@@ -522,5 +524,5 @@ def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension):
     for file in os.listdir(InDirectory):
         if file.endswith(Extension):
             counter += 1
-            shutil.move(os.path.join(working_directory, file), os.path.join(destinationpath, file))
+            shutil.move(os.path.join(InDirectory, file), os.path.join(OutDirectory, file))
     print(str(counter) + ' files copied to OutDirectory')

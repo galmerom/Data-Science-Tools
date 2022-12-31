@@ -25,6 +25,7 @@
 import os
 import sys
 import zipfile
+import shutil
 import pandas as pd
 from sklearn.metrics import mean_squared_error , r2_score
 import numpy as np
@@ -509,14 +510,17 @@ def OpenZipFilesInDirectory(DirectoryPath, DestinationPath=None):
     
 def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension):
     """
-    Move files between directories that contains a specific extention.
+    Move files between directories that contains a specific extention
     :param InDirectory:     string. The path to the input directory
-    :param OutDirectory:    string. The path to the Output directory 
+    :param OutDirectory:    string. The path to the Output directory
     :param Extension:       string. The extention to look for.
     :return: none
     """
     if not os.path.isdir(OutDirectory):
         os.mkdir(OutDirectory)
+    counter = 0
     for file in os.listdir(InDirectory):
         if file.endswith(Extension):
+            counter += 1
             shutil.move(os.path.join(working_directory, file), os.path.join(destinationpath, file))
+    print(str(counter) + ' files copied to OutDirectory')

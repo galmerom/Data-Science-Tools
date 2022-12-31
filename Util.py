@@ -21,7 +21,9 @@
 #####################################################################################################################################
 
 #Imports
-import os,sys, zipfile
+import os
+import sys
+import zipfile
 import pandas as pd
 from sklearn.metrics import mean_squared_error , r2_score
 import numpy as np
@@ -481,24 +483,25 @@ def PickleLoad(PathPlusName):
 def OpenZipFilesInDirectory(DirectoryPath, DestinationPath=None):
     """
     Get a directory with zip files and extract them. Ignore non zip files and directories.
-    The files opens to the destination directory if given (if not exists then it create the directory).
+    The files are extracted to the destination directory if given (if not exists then it create the directory).
     If DestinationPath not given then it extacts to the same directory.
 
     :param DirectoryPath:       string. The path for the directory contaning the zip files
     :param DestinationPath:     string. The path were the extracted files will be saved. If None then use DirectoryPath
     :return: Nothing
     """
-    counter=0 # count the number of zip files
-    
-    cwd = os.getcwd() # keep the name of the current working directory
+    counter = 0  # count the number of zip files
+
+    cwd = os.getcwd()  # keep the name of the current working directory
     if not os.path.isdir(DirectoryPath):
-        print('DirectoryPath: '+ str(DirectoryPath) + ' not exists. \nFiles were not extracted')
+        print('DirectoryPath: ' + str(DirectoryPath) + ' not exists. \nFiles were not extracted')
         return
-    
+
     for file in os.listdir(DirectoryPath):  # get the list of files
-        if zipfile.is_zipfile(file):  # if it is a zipfile, extract it
-            with zipfile.ZipFile(file) as item:  # treat the file as a zip
-                counter +=1
+        CurrPath = os.path.join(DirectoryPath, file)
+        if zipfile.is_zipfile(CurrPath):  # if it is a zipfile, extract it
+            with zipfile.ZipFile(CurrPath) as item:  # treat the file as a zip
+                counter += 1
                 item.extractall(DestinationPath)  # extract it in the working directory
-    print (str(counter) + ' zip files extracted.')
+    print(str(counter) + ' zip files extracted.')
     os.chdir(cwd)

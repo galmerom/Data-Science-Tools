@@ -72,6 +72,7 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
     DBtable = pd.read_sql(SQL,connection)
     TableColumns = DBtable.COLUMN_NAME.unique()
     TableColumnsLower = [x.lower() for x in TableColumns]
+    currCursor = connection.cursor()
     for col in DfCol_lower:
         # Find the original name before lower case
         Colindx = [i for i,x in enumerate(DfCol_lower) if x == col][0]
@@ -80,9 +81,10 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
         # Find the generic type of the column
         GenerType,DBType = __findGenericType(df2[OriginalColName])
         # Check if the column exists in the table
+        
         if col not in TableColumnsLower:
             SQL = 'ALTER TABLE ' + str(DB_tableName) + ' ADD `' + str(OriginalColName) + '` ' + str(DBType)
-            connection.execute(SQL)
+            currCursor.execute(SQL)
             print('Column: "' + str(OriginalColName)+ '" added to table: ' + str(DB_tableName))
         else:
             # In case the same column appears in different capitalization in dataframe ver. the DB table
@@ -137,7 +139,7 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
                     print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a numeric type as in database table.')
                 else:
                     continue
-                    
+    currCursor.close()                
     return df2
 
 def __findGenericType(PandasSer):

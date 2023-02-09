@@ -13,6 +13,7 @@
 # FindProc          - show the process table of the database (processes from the same user)
 # KillDBProc        - kill a specific process from the database
 # GetSQLasDict      - Gets an SQL statement and returns the output as dictionary.
+# FromDicToSqlUpdateStatement   - Gets a dictionary and returns an UPDATE Sql statement (also gets table name and where clause)
 ########################################################
 
 # Imports
@@ -414,4 +415,19 @@ def BuildSQLAndSend(Rec, KeyRec, Table2Upd, connection, Archive_table=True, Debu
         print('Main SQL:\n' + SQL)
     sendSQL(SQL, connection)
     print('SQL sent')
+    return SQL
+
+
+def FromDicToSqlUpdateStatement(TblName, Dic, WhereClause=None):
+    """
+    Creates an SQL update statement from a dictionary
+    :param TblName: str. The name of the table in the DB
+    :param Dic: dict. The dictionary containing the fields and values to update
+    :param WhereClause: str. The where clause of the update statement
+    :return: str. The SQL update statement
+    """
+    # Create the SQL statement
+    SQL = 'UPDATE {} SET {} '.format(TblName, ', '.join('{}=%s'.format(k) for k in Dic.keys()))
+    if WhereClause is not None:
+        SQL += 'WHERE ' + WhereClause
     return SQL

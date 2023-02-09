@@ -23,6 +23,7 @@ from pandas.api.types import is_datetime64_any_dtype
 from pandas.api.types import is_bool_dtype
 import datetime as dt
 import pytz
+import numpy as np
 
 def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFieldType=True,errorType='coerce'):
     """

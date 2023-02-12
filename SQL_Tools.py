@@ -423,7 +423,7 @@ def FromDicToSqlUpdStatement(TblName, Dic, WhereClause=None):
     Creates an SQL update statement from a dictionary
     :param TblName: str. The name of the table in the DB
     :param Dic: dict. The dictionary containing the fields and values to update
-    :param WhereClause: str. The where clause of the update statement
+    :param WhereClause: str. The where clause of the update statement (DON'T include "where")
     :return: str. The SQL update statement
     """
     SQL = "UPDATE " + TblName + " SET "

@@ -2,18 +2,23 @@
 # The following module dealls with SQL and all kinds of fits that are required when working with dataframes and SQL.
 # It contains the following functions:
 # InsertMissingFields - Compares a database table and a dataframe and does the following:
-#                       1. Add a field to the database table that appears in the dataframe and not in the database table.
-#                       2. If the capitalization of the dataframe is different then in the database then it changes the dataframe column
+#                       1. Add a field to the database table that appears in the dataframe and not in the database
+#                       table.
+#                       2. If the capitalization of the dataframe is different than in the database then it changes
+#                       the dataframe column
 #                          to fit the database table capitalization.
 #                       3. Optional. It converts the dataframe columns type to fit the database table columns type.
 # BuildSQLAndSend - Allow us to send 1 record to a database table with the following features:
-#                   1. If the record key already exists then it only UPDATEs the record. If not then it INSERT a new record.
-#                   2. If the record is existed and a table with the same name and the word archieve exists in the database, then it saves
+#                   1. If the record key already exists then it only UPDATEs the record. If not then it INSERT
+#                   a new record.
+#                   2. If the record is existed and a table with the same name and the word archieve exists in the
+#                   database, then it saves
 #                      the existing record to the archieve table and only then it updates the record 
 # FindProc          - show the process table of the database (processes from the same user)
 # KillDBProc        - kill a specific process from the database
 # GetSQLasDict      - Gets an SQL statement and returns the output as dictionary.
-# FromDicToSqlUpdStatement   - Gets a dictionary and returns an UPDATE Sql statement (also gets table name and where clause)
+# FromDicToSqlUpdStatement   - Gets a dictionary and returns an UPDATE Sql statement
+#                               (also gets table name and where clause)
 ########################################################
 
 # Imports
@@ -26,7 +31,8 @@ import datetime as dt
 import pytz
 import numpy as np
 
-def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFieldType=True,errorType='coerce'):
+
+def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjustFieldType=True, errorType='coerce'):
     """
     This function compares a dataframe to a database table and does the following:
     1. If a column appears in the dataframe but not in the database table, it adds it to the
@@ -35,20 +41,21 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
        it changes the capitalization to fit the database table.
     3. It can convert the dataframe column type to the database type. The conversion is only done by 
        finding if the column type is a string, date, or numeric. Change it to a
-       double/float type if a numeric is required. There is no conversion between double/float and an int or vice versa. If the
-       type is different from numeric/date/string, it does nothing.
+       double/float type if a numeric is required. There is no conversion between double/float and an int or vice versa.
+        If the type is different from numeric/date/string, it does nothing.
     
     The function returns a NEW dataframe with the converted columns
 
     parameters:
+     
     :param df               dataframe. The input dataframe.
     :param DB_tableName     string. The name of the database table
     :param connection       database connection
-    :param typeConverDic    dictionary. A dictionary that convert the database type to a category of: 'object' for strings,
-                            'Numeric' for numeric types, 'bool' for boolean, 'Datetime' for dates. If none are given then
-                             it uses the default dictionary based on Mysql types.
+    :param typeConverDic:   dictionary. A dictionary that convert the database type to a category of: 'object' for
+                            strings,'Numeric' for numeric types, 'bool' for boolean, 'Datetime' for dates.
+                             If none are given then it uses the default dictionary based on Mysql types.
 
-    :param adjustFieldType  bool. If True (default) it adjust the datafram column to fit the database table column types.
+    :param adjustFieldType  bool. If True (default) it adjust the datafram column to fit the database table column types
                             It support the following conversions (DB: database type, DF: dataframe type):
                             (DB: string, DF: not string), (DB: Datetime, DF: string), (DB: Numeric, DF: string)
                             , (DB: bool, DF: string), (DB: Numeric, DF: bool)
@@ -63,115 +70,131 @@ def InsertMissingFields(df,DB_tableName,connection,typeConverDic=None,adjustFiel
     df2 = df.copy()
     ConvTypeDic = typeConverDic
     if ConvTypeDic is None:
-        ConvTypeDic = {'varchar':'object','char':'object','varbinary':'object','tinytext':'object','text':'object',
-                       'mediumtext':'object','longtext':'object','tinyint':'Numeric','smallint':'Numeric','mediumint':'Numeric',
-                       'int':'Numeric','integer':'Numeric','bigint':'Numeric','float':'Numeric','double':'Numeric',
-                       'double precision':'Numeric','decimal':'Numeric','dec':'Numeric','year':'Numeric','date':'Datetime',
-                       'datetime':'Datetime','time':'Datetime'}
+        ConvTypeDic = {'varchar': 'object', 'char': 'object', 'varbinary': 'object', 'tinytext': 'object',
+                       'text': 'object',
+                       'mediumtext': 'object', 'longtext': 'object', 'tinyint': 'Numeric', 'smallint': 'Numeric',
+                       'mediumint': 'Numeric',
+                       'int': 'Numeric', 'integer': 'Numeric', 'bigint': 'Numeric', 'float': 'Numeric',
+                       'double': 'Numeric',
+                       'double precision': 'Numeric', 'decimal': 'Numeric', 'dec': 'Numeric', 'year': 'Numeric',
+                       'date': 'Datetime',
+                       'datetime': 'Datetime', 'time': 'Datetime'}
     DfCol = list(df2.columns)
-    DfCol_lower = [x.lower() for x in DfCol] 
-    SQL = 'SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "'+DB_tableName+'"'
-    DBtable = pd.read_sql(SQL,connection)
+    DfCol_lower = [x.lower() for x in DfCol]
+    SQL = 'SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "' + DB_tableName + '"'
+    DBtable = pd.read_sql(SQL, connection)
     TableColumns = DBtable.COLUMN_NAME.unique()
     TableColumnsLower = [x.lower() for x in TableColumns]
     currCursor = connection.cursor()
     for col in DfCol_lower:
         # Find the original name before lower case
-        Colindx = [i for i,x in enumerate(DfCol_lower) if x == col][0]
+        Colindx = [i for i, x in enumerate(DfCol_lower) if x == col][0]
         OriginalColName = DfCol[Colindx]
 
         # Find the generic type of the column
-        GenerType,DBType = __findGenericType(df2[OriginalColName])
+        GenerType, DBType = __findGenericType(df2[OriginalColName])
         # Check if the column exists in the table
-        
+
         if col not in TableColumnsLower:
             SQL = 'ALTER TABLE ' + str(DB_tableName) + ' ADD `' + str(OriginalColName) + '` ' + str(DBType)
             currCursor.execute(SQL)
-            print('Column: "' + str(OriginalColName)+ '" added to table: ' + str(DB_tableName))
+            print('Column: "' + str(OriginalColName) + '" added to table: ' + str(DB_tableName))
         else:
             # In case the same column appears in different capitalization in dataframe ver. the DB table
             # Then convert the dataframe name to fit the table name
             if OriginalColName not in TableColumns:
-                DBColindx = [i for i,x in enumerate(TableColumnsLower) if x == col][0]
+                DBColindx = [i for i, x in enumerate(TableColumnsLower) if x == col][0]
                 DBOriginalColName = TableColumns[DBColindx]
-                df2 = df2.rename({OriginalColName:DBOriginalColName},axis=1)
-                print ('Dataframe column: "' +str(OriginalColName)+'" changed to "' + str(DBOriginalColName) + 
-                       '" to fit database table column name')
-                OriginalColName=DBOriginalColName
+                df2 = df2.rename({OriginalColName: DBOriginalColName}, axis=1)
+                print('Dataframe column: "' + str(OriginalColName) + '" changed to "' + str(DBOriginalColName) +
+                      '" to fit database table column name')
+                OriginalColName = DBOriginalColName
             # column exist. If asked adjust the type
             if adjustFieldType:
-                colType = DBtable[DBtable['COLUMN_NAME'].str.lower()==col]['DATA_TYPE'].iloc[0]
-                DbGenerType = __FindTablColGenType(col,colType,ConvTypeDic,DB_tableName)
-                if DbGenerType=='Other':
+                colType = DBtable[DBtable['COLUMN_NAME'].str.lower() == col]['DATA_TYPE'].iloc[0]
+                DbGenerType = __FindTablColGenType(col, colType, ConvTypeDic, DB_tableName)
+                if DbGenerType == 'Other':
                     continue
-                if DbGenerType=='object' and GenerType!='object':
+                if DbGenerType == 'object' and GenerType != 'object':
                     try:
                         df2[OriginalColName] = df2[OriginalColName].astype(str)
-                        print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a string type as in database table.')
+                        print('Column: "' + str(
+                            OriginalColName) + '" in dataframe converted to a string type as in database table.')
                     except Exception as e:
-                        print('The conversion of column: "' +str(OriginalColName)+ 
-                              '"  to string type, in the dataframe, did not succeed. The following error generated:' + str(e))
-                elif DbGenerType=='Datetime' and GenerType=='object':
+                        print('The conversion of column: "' + str(OriginalColName) +
+                              '"  to string type, in the dataframe, did not succeed. The following error generated:' 
+                              + str(e))
+                elif DbGenerType == 'Datetime' and GenerType == 'object':
                     try:
-                        df2[OriginalColName] = pd.to_datetime(df2[OriginalColName], errors = errorType)
-                        print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a date type as in database table.')                        
+                        df2[OriginalColName] = pd.to_datetime(df2[OriginalColName], errors=errorType)
+                        print('Column: "' + str(
+                            OriginalColName) + '" in dataframe converted to a date type as in database table.')
                     except Exception as e:
-                        print('The conversion of column: "' +str(OriginalColName)+ 
-                              '"  to date type, in the dataframe, did not succeed. The following error generated:' + str(e))
-                elif DbGenerType=='Numeric' and GenerType=='object':
+                        print('The conversion of column: "' + str(OriginalColName) +
+                              '"  to date type, in the dataframe, did not succeed. The following error generated:'
+                              + str(e))
+                elif DbGenerType == 'Numeric' and GenerType == 'object':
                     try:
-                        df2[OriginalColName] = pd.to_numeric(df2[OriginalColName], errors = errorType)
-                        print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a numeric type as in database table.')
+                        df2[OriginalColName] = pd.to_numeric(df2[OriginalColName], errors=errorType)
+                        print('Column: "' + str(
+                            OriginalColName) + '" in dataframe converted to a numeric type as in database table.')
                     except Exception as e:
-                        print('The conversion of column: "' +str(OriginalColName)+ 
-                              '"  to numeric type, in the dataframe, did not succeed. The following error generated:' + str(e))
-                elif DbGenerType=='bool' and GenerType=='object':
+                        print('The conversion of column: "' + str(OriginalColName) +
+                              '"  to numeric type, in the dataframe, did not succeed. The following error generated:' + 
+                              str(e))
+                elif DbGenerType == 'bool' and GenerType == 'object':
                     try:
                         df2[OriginalColName] = df2[OriginalColName].astype(bool)
-                        print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a bool type as in database table.')
+                        print('Column: "' + str(
+                            OriginalColName) + '" in dataframe converted to a bool type as in database table.')
                     except Exception as e:
-                        print('The conversion of column: "' +str(OriginalColName)+ 
-                              '"  to bool type, in the dataframe, did not succeed. The following error generated:' + str(e))
-                elif DbGenerType=='bool' and GenerType=='Numeric':
+                        print('The conversion of column: "' + str(OriginalColName) +
+                              '"  to bool type, in the dataframe, did not succeed. The following error generated:' +
+                              str(e))
+                elif DbGenerType == 'bool' and GenerType == 'Numeric':
                     # Gets True if the numeric value is not zero and False if Zero
                     df2[OriginalColName] = df2[OriginalColName] != 0
-                    print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a bool type as in database table.')
-                elif DbGenerType=='Numeric' and GenerType=='bool':
-                    df2[OriginalColName] = np.where(df2[OriginalColName],1,0)
-                    print('Column: "' +str(OriginalColName)+ '" in dataframe converted to a numeric type as in database table.')
+                    print('Column: "' + str(
+                        OriginalColName) + '" in dataframe converted to a bool type as in database table.')
+                elif DbGenerType == 'Numeric' and GenerType == 'bool':
+                    df2[OriginalColName] = np.where(df2[OriginalColName], 1, 0)
+                    print('Column: "' + str(
+                        OriginalColName) + '" in dataframe converted to a numeric type as in database table.')
                 else:
                     continue
-    currCursor.close()                
+    currCursor.close()
     return df2
+
 
 def __findGenericType(PandasSer):
     GenerType = 'Other'
     DBType = 'text'
     if is_string_dtype(PandasSer):
-        GenerType='object'
+        GenerType = 'object'
         DBType = 'text'
     elif is_bool_dtype(PandasSer):
-        GenerType='bool'
+        GenerType = 'bool'
         DBType = 'bool'
     elif is_numeric_dtype(PandasSer):
-        GenerType='Numeric'
+        GenerType = 'Numeric'
         DBType = 'double'
     elif is_datetime64_any_dtype(PandasSer):
-        GenerType='Datetime'
+        GenerType = 'Datetime'
         DBType = 'Datetime'
 
-    return GenerType,DBType
+    return GenerType, DBType
 
-def __FindTablColGenType(col,colType,ConvTypeDic,DB_tableName):
+
+def __FindTablColGenType(col, colType, ConvTypeDic, DB_tableName):
     if colType not in ConvTypeDic.keys():
-        print('Column: ' + str(col)+ ' in the database table: ' + str(DB_tableName) +' has a type ' + 
-              str(colType) +' that is not supported.')
+        print('Column: ' + str(col) + ' in the database table: ' + str(DB_tableName) + ' has a type ' +
+              str(colType) + ' that is not supported.')
         return 'Other'
     else:
-        return  ConvTypeDic[colType] 
-    
-    
-#### Use the following 2 functions to read processes on the database (originaly made for Mysql) and kill them
+        return ConvTypeDic[colType]
+
+    #### Use the following 2 functions to read processes on the database (originaly made for Mysql) and kill them
+
 
 def FindProc(conn):
     """
@@ -179,22 +202,24 @@ def FindProc(conn):
     conn  - engine connection to the database
     returns dataframe with the processes
     """
-    SQL='SELECT *  FROM information_schema.processlist  ORDER BY time'
-    return pd.read_sql(SQL,conn)
+    SQL = 'SELECT *  FROM information_schema.processlist  ORDER BY time'
+    return pd.read_sql(SQL, conn)
 
-def KillDBProc(ProcID,conn,showProcList=True):
+
+def KillDBProc(ProcID, conn, showProcList=True):
     """
     Get a process ID and a connection and kill the process in the database
     ProcID          string or number that is the process id
     conn            database connection
-    showProcList    bool. If True then show the remaining processes
+    showProcList    bool. If True then shows the remaining processes
     """
-    conn.execute('kill ' +str(ProcID))
+    conn.execute('kill ' + str(ProcID))
     if showProcList:
         return FindProc(conn)
 
+
 ################ Get table from database and change it to dictionary #############
-def GetSQLasDict(SQL,conn):
+def GetSQLasDict(SQL, conn):
     """
     Gets an SQL statement and returns the output as dictionary. Any rowin the table is a dictionary
     In each dictionary(row) contains header names as keys and values as dictionary values
@@ -203,7 +228,7 @@ def GetSQLasDict(SQL,conn):
     Example:
     GetSQLasDict('select * from YourTable',conn)
     """
-    Result=conn.execute(SQL)
+    Result = conn.execute(SQL)
     d, a = {}, []
     for rowproxy in Result:
         # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
@@ -213,13 +238,14 @@ def GetSQLasDict(SQL,conn):
         a.append(d)
     return a
 
+
 ##################################################################################################################
 # The following functions are used for sending SQL messages to update dada tables in a database.
 # It checks if the record exist by checking if a record with the same keys exists.
 # If there is such a record it uses the SQL Update statement to update the record.
 # If not it uses the INSERT INTO statement.
-# It also copy the record to an archive table (with  name: original table name + "_archive"). The archive table
-# should contains  the same columns + "ArchiveDate" column as Datetime type.
+# It also copies the record to an archive table (with  name: original table name + "_archive"). The archive table
+# should contain  the same columns + "ArchiveDate" column as Datetime type.
 # Use this function to send SQL: BuildSQLAndSend
 # 
 # Example of using this module:
@@ -230,10 +256,8 @@ def GetSQLasDict(SQL,conn):
 
 # The Rec dictionary uses keys as the table columns and the values are the values we want to enter the record.
 # The KeyRec dictionary is the dictionary that contains keys of the primary keys in the table. (the algorithm will
-# use KeyRec dictionary to look if the record is already exists in the database.
+# use KeyRec dictionary to look if the record is already exists in the database.)
 ##################################################################################################################
-
-
 
 
 def CrtUpdateSQL(RecDic, KeyDic, TblName):
@@ -315,7 +339,7 @@ def CheckIfExists(keyDic, TableName, connection, Debug=False):
                  The keys are checked agaianst the DB.
     TableName str. The name of the table to check
     connection database conncetion.
-    Debug bool. If True then print all SQL statements
+    Debug bool. If True then prints all SQL statements
     Return: bool. True if the record exists in the table, False if not
     """
     cursor = connection.cursor()
@@ -336,10 +360,10 @@ def CheckIfExists(keyDic, TableName, connection, Debug=False):
     cursor.execute(sql)
     records = cursor.fetchall()
     # check if the cursor is from pymysql using sqlalchemy
-    if str(type(cursor))=="<class 'pymysql.cursors.Cursor'>":
-        Desc=cursor.description
-        header=[]
-        for i in range(0,len(Desc)):
+    if str(type(cursor)) == "<class 'pymysql.cursors.Cursor'>":
+        Desc = cursor.description
+        header = []
+        for i in range(0, len(Desc)):
             header.append(Desc[i][0])
     else:
         header = cursor.column_names

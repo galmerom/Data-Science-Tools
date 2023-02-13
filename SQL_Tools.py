@@ -32,7 +32,8 @@ import pytz
 import numpy as np
 
 
-def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjustFieldType=True, errorType='coerce'):
+def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjustFieldType=True, errorType='coerce',
+                        verbose=True):
     """
     This function compares a dataframe to a database table and does the following:
     1. If a column appears in the dataframe but not in the database table, it adds it to the
@@ -47,7 +48,7 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
     The function returns a NEW dataframe with the converted columns
 
     parameters:
-     
+
     :param df               dataframe. The input dataframe.
     :param DB_tableName     string. The name of the database table
     :param connection       database connection
@@ -64,6 +65,8 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
                             If ‘raise’, then invalid parsing will raise an exception.
                             If ‘coerce’, then invalid parsing will be set as NaN.   
                             If ‘ignore’, then invalid parsing will return the input.
+    :param verbose          bool. If True (default) it prints the changes that were done to the database table or
+                            the dataframe
 
     Returns a copy of the dataframe after changes
     """
@@ -98,7 +101,8 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
         if col not in TableColumnsLower:
             SQL = 'ALTER TABLE ' + str(DB_tableName) + ' ADD `' + str(OriginalColName) + '` ' + str(DBType)
             currCursor.execute(SQL)
-            print('Column: "' + str(OriginalColName) + '" added to table: ' + str(DB_tableName))
+            if verbose:
+                print('Column: "' + str(OriginalColName) + '" added to table: ' + str(DB_tableName))
         else:
             # In case the same column appears in different capitalization in dataframe ver. the DB table
             # Then convert the dataframe name to fit the table name
@@ -106,8 +110,9 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
                 DBColindx = [i for i, x in enumerate(TableColumnsLower) if x == col][0]
                 DBOriginalColName = TableColumns[DBColindx]
                 df2 = df2.rename({OriginalColName: DBOriginalColName}, axis=1)
-                print('Dataframe column: "' + str(OriginalColName) + '" changed to "' + str(DBOriginalColName) +
-                      '" to fit database table column name')
+                if verbose:
+                    print('Dataframe column: "' + str(OriginalColName) + '" changed to "' + str(DBOriginalColName) +
+                          '" to fit database table column name')
                 OriginalColName = DBOriginalColName
             # column exist. If asked adjust the type
             if adjustFieldType:
@@ -118,17 +123,19 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
                 if DbGenerType == 'object' and GenerType != 'object':
                     try:
                         df2[OriginalColName] = df2[OriginalColName].astype(str)
-                        print('Column: "' + str(
-                            OriginalColName) + '" in dataframe converted to a string type as in database table.')
+                        if verbose:
+                            print('Column: "' + str(
+                                OriginalColName) + '" in dataframe converted to a string type as in database table.')
                     except Exception as e:
                         print('The conversion of column: "' + str(OriginalColName) +
-                              '"  to string type, in the dataframe, did not succeed. The following error generated:' 
+                              '"  to string type, in the dataframe, did not succeed. The following error generated:'
                               + str(e))
                 elif DbGenerType == 'Datetime' and GenerType == 'object':
                     try:
                         df2[OriginalColName] = pd.to_datetime(df2[OriginalColName], errors=errorType)
-                        print('Column: "' + str(
-                            OriginalColName) + '" in dataframe converted to a date type as in database table.')
+                        if verbose:
+                            print('Column: "' + str(
+                                OriginalColName) + '" in dataframe converted to a date type as in database table.')
                     except Exception as e:
                         print('The conversion of column: "' + str(OriginalColName) +
                               '"  to date type, in the dataframe, did not succeed. The following error generated:'
@@ -136,17 +143,19 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
                 elif DbGenerType == 'Numeric' and GenerType == 'object':
                     try:
                         df2[OriginalColName] = pd.to_numeric(df2[OriginalColName], errors=errorType)
-                        print('Column: "' + str(
-                            OriginalColName) + '" in dataframe converted to a numeric type as in database table.')
+                        if verbose:
+                            print('Column: "' + str(
+                                OriginalColName) + '" in dataframe converted to a numeric type as in database table.')
                     except Exception as e:
                         print('The conversion of column: "' + str(OriginalColName) +
-                              '"  to numeric type, in the dataframe, did not succeed. The following error generated:' + 
+                              '"  to numeric type, in the dataframe, did not succeed. The following error generated:' +
                               str(e))
                 elif DbGenerType == 'bool' and GenerType == 'object':
                     try:
                         df2[OriginalColName] = df2[OriginalColName].astype(bool)
-                        print('Column: "' + str(
-                            OriginalColName) + '" in dataframe converted to a bool type as in database table.')
+                        if verbose:
+                            print('Column: "' + str(
+                                OriginalColName) + '" in dataframe converted to a bool type as in database table.')
                     except Exception as e:
                         print('The conversion of column: "' + str(OriginalColName) +
                               '"  to bool type, in the dataframe, did not succeed. The following error generated:' +
@@ -154,12 +163,14 @@ def InsertMissingFields(df, DB_tableName, connection, typeConverDic=None, adjust
                 elif DbGenerType == 'bool' and GenerType == 'Numeric':
                     # Gets True if the numeric value is not zero and False if Zero
                     df2[OriginalColName] = df2[OriginalColName] != 0
-                    print('Column: "' + str(
-                        OriginalColName) + '" in dataframe converted to a bool type as in database table.')
+                    if verbose:
+                        print('Column: "' + str(
+                            OriginalColName) + '" in dataframe converted to a bool type as in database table.')
                 elif DbGenerType == 'Numeric' and GenerType == 'bool':
                     df2[OriginalColName] = np.where(df2[OriginalColName], 1, 0)
-                    print('Column: "' + str(
-                        OriginalColName) + '" in dataframe converted to a numeric type as in database table.')
+                    if verbose:
+                        print('Column: "' + str(
+                            OriginalColName) + '" in dataframe converted to a numeric type as in database table.')
                 else:
                     continue
     currCursor.close()
@@ -385,7 +396,7 @@ def sendSQL(SQL, connection):
     Gets an SQL atatement and a connection object and send it to the DB.
     Inputs:
     SQL str. SQL atatement
-    connection mysql.connector object for connecting to DB
+    connection  "mysql.connector object" for connecting to DB
     """
     cursor = connection.cursor()
     cursor.execute(SQL)

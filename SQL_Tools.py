@@ -224,7 +224,9 @@ def KillDBProc(ProcID, conn, showProcList=True):
     conn            database connection
     showProcList    bool. If True then shows the remaining processes
     """
-    conn.execute('kill ' + str(ProcID))
+    crsr = conn.cursor()
+    crsr.execute('kill ' + str(ProcID))
+    crsr.close()
     if showProcList:
         return FindProc(conn)
 

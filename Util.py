@@ -288,7 +288,7 @@ def ConcatDataFrameDict(DFdic,AddOriginCol=True):
     return OutDf
 
 
-def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
+def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer',AddLeadingZeros=False):
     """
     This function gets a series and a list of values and returns a series with categories.
     (if the value is equal to an element in the bucket list, then it will get the bucket of the smaller one)
@@ -300,6 +300,7 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
     :param InputSer     pd.series  The input series
     :param BucketList   list. A list that defines the buckets limits
     :param NewSeriesName string. The name of the new series
+    :param AddLeadingZeros bool. If True then the output string will contain leading zeros for easy sorting
     return pd.series
     
     Example of use:
@@ -307,19 +308,28 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer'):
 
     """
     Bucklst = sorted(BucketList)
+    # Find the most digits in the list
+    MaxNumOfDigits = len(str(max(abs(x) for x in Bucklst))) 
+     # Create a new list to store the output.
+    output_list = Bucklst
+    if AddLeadingZeros:
+        output_list = []
+        # Iterate over the input list and add leading zeros to each number.
+        for num in Bucklst:
+            output_list.append("{0:0{1}}".format(num, MaxNumOfDigits))
     # Build a dataframe to use for calculations
     Outdf = pd.DataFrame()
     Outdf['Original'] = InputSer
     Outdf[NewSeriesName] = ""
     # Deal with the values BEFORE the first element and AFTER the last element in the bucket list
-    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = ' Less than ' + str(Bucklst[0])
-    Outdf.loc[Outdf['Original']>Bucklst[-1],NewSeriesName] = str(Bucklst[-1]) + '+'
+    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = ' Less than ' + str(output_list[0])
+    Outdf.loc[Outdf['Original']>Bucklst[-1],NewSeriesName] = str(output_list[-1]) + '+'
     # Deal with the values BETWEEN the first element and the last
     for i in range(0,len(Bucklst)-1):
         FirstElem = str(Bucklst[i])
         if len(FirstElem)==1 and FirstElem!='0':
             FirstElem = '0'+FirstElem 
-        Outdf.loc[Outdf['Original'].between(Bucklst[i],Bucklst[i+1],inclusive='left'),NewSeriesName] = FirstElem + '-' + str(Bucklst[i+1])
+        Outdf.loc[Outdf['Original'].between(Bucklst[i],Bucklst[i+1],inclusive='left'),NewSeriesName] = str(output_list[i]) + '-' + str(output_list[i+1])
     return Outdf[NewSeriesName]
 
 

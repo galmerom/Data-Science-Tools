@@ -1488,7 +1488,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
             colorlist = list(colorConverter.colors.keys())
         else:
             colorlist = list(mcolors.TABLEAU_COLORS)  # This list contains only 10 colors with big contrast
-        colorDic = dict(zip(ClrSer.unique(),
+        colorDic = dict(zip(sorted(ClrSer.unique()),
                             colorlist[0:len(ClrSer.unique())]))  # create a dictionary with unique values and colors
         ColorInput = ClrSer.map(colorDic)
     else:

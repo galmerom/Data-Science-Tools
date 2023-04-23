@@ -296,7 +296,7 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer',AddLeadingZeros
     Input series = [-10,0,12,13,25,10,3,60]
     BucketList = [0,10,20,30]
     The output will be:
-    Output series = ['Less than -10','0-10','10-20','10-20','20-30','10-20','0-10','30+']
+    Output series = ['#Less than -10','0-10','10-20','10-20','20-30','10-20','0-10','30+']
     :param InputSer     pd.series  The input series
     :param BucketList   list. A list that defines the buckets limits
     :param NewSeriesName string. The name of the new series
@@ -322,7 +322,7 @@ def CategValueSeries(InputSer,BucketList,NewSeriesName='CatgSer',AddLeadingZeros
     Outdf['Original'] = InputSer
     Outdf[NewSeriesName] = ""
     # Deal with the values BEFORE the first element and AFTER the last element in the bucket list
-    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = ' Less than ' + str(output_list[0])
+    Outdf.loc[Outdf['Original']<Bucklst[0],NewSeriesName] = '#Less than ' + str(output_list[0])
     Outdf.loc[Outdf['Original']>Bucklst[-1],NewSeriesName] = str(output_list[-1]) + '+'
     # Deal with the values BETWEEN the first element and the last
     for i in range(0,len(Bucklst)-1):

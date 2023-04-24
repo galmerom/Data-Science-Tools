@@ -1547,7 +1547,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     plt.xlabel(x)
     # Set x ticks - sorted (if string)
     if pd.api.types.is_string_dtype(dframe[x].dtype):
-      plt.xticks(sorted(dframe[x].unique()),rotation=XlabelsRotation)
+      plt.xticks(sorted(list(dframe[x].unique())),rotation=XlabelsRotation)
     else:
        plt.xticks(rotation=XlabelsRotation)
 

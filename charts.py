@@ -1469,8 +1469,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     BinsType         string. When find bins for DBScan it can find it using 'EqualPoints' that means every bin will
                       have the same amount of points. Or it can get 'Linear' which means that the boundries of each bin will
                       have the same amount of range.
-    ClrOrder          bool. In case that a point is at the same place as other point and we can not see the point under:
-                      If True then the "first" smaller amount in the ClrSeries will be shown first. Else the bigger will be first.
+    ClrOrder          bool. Changes the order of the colors per ClrSeries item.
     return nothing if FindBoundries=False
     return BoundDF,minEquation,maxEquation if FindBoundries=True
     BoundDF is a dataframe that shows for each bin the x mean and for the y: max, min, mean, and the calculated value
@@ -1545,6 +1544,9 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     # Set x and y axes labels
     plt.ylabel(y)
     plt.xlabel(x)
+    # Set x and y ticks - sorted
+    plt.set_xticks(sorted(x.unique()))
+    plt.set_yticks(sorted(y.unique()))
     ##### Add a diagonal line across the chart ###########
     if ShowEqualLine:
         plt.xlim(MinValue, MaxValue)

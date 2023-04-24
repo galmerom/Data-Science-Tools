@@ -1428,7 +1428,7 @@ def _Scoring(df, y_true, y_pred):
 def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
             ShowOutliar=False, OutFont=8,figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20, XAxisLimit=None,
             YAxisLimit=None, LegendFontSize=14, SizeBins=5, BasicSize=40, FindBoundries=False, BoundriesBins=20, Bound_SD_max=1,
-             Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints',ClrOrder=False):
+             Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints',ClrOrder=False,XlabelsRotation=0):
     """
     Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
     and lower boundaries.
@@ -1470,6 +1470,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
                       have the same amount of points. Or it can get 'Linear' which means that the boundries of each bin will
                       have the same amount of range.
     ClrOrder          bool. Changes the order of the colors per ClrSeries item.
+    XlabelsRotation   int. Rotate the x labels by this amount
     return nothing if FindBoundries=False
     return BoundDF,minEquation,maxEquation if FindBoundries=True
     BoundDF is a dataframe that shows for each bin the x mean and for the y: max, min, mean, and the calculated value
@@ -1544,9 +1545,12 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     # Set x and y axes labels
     plt.ylabel(y)
     plt.xlabel(x)
-    # Set x and y ticks - sorted
-    plt.set_xticks(sorted(x.unique()))
-    plt.set_yticks(sorted(y.unique()))
+    # Set x ticks - sorted (if string)
+    if pd.api.types.is_string_dtype(dframe[x].dtype):
+      plt.xticks(sorted(x.unique()),rotation=XlabelsRotation)
+    else:
+       plt.xticks(rotation=XlabelsRotation)
+
     ##### Add a diagonal line across the chart ###########
     if ShowEqualLine:
         plt.xlim(MinValue, MaxValue)

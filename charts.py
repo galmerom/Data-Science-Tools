@@ -1545,11 +1545,11 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     # Set x and y axes labels
     plt.ylabel(y)
     plt.xlabel(x)
-    # Set x ticks - sorted (if string)
-    if pd.api.types.is_string_dtype(dframe[x].dtype):
-      plt.xticks(sorted(list(dframe[x].unique())),rotation=XlabelsRotation)
-    else:
-       plt.xticks(rotation=XlabelsRotation)
+#     # Set x ticks - sorted (if string)
+#     if pd.api.types.is_string_dtype(dframe[x].dtype):
+#       plt.xticks(sorted(list(dframe[x].unique())),rotation=XlabelsRotation)
+#     else:
+#        plt.xticks(rotation=XlabelsRotation)
 
     ##### Add a diagonal line across the chart ###########
     if ShowEqualLine:

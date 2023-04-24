@@ -1427,8 +1427,8 @@ def _Scoring(df, y_true, y_pred):
 
 def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
             ShowOutliar=False, OutFont=8,figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20, XAxisLimit=None,
-            YAxisLimit=None, LegendFontSize=14, SizeBins=5, BasicSize=40,
-            FindBoundries=False, BoundriesBins=20, Bound_SD_max=1, Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints'):
+            YAxisLimit=None, LegendFontSize=14, SizeBins=5, BasicSize=40, FindBoundries=False, BoundriesBins=20, Bound_SD_max=1,
+             Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints',ClrOrder=False):
     """
     Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
     and lower boundaries.
@@ -1466,6 +1466,11 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     Bound_SD_max     float. The factor to multiply the SD for the MAX boundary line
     Bound_SD_min     float. The factor to multiply the SD for the MIN boundary line
     BoundryPolyLevel int. The level of the polynomial that is used to curve fit the boundaries
+    BinsType         string. When find bins for DBScan it can find it using 'EqualPoints' that means every bin will
+                      have the same amount of points. Or it can get 'Linear' which means that the boundries of each bin will
+                      have the same amount of range.
+    ClrOrder          bool. In case that a point is at the same place as other point and we can not see the point under:
+                      If True then the "first" smaller amount in the ClrSeries will be shown first. Else the bigger will be first.
     return nothing if FindBoundries=False
     return BoundDF,minEquation,maxEquation if FindBoundries=True
     BoundDF is a dataframe that shows for each bin the x mean and for the y: max, min, mean, and the calculated value
@@ -1488,7 +1493,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
             colorlist = list(colorConverter.colors.keys())
         else:
             colorlist = list(mcolors.TABLEAU_COLORS)  # This list contains only 10 colors with big contrast
-        colorDic = dict(zip(sorted(ClrSer.unique()),
+        colorDic = dict(zip(sorted(ClrSer.unique(),reverse=ClrOrder),
                             colorlist[0:len(ClrSer.unique())]))  # create a dictionary with unique values and colors
         ColorInput = ClrSer.map(colorDic)
     else:

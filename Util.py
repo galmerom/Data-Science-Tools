@@ -13,6 +13,7 @@
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
 #   ErrScoreSlicer - show the perentage score with LOT (limit of detection) by category
 # Column manipulation:
+#   pdChangeColLocation - Change the location of a column in dataframe
 #   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
 #   AddBasicFeatures - Add difference and ratio columns between columns (from a given list)
 # Model related:
@@ -543,3 +544,34 @@ def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension, include
             counter += 1
             shutil.move(os.path.join(InDirectory, file), os.path.join(OutDirectory, file))
     print(str(counter) + ' files copied to OutDirectory')
+    
+def pdChangeColLocation(df,Col2Move,Col2MoveBefore=None):
+    """
+    Change the location of a column in a dataframe
+    :param df               dataframe. The relevant dataframe
+    :param Col2Move         string or a list. The name of the column to move or a list of columns to move
+    :param Col2MoveBefore   string. The Col2Move column will be before this column. 
+                            If it ramains None then the Col2Move will be moved to the end
+    return dataframe
+    """
+    colList = list(df.columns)
+    if Col2MoveBefore not in colList and Col2MoveBefore is not None:
+        print ('Col2MoveBefore: '+Col2MoveBefore+ ' is not a column in the dataframe.')
+        return
+    if isinstance(Col2Move,list):
+        for elem in Col2Move:
+            df = pdChangeColLocation(df,elem,Col2MoveBefore)
+        return df    
+    else:
+        if Col2Move not in colList:
+            print ('Col2Move: '+Col2Move+ ' is not a column in the dataframe.')
+            return
+
+        oldindex = colList.index(Col2Move)
+        val = colList.pop(oldindex)
+        if Col2MoveBefore is None:
+            colList.append(val)
+        else:
+            newindex = colList.index(Col2MoveBefore)
+            colList.insert(newindex, val)
+        return df[colList]

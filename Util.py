@@ -13,7 +13,7 @@
 #   Scoring - Gets 2 series and return r^2 and RMSE and if asked it also show a chart
 #   ErrScoreSlicer - show the perentage score with LOT (limit of detection) by category
 # Column manipulation:
-#   pdChangeColLocation - Change the location of a column in dataframe
+#   pdChangeColLoc - Change the location of a column in dataframe
 #   CategValueSeries -Gets a series and a list of bins and returns a series with categories (bins), similar to histogram bins.
 #   AddBasicFeatures - Add difference and ratio columns between columns (from a given list)
 # Model related:
@@ -545,7 +545,7 @@ def MoveFilesWithSpecificExtention(InDirectory, OutDirectory, Extension, include
             shutil.move(os.path.join(InDirectory, file), os.path.join(OutDirectory, file))
     print(str(counter) + ' files copied to OutDirectory')
     
-def pdChangeColLocation(df,Col2Move,Col2MoveBefore=None):
+def pdChangeColLoc(df,Col2Move,Col2MoveBefore=None):
     """
     Change the location of a column in a dataframe
     :param df               dataframe. The relevant dataframe

@@ -229,6 +229,8 @@ def KillDBProc(ProcID, conn, showProcList=True):
     ProcIDLst = []
     if not isinstance(ProcID, list):
        ProcIDLst.append(ProcID)
+    else:
+       ProcIDLst=ProcID
     for elem in ProcIDLst:
       crsr.execute('kill ' + str(elem))
     crsr.close()

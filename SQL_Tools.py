@@ -213,7 +213,7 @@ def FindProc(conn):
     conn  - engine connection to the database
     returns dataframe with the processes
     """
-    SQL = 'SELECT *  FROM information_schema.processlist  ORDER BY time'
+    SQL = 'SELECT *  FROM information_schema.processlist  ORDER BY time DESC'
     return pd.read_sql(SQL, conn)
 
 

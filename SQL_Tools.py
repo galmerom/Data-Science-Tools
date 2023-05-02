@@ -221,10 +221,13 @@ def KillDBProc(ProcID, conn, showProcList=True):
     """
     Get a process ID and a connection and kill the process in the database
     If it gets a list it will do the list
+    If it gets None then it shows the list of processes 
     ProcID          list or number that is the process id
     conn            database connection
     showProcList    bool. If True then shows the remaining processes
     """
+    if ProcID is None:
+      return FindProc(conn)
     crsr = conn.cursor()
     ProcIDLst = []
     if not isinstance(ProcID, list):

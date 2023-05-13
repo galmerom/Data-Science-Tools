@@ -19,6 +19,8 @@
 # GetSQLasDict      - Gets an SQL statement and returns the output as dictionary.
 # FromDicToSqlUpdStatement   - Gets a dictionary and returns an UPDATE Sql statement
 #                               (also gets table name and where clause)
+# OnlyNewRecords -  Gets a dataframe and a table name and a key list and returns a dataframe with only the records 
+#                   that are in the dataframe but not in the table. (can be use for df.to_sql)
 ########################################################
 
 # Imports
@@ -483,3 +485,28 @@ def FromDicToSqlUpdStatement(TblName, Dic, WhereClause=None):
     if WhereClause is not None:
         SQL += " WHERE " + WhereClause
     return SQL
+  
+  def OnlyNewRecords(df,TableName,connection, KeyFields2Check,AdjustDF2TablTypes=True):
+    """
+    Gets a dataframe and a table name and returns only the records that are not in the table
+    :param AdjustDF2TablTypes bool. If True then the dataframe column types will adjust to the table column types
+                                    If there are fields in the dataframe and not in the table it will add them
+                                    to the table.
+    :param df: dataframe. The input dataframe
+    :param TableName: string. The name of the table to check
+    :param connection: database connection
+    :param KeyFields2Check: list. The list of fields to check if the record is in the table
+    :return: dataframe. The records that are not in the table
+    """
+    df2=df
+    if AdjustDF2TablTypes:
+        df2=SQLT.InsertMissingFields(df2,TableName,connection)
+        
+    SQL = 'SELECT * FROM ' + TableName
+    TempDF = pd.read_sql(SQL, connection)
+    if len(TempDF) > 0:
+        df2 = df2.merge(TempDF, how='left', on=KeyFields2Check, indicator=True,suffixes=('','_y'))
+        df2 = df2[df2['_merge'] == 'left_only']
+        df2 = df2.drop(columns=['_merge'])
+        df2 = df2.loc[:, ~df2.columns.str.endswith('_y')]
+    return df2

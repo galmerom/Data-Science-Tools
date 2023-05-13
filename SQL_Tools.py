@@ -500,7 +500,7 @@ def FromDicToSqlUpdStatement(TblName, Dic, WhereClause=None):
     """
     df2=df
     if AdjustDF2TablTypes:
-        df2=SQLT.InsertMissingFields(df2,TableName,connection)
+        df2=InsertMissingFields(df2,TableName,connection)
         
     SQL = 'SELECT * FROM ' + TableName
     TempDF = pd.read_sql(SQL, connection)

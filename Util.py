@@ -18,6 +18,8 @@
 #   AddBasicFeatures - Add difference and ratio columns between columns (from a given list)
 # Model related:
 #   FindFeatureImportanceRMSE - Takes a model and the input and show the importance of the CHANGE in each feature in terms of RMSE
+# Compare dataframes:
+#   FindDiffBetweenDfByKey - Gets 2 dataframes and find the extra records that are in table2 compare to table1 by key list
 # Other:
 #   PandasIf - do a simple if with pandas series if(condition,TrueValue,FalseValue)
 #####################################################################################################################################
@@ -573,5 +575,21 @@ def pdChangeColLoc(df,Col2Move,Col2MoveBefore=None):
             colList.append(val)
         else:
             newindex = colList.index(Col2MoveBefore)
+            
+            
+def FindDiffBetweenDfByKey(df1,df2,keyList):
+    """
+    Gets 2 dataframes and a list of keys. The function returns a dataframe with the records that are in df2 but not in df1
+    :param df1: dataframe. The first dataframe
+    :param df2: dataframe. The second dataframe
+    :param keyList: list. The list of keys to compare the dataframes by
+    :return: dataframe. The records that are in df2 but not in df1
+    """
+    df1=df1.drop_duplicates(subset=keyList,keep='first')
+    df2=df2.drop_duplicates(subset=keyList,keep='first')
+    df1=df1.set_index(keyList)
+    df2=df2.set_index(keyList)
+    df2=df2.drop(df1.index,errors='ignore')
+    return df2.reset_index()
             colList.insert(newindex, val)
         return df[colList]

@@ -575,6 +575,8 @@ def pdChangeColLoc(df,Col2Move,Col2MoveBefore=None):
             colList.append(val)
         else:
             newindex = colList.index(Col2MoveBefore)
+            colList.insert(newindex, val)
+        return df[colList]
             
             
 def FindDiffBetweenDfByKey(df1,df2,keyList):
@@ -591,5 +593,3 @@ def FindDiffBetweenDfByKey(df1,df2,keyList):
     df2=df2.set_index(keyList)
     df2=df2.drop(df1.index,errors='ignore')
     return df2.reset_index()
-            colList.insert(newindex, val)
-        return df[colList]

@@ -562,7 +562,7 @@ def pdChangeColLoc(df,Col2Move,Col2MoveBefore=None):
         return
     if isinstance(Col2Move,list):
         for elem in Col2Move:
-            df = Util.pdChangeColLocation(df,elem,Col2MoveBefore)
+            df = pdChangeColLoc(df,elem,Col2MoveBefore)
         return df    
     else:
         if Col2Move not in colList:

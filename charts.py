@@ -379,7 +379,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
                 tempDic = {xCol: [xColVal], LegendCol: [LegendValue], ValueCol: [0]}
                 tmpDF = pd.DataFrame.from_dict(tempDic)
                 tmpDF.index = [df.index.max() + 1]
-                df = df.append(tmpDF)
+                df = pd.concat([df, tmpDF], axis=0)
     df = df.sort_values(by=xCol)
 
     fig, ax = plt.subplots(figsize=ChartSizeVal)

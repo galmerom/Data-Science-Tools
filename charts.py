@@ -1643,9 +1643,13 @@ def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD
                 currYSd=prevDF[y].std()
             currYminWithSD = currYMean - Bound_SD_min * currYSd
             currYmaxWithSD = currYMean + Bound_SD_max * currYSd
-            OutDF = OutDF.append({'Bin': bin, 'Y_Min': currYMin, 'Y_max': currYMax, 'X_mean': currXavg,
+            # Add the values to the dataframe
+            NewRowDic = {'Bin': bin, 'Y_Min': currYMin, 'Y_max': currYMax, 'X_mean': currXavg,
                                   'Y_Mean': currYMean, 'Y_Sd': currYSd, 'Y_Mean_Less_x_SD': currYminWithSD,
-                                  'Y_Mean_plus_x_SD': currYmaxWithSD}, ignore_index=True)
+                                  'Y_Mean_plus_x_SD': currYmaxWithSD}
+            df_dictionary = pd.DataFrame([NewRowDic])
+            OutDF = pd.concat([OutDF, df_dictionary], ignore_index=True)
+    # Find the polynomials that fit
     curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean_Less_x_SD'], showCharts=False)
     minEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
     curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean_plus_x_SD'], showCharts=False)

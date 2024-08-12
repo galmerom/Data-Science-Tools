@@ -266,7 +266,7 @@ def __AddTextOnTheCorner(ax, str2Show):
 
 def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=10, TitleSize=30,
                    WithPerc=0, XtickFontSize=15, ColorInt=0, Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
-                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False):
+                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False,SortBySum=0):
     """
       Parameters:
         :param InpList =  List of tuples.Dataframes to show. Each element in the list is a tuple.
@@ -302,6 +302,8 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         :param TopValFactor: float. The max value of the y-axis is determined by the max value
                                     in the chart * TopValFactor
         :param SaveCharts = Bool. If True, then it will save the chart as a jpeg file (use for presentations)
+        :param SortBySum = int. If 0 then the x axis is sorted by xCol else it is sorted by the sum of all ValueCol per xCol
+                                just like doing group by xCol, sum by ValueCol and then sort by the grouped ValueCol
 
 
     """
@@ -318,7 +320,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
     if NumRows == 1 and NumCol == 1:
         ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadVal=PadValue, StackBarPer=StackBarPer,
                                              ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc,
-                                             ColorInt=ColorInt)
+                                             ColorInt=ColorInt,SortBySum=SortBySum)
         ax.title.set_size(TitleSize)
         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
@@ -360,7 +362,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
 
 
 def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, StackBarPer=False, ChartSizeVal=(10, 7),
-                            FsizeVal=10, WithPerc=0, ColorInt=0):
+                            FsizeVal=10, WithPerc=0, ColorInt=0,SortBySum=0):
     """
     xCol = The column we want to be in the x-axis
     LegendCol = The column that we want to be the legend
@@ -380,7 +382,14 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
                 tmpDF = pd.DataFrame.from_dict(tempDic)
                 tmpDF.index = [df.index.max() + 1]
                 df = pd.concat([df, tmpDF], axis=0)
-    df = df.sort_values(by=xCol)
+    if SortBySum == 0:
+      df = df.sort_values(by=xCol)
+    else:
+      SortDF = df[[xCol,ValueCol]].rename({ValueCol:'Sort_col'},axis=1).groupby([xCol]).sum().sort_values(by = 'Sort_col',ascending=False)
+      df = df.merge(SortDF,on=xCol,how='left')
+      df = df.sort_values(by='Sort_col',ascending=False)
+      df = df.drop('Sort_col',axis=1)
+    
 
     fig, ax = plt.subplots(figsize=ChartSizeVal)
 

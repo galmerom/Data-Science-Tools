@@ -441,10 +441,13 @@ def FindFeatureImportanceRMSE(X,y,model,diffValinPercList,showchart=True,MaxFeat
             ExpectedTimeLeftInMin = round((NumOfIter-counter)*(((dt.datetime.now()-startTime).total_seconds() / 60.0) / (counter+1)),1)
             print('Iteration: '+str(counter) + ' out of : ' +str(NumOfIter)+' Curr Feature:' + col + ' Diff Value: '+
                   str(diffValue) + ' Exp. Min. left: ' + str(ExpectedTimeLeftInMin))
-            OutDF = OutDF.append({'Feature':col,'diff_Value_Perc':diffValue,'Base_RMSE':BaseRMSE,
+            tempDic = {'Feature':col,'diff_Value_Perc':diffValue,'Base_RMSE':BaseRMSE,
                           'DiffVal_RMSE':CurrRMSE,'DiffMaxBase':(CurrRMSE-BaseRMSE),
                           'Abs_DiffMaxBase':abs(CurrRMSE-BaseRMSE),
-                          'ActualInpMaxOverMin':abs(tempdf[col].max()/tempdf[tempdf[col]!=0][col].min())}, ignore_index=True)
+                          'ActualInpMaxOverMin':abs(tempdf[col].max()/tempdf[tempdf[col]!=0][col].min())}
+            tmpDF = pd.DataFrame.from_dict(tempDic)
+            tmpDF.index = [OutDF.index.max() + 1]
+            OutDF = pd.concat([OutDF, tmpDF], axis=0)
             OutDF = OutDF.sort_values(by='ActualInpMaxOverMin',ascending=False)
     ### create charts to show the results ######
     if showchart:

@@ -266,7 +266,8 @@ def __AddTextOnTheCorner(ax, str2Show):
 
 def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=10, TitleSize=30,
                    WithPerc=0, XtickFontSize=15, ColorInt=0, Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
-                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False,SortBySum=0):
+                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False,SortBySum=0,
+                   CategSortLs=[]):
     """
       Parameters:
         :param InpList =  List of tuples.Dataframes to show. Each element in the list is a tuple.
@@ -301,10 +302,11 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
                            The last integer is the correction on the y-axis.
         :param TopValFactor: float. The max value of the y-axis is determined by the max value
                                     in the chart * TopValFactor
-        :param SaveCharts = Bool. If True, then it will save the chart as a jpeg file (use for presentations)
-        :param SortBySum = int. If 0 then the x axis is sorted by xCol else it is sorted by the sum of all ValueCol per xCol
-                                just like doing group by xCol, sum by ValueCol and then sort by the grouped ValueCol
-
+        :param SaveCharts = Bool. If True, then it will save the chart as a jpeg file (used for presentations)
+        :param SortBySum = int. If 0 then the x-axis is sorted by xCol else it is sorted by the sum of all ValueCol per xCol
+                                just like doing group by xCol, sum by ValueCol, and then sort by the grouped ValueCol
+        :param CategSortLs = list. If not empty, then the Legend will be sorted according to the list order (should contain
+                              all possible categories. If the data contains new categories it will be placed at the end
 
     """
 
@@ -320,7 +322,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
     if NumRows == 1 and NumCol == 1:
         ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadVal=PadValue, StackBarPer=StackBarPer,
                                              ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc,
-                                             ColorInt=ColorInt,SortBySum=SortBySum)
+                                             ColorInt=ColorInt,SortBySum=SortBySum,CategSortLs=CategSortLs)
         ax.title.set_size(TitleSize)
         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
@@ -358,11 +360,28 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
     plt.show()
 
 
-"""Create the stack bar from scratch"""
+def __list_compare_and_sort(mainList, actualList):
+  """
+  This function is sorting the actualList according to mainList. If there is a member in actualList that 
+  is not in mainList it will be at the end of the returned list
+  mainList = list. The list that contains the sorting order
+  actualList = list. The list that need to be sorted
+  """
+  
+  if mainList == actualList:
+    return mainList
+  elif set(actualList).issubset(set(mainList)):
+    return sorted(actualList, key=mainList.index)
+  else:
+    newList = mainList.copy()
+    for item in actualList:
+      if item not in mainList:
+        newList.append(item)
+    return newList
 
-
+""" Create the stack bar from scratch """
 def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, StackBarPer=False, ChartSizeVal=(10, 7),
-                            FsizeVal=10, WithPerc=0, ColorInt=0,SortBySum=0):
+                            FsizeVal=10, WithPerc=0, ColorInt=0,SortBySum=0,CategSortLs=[]):
     """
     xCol = The column we want to be in the x-axis
     LegendCol = The column that we want to be the legend
@@ -374,7 +393,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
     # Copy the original dataframe so if we add records it will not have an effect on the original
     df = dfOriginal.copy()
 
-    # Add records with zero values to a combination of xCol and LegendCol that is not exist in the original dataframe
+    # Add records with zero values to a combination of xCol and LegendCol that does not exist in the original dataframe
     for xColVal in df[xCol].unique():
         for LegendValue in df[LegendCol].unique():
             if len(df[(df[xCol] == xColVal) & (df[LegendCol] == LegendValue)]) == 0:
@@ -393,7 +412,10 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
 
     fig, ax = plt.subplots(figsize=ChartSizeVal)
 
-    LegendVal = df[LegendCol].drop_duplicates()
+    if len(CategSortLs)>0:
+      LegendVal = __list_compare_and_sort(CategSortLs, df[LegendCol].drop_duplicates())
+    else:
+      LegendVal = df[LegendCol].drop_duplicates()
 
     margin_bottom = np.zeros(len(df[xCol].drop_duplicates()))
     # colors = ["#CC0000", "#FF8000","#FFFF33","#66FFB2","#66FFB2"]

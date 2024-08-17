@@ -404,9 +404,9 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
     if SortBySum == 0:
       df = df.sort_values(by=xCol)
     else:
-      SortDF = df[[xCol,ValueCol]].rename({ValueCol:'Sort_col'},axis=1).groupby([xCol]).sum().sort_values(by = 'Sort_col',ascending=False)
+      SortDF = df[[xCol,ValueCol]].rename({ValueCol:'Sort_col'},axis=1).groupby([xCol]).sum()
       df = df.merge(SortDF,on=xCol,how='left')
-      df = df.sort_values(by='Sort_col',ascending=False)
+      df = df.sort_values(by=['Sort_col',xCol],ascending=False)
       df = df.drop('Sort_col',axis=1)
     
 

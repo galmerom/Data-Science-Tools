@@ -413,7 +413,7 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
     fig, ax = plt.subplots(figsize=ChartSizeVal)
 
     if len(CategSortLs)>0:
-      LegendVal = __list_compare_and_sort(CategSortLs, df[LegendCol].drop_duplicates())
+      LegendVal = __list_compare_and_sort(CategSortLs, list(df[LegendCol].drop_duplicates()))
     else:
       LegendVal = df[LegendCol].drop_duplicates()
 

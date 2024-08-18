@@ -596,18 +596,17 @@ class MegaClassifier:
 
             # Add to dataframe
             CombName = '_'.join([str(elem) for elem in comb])
-            self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_Avg',
-                                                                'Score': Y_averageScore,
-                                                                'NumOfModels': len(comb),
-                                                                'Param': ('Avg', comb)}, ignore_index=True)
-            self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_Max',
-                                                                'Score': Y_maxScore,
-                                                                'NumOfModels': len(comb),
-                                                                'Param': ('Max', comb)}, ignore_index=True)
-            self.BestCombResults = self.BestCombResults.append({'Combination': CombName + '_SPC',
-                                                                'Score': Y_SPS_Score,
-                                                                'NumOfModels': len(comb),
-                                                                'Param': ('SPS', comb)}, ignore_index=True)
+            Rec1 = pd.DataFrame.from_dict({'Combination': CombName + '_Max','Score': Y_averageScore,'NumOfModels': len(comb),
+                                            'Param': ('Max', comb)})
+            Rec1.index = [self.BestCombResults.index.max() + 1]
+            Rec2 = pd.DataFrame.from_dict({'Combination': CombName + '_Avg','Score': Y_maxScore,'NumOfModels': len(comb),
+                                            'Param': ('Avg', comb)})
+            Rec2.index = [Rec1.index + 1]
+            Rec3 = pd.DataFrame.from_dict({'Combination': CombName + '_SPC','Score': Y_SPS_Score,'NumOfModels': len(comb),
+                                            'Param': ('SPS', comb)})
+            Rec3.index = [Rec2.index + 1]            
+            self.BestCombResults = pd.concat([self.BestCombResults, Rec1,Rec2,Rec3], axis=0)
+
         # Sort data frame according to score
         self.BestCombResults = self.BestCombResults.sort_values(by='Score', ascending=False)
         self.BestCombResults = self.BestCombResults.reset_index()
@@ -663,8 +662,9 @@ class MegaClassifier:
             Summary_df = pd.DataFrame(columns=['Name of combination', 'Scoring'])
             for col in list(res_df.columns):
                 CurrScore = self.OriginalScoring(y_true, res_df[col])
-                Summary_df = Summary_df.append({'Name of combination': col, 'Scoring': CurrScore}, ignore_index=True)
-
+                tempDf = pd.DataFrame.from_dict({'Name of combination': col, 'Scoring': CurrScore})
+                tempDf.index = [Summary_df.index.max() + 1]
+                Summary_df = pd.concat([Summary_df,tempDf], axis=0)
         return res_df, Summary_df
 
     @staticmethod
@@ -824,7 +824,7 @@ class MegaClassifier:
                 self.ClassReportDF = tempDF.copy()
                 FirstFlag = False
             else:
-                self.ClassReportDF = self.ClassReportDF.append(tempDF)
+                self.ClassReportDF = pd.concat([self.ClassReportDF,tempDF], axis=0)
 
     def GetSpecificLabelScore(self, ListOfScoreTypes, ListOfLabels, ShowChart=False):
         """
@@ -1166,7 +1166,7 @@ class MultiMegaClassifiers:
                 yPred_DF = CurrModel
                 Flag = False
             else:
-                yPred_DF = yPred_DF.append(CurrModel)
+                yPred_DF =  pd.concat([yPred_DF,CurrModel], axis=0)
 
         yPred_DF = yPred_DF.reindex(X.index.tolist())
 
@@ -1200,13 +1200,13 @@ class MultiMegaClassifiers:
         if not isinstance(CurrScore, pd.DataFrame):
             return
         CurrScore['Slice'] = strName
-        self.ScoreDf4All = self.ScoreDf4All.append(CurrScore)
+        self.ScoreDf4All = pd.concat([self.ScoreDf4All,CurrScore], axis=0)
         # Classification report
         CurrClassReport = MC_model.GetClassificationReport()
         CurrClassReport['Slice'] = strName
-        self.ClassReportAll = self.ClassReportAll.append(CurrClassReport)
-
+        self.ClassReportAll = pd.concat([self.ClassReportAll,CurrClassReport], axis=0)
+        
         # Feature importance
         Curr_Feature = MC_model.GetFeatureImportance(ShowChart=False)
         Curr_Feature['Slice'] = strName
-        self.Feature_all = self.Feature_all.append(Curr_Feature)
+        self.Feature_all = pd.concat([self.Feature_all,Curr_Feature], axis=0)

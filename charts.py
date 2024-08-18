@@ -10,7 +10,7 @@ pairplotVerCol - Used for comparing every 2 features against the target feature.
 pairplotVerColSNS - The same as pairplotVerCol but charts made with seaborn library
 AnomalyChart - Use this chart to show inertia when using k - means
 plotCM - Plotting graphical confusion matrix can also show classification report
-ClassicGraphicCM - like plotCM, except it does not get a model and perform a predict (gets y_pred and classes instead)
+ClassicGraphicCM - like plotCM, except it does not get a model and perform a prediction(gets y_pred and classes instead)
 PlotFeatureImportance - Plot feature importance and return a dataframe
 Show_AucAndROC - Show AUC value, and if a classifier model is given, it also shows the ROC chart
 BuildMuliLineChart - Built a chart with two or more lines. The first line is on the left axis, the rest are on the
@@ -20,7 +20,6 @@ PolyFitResults - Build ski-learn curve fit for polynomials until the 5th degree 
 Scatter - Used for creating a scatter that uses x and y as the location of the point. It also uses DBSCAN to show
             outliers values.
 """
-
 
 # Imports
 import pandas as pd
@@ -159,7 +158,7 @@ def __add_value_labels(ax, Fsize=15, WithPerc=0, spacing=5, PadValue=0.3, precis
                 1 = Only Normalized Percentage
                 2 = Only values
                 3 = Only Percentage
-                Normalized Percentage = The value of column/ sum of all columns
+                Normalized Percentage = The value of column / sum of all columns
     :param spacing: int. The distance between the labels and the bars.
     :param PadValue: float The amount of space around the text
     :param precision: int. Number of digits after the dot to show in the label
@@ -266,7 +265,7 @@ def __AddTextOnTheCorner(ax, str2Show):
 
 def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', ChartSize=(15, 5), Fsize=10, TitleSize=30,
                    WithPerc=0, XtickFontSize=15, ColorInt=0, Xlabelstr=['', 15], Ylabelstr=['', 15], PadValue=0.3,
-                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False,SortBySum=0,
+                   StackBarPer=False, txt2show=[("", 10)], TopValFactor=1.1, SaveCharts=False, SortBySum=0,
                    CategSortLs=[]):
     """
       Parameters:
@@ -303,10 +302,11 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
         :param TopValFactor: float. The max value of the y-axis is determined by the max value
                                     in the chart * TopValFactor
         :param SaveCharts = Bool. If True, then it will save the chart as a jpeg file (used for presentations)
-        :param SortBySum = int. If 0 then the x-axis is sorted by xCol else it is sorted by the sum of all ValueCol per xCol
-                                just like doing group by xCol, sum by ValueCol, and then sort by the grouped ValueCol
-        :param CategSortLs = list. If not empty, then the Legend will be sorted according to the list order (should contain
-                              all possible categories. If the data contains new categories it will be placed at the end
+        :param SortBySum = int. If 0 then the x-axis is sorted by xCol else it is sorted by the sum of all ValueCol per
+                           xCol just like doing group by xCol, sum by ValueCol, and then sort by the grouped ValueCol
+        :param CategSortLs = list. If not empty, then the Legend will be sorted according to the list order
+                            (should contain all possible categories). If the data contains new categories it will be
+                             placed at the end
 
     """
 
@@ -322,7 +322,7 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
     if NumRows == 1 and NumCol == 1:
         ax, maxVal = __CreateStackBarDetails(InpList[0], TitleList[0], PadVal=PadValue, StackBarPer=StackBarPer,
                                              ChartSizeVal=ChartSize, FsizeVal=Fsize, WithPerc=WithPerc,
-                                             ColorInt=ColorInt,SortBySum=SortBySum,CategSortLs=CategSortLs)
+                                             ColorInt=ColorInt, SortBySum=SortBySum, CategSortLs=CategSortLs)
         ax.title.set_size(TitleSize)
         ax.xaxis.set_tick_params(labelsize=XtickFontSize, rotation=45)
         ax.set_xlabel(Xlabelstr[0], fontsize=Xlabelstr[1])
@@ -361,27 +361,30 @@ def StackBarCharts(InpList, TitleList, NumRows=1, NumCol=1, ChartType='bar', Cha
 
 
 def __list_compare_and_sort(mainList, actualList):
-  """
+    """
   This function is sorting the actualList according to mainList. If there is a member in actualList that 
   is not in mainList it will be at the end of the returned list
   mainList = list. The list that contains the sorting order
   actualList = list. The list that need to be sorted
   """
-  
-  if mainList == actualList:
-    return mainList
-  elif set(actualList).issubset(set(mainList)):
-    return sorted(actualList, key=mainList.index)
-  else:
-    newList = mainList.copy()
-    for item in actualList:
-      if item not in mainList:
-        newList.append(item)
-    return newList
+
+    if mainList == actualList:
+        return mainList
+    elif set(actualList).issubset(set(mainList)):
+        return sorted(actualList, key=mainList.index)
+    else:
+        newList = mainList.copy()
+        for item in actualList:
+            if item not in mainList:
+                newList.append(item)
+        return newList
+
 
 """ Create the stack bar from scratch """
+
+
 def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, StackBarPer=False, ChartSizeVal=(10, 7),
-                            FsizeVal=10, WithPerc=0, ColorInt=0,SortBySum=0,CategSortLs=[]):
+                            FsizeVal=10, WithPerc=0, ColorInt=0, SortBySum=0, CategSortLs=[]):
     """
     xCol = The column we want to be in the x-axis
     LegendCol = The column that we want to be the legend
@@ -402,20 +405,19 @@ def __CreateStackBarDetails(tupleParam, titleVal, TitleSize=20, PadVal=0.3, Stac
                 tmpDF.index = [df.index.max() + 1]
                 df = pd.concat([df, tmpDF], axis=0)
     if SortBySum == 0:
-      df = df.sort_values(by=xCol)
+        df = df.sort_values(by=xCol)
     else:
-      SortDF = df[[xCol,ValueCol]].rename({ValueCol:'Sort_col'},axis=1).groupby([xCol]).sum()
-      df = df.merge(SortDF,on=xCol,how='left')
-      df = df.sort_values(by=['Sort_col',xCol],ascending=False)
-      df = df.drop('Sort_col',axis=1)
-    
+        SortDF = df[[xCol, ValueCol]].rename({ValueCol: 'Sort_col'}, axis=1).groupby([xCol]).sum()
+        df = df.merge(SortDF, on=xCol, how='left')
+        df = df.sort_values(by=['Sort_col', xCol], ascending=False)
+        df = df.drop('Sort_col', axis=1)
 
     fig, ax = plt.subplots(figsize=ChartSizeVal)
 
-    if len(CategSortLs)>0:
-      LegendVal = __list_compare_and_sort(CategSortLs, list(df[LegendCol].drop_duplicates()))
+    if len(CategSortLs) > 0:
+        LegendVal = __list_compare_and_sort(CategSortLs, list(df[LegendCol].drop_duplicates()))
     else:
-      LegendVal = df[LegendCol].drop_duplicates()
+        LegendVal = df[LegendCol].drop_duplicates()
 
     margin_bottom = np.zeros(len(df[xCol].drop_duplicates()))
     # colors = ["#CC0000", "#FF8000","#FFFF33","#66FFB2","#66FFB2"]
@@ -655,7 +657,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
     :param S: In the case of a scatter plot: how big should the points be.
     :param UseTargetAsHue: bool. If true, then use the target column value as the chart's hue value.
                            (determine the colors based on the values)
-    :param ChangeAxis: bool. If false, then f(x) is on the y axis (default) if true, then change the axis so f(x)
+    :param ChangeAxis: bool. If false, then f(x) is on the y-axis (default) if true, then change the axis so f(x)
                              is on the x-axis
     :param Savepng: bool. If True, then every chart will be saved in png format
     :return: nothing
@@ -694,7 +696,7 @@ def pairplotVerColSNS(DF, TargetCol, Figsize=(15, 5), Xlabelstr=15, Ylabelstr=15
 """# Anomaly chart"""
 
 
-def AnomalyChart(X, model,ylim=(-7, 7),xlim=(-7, 7),FigSize=(10,10)):
+def AnomalyChart(X, model, ylim=(-7, 7), xlim=(-7, 7), FigSize=(10, 10)):
     """
   The function gets a np array X and an outlier model, AFTER FITTING, such as:
    Isolation forest
@@ -712,7 +714,7 @@ def AnomalyChart(X, model,ylim=(-7, 7),xlim=(-7, 7),FigSize=(10,10)):
     xx1, xx2 = np.meshgrid(np.linspace(xlim[0], xlim[1], 100),
                            np.linspace(ylim[0], ylim[1], 100))
     Z = model.decision_function(np.c_[xx1.ravel(), xx2.ravel()]).reshape(xx1.shape)
-    fig, ax = plt.subplots(1,1, figsize=FigSize)
+    fig, ax = plt.subplots(1, 1, figsize=FigSize)
 
     # Background colors
     ax.contourf(xx1, xx2, Z,
@@ -735,7 +737,7 @@ def AnomalyChart(X, model,ylim=(-7, 7),xlim=(-7, 7),FigSize=(10,10)):
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     plt.show()
-    
+
 
 """# Inertia elbow chart"""
 
@@ -775,7 +777,7 @@ def InertiaElbow(data, model, StartFrom=1, EndAt=10, AddLabels=False):
 
 # Confusion matrix
 def plotCM(X, y_true, modelName, normalize=False, title=None, cmap=plt.cm.Blues, precisionVal=2, titleSize=15,
-           fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, RemoveColorBar=False,  ShowAUCVal=False,
+           fig_size=(7, 5), InFontSize=15, LabelSize=15, ClassReport=True, RemoveColorBar=False, ShowAUCVal=False,
            pos_label=1):
     """
      This function prints and plots the confusion matrix.
@@ -1017,10 +1019,10 @@ def PlotFeatureImportance(X, model, TopFeatures=10, ShowChart=True, Label_Precis
 
 
 def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, FirstAxisLimit=None, SecondAxisLimit=None,
-                       XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'], 
+                       XField='dataframe_Index', figsize=(20, 7), linewidth=0, colors=['none'],
                        yLabels=('FirstField', 'SecondLabel'), LegendBboxCorr=None, AnnotLst={}, MarkerWidth=2,
-                       title=("", 16), marker="o", SameAxis = 'None', AllFontSize = 14, LegFontSize=None,
-                       AxisFontSize=None,LabelSizes=None, ReturnArtistOnly=False, SavePath=None,
+                       title=("", 16), marker="o", SameAxis='None', AllFontSize=14, LegFontSize=None,
+                       AxisFontSize=None, LabelSizes=None, ReturnArtistOnly=False, SavePath=None,
                        showTable=False):
     """
     Build a chart with 1 or more lines where the first line gets the left axis, and the rest gets the right axis
@@ -1054,7 +1056,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                             The values of the dictionary: The first element is the list of strings to show
                             the second element is the font size.
                             If AnnotLst is empty, then nothing will happen.
-        MarkerWidth =       int or list of int.The size of the marker (usually the size of the point). If int, then the
+        MarkerWidth =       int or list of int. The size of the marker (usually the size of the point). If int, then the
                             size will be the same for all lines. If list, then the first element will get the first
                              value, and so on.
         title =             tuple. The first element is a string that will be the figure title. The second element is
@@ -1097,30 +1099,30 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     NumOfLines = len(YFields)
     lines = []
     # Deal with fonts
-    if LegFontSize is None: 
+    if LegFontSize is None:
         LegFontSize = AllFontSize
-    if AxisFontSize is None: 
-        AxisFontSize = (AllFontSize,AllFontSize)
-    if LabelSizes is None: 
-        LabelSizes = (AllFontSize+5,AllFontSize+5)        
-    # Deal with same axis parameter if equal to 1 or 2
+    if AxisFontSize is None:
+        AxisFontSize = (AllFontSize, AllFontSize)
+    if LabelSizes is None:
+        LabelSizes = (AllFontSize + 5, AllFontSize + 5)
+        # Deal with same axis parameter if equal to 1 or 2
     if SameAxis is not None:
         if SameAxis.lower() == 'right':
             maxVal = df[YFields[1:]].max().max()
             minVal = df[YFields[1:]].min().min()
-            ExtraVal = (maxVal-minVal)*0.1
+            ExtraVal = (maxVal - minVal) * 0.1
             if SecondAxisLimit is None:
-                SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
+                SecondAxisLimit = (minVal - ExtraVal, maxVal + ExtraVal)
 
         if SameAxis.lower() == 'both':
             maxVal = df[YFields].max().max()
             minVal = df[YFields].min().min()
-            ExtraVal = (maxVal-minVal)*0.1
+            ExtraVal = (maxVal - minVal) * 0.1
             if SecondAxisLimit is None:
-                SecondAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal) 
+                SecondAxisLimit = (minVal - ExtraVal, maxVal + ExtraVal)
 
             if FirstAxisLimit is None:
-                FirstAxisLimit = (minVal-ExtraVal,maxVal+ExtraVal)
+                FirstAxisLimit = (minVal - ExtraVal, maxVal + ExtraVal)
 
     # create figure and axis objects with subplots()
     fig, ax = plt.subplots(figsize=figsize)
@@ -1164,14 +1166,13 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                 label=FieldDescription[0], markeredgewidth=currMarWdth))
     # set x-axis label
     ax.set_xlabel(xLabel, fontsize=LabelSizes[0])
-        
 
     # set y-axis label
     ax.set_ylabel(y_labels[0], fontsize=LabelSizes[1], color="red")
     if AxisFontSize is not None:
-        ax.tick_params(axis='x', labelsize= AxisFontSize[0])
-        ax.tick_params(axis='y', labelsize= AxisFontSize[1]) 
-    # set y-axis limits
+        ax.tick_params(axis='x', labelsize=AxisFontSize[0])
+        ax.tick_params(axis='y', labelsize=AxisFontSize[1])
+        # set y-axis limits
     ax.set_ylim(FirstAxisLimit)
     if len(AnnotLst) > 0:
         if 0 in AnnotLst.keys():
@@ -1197,7 +1198,7 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
                               linewidth=linewidth, label=FieldDescription[Inx], markeredgewidth=currMarWdth))
         ax2.set_ylim(SecondAxisLimit)
         if AxisFontSize is not None:
-            ax2.tick_params(axis='y', labelsize= AxisFontSize[1]) 
+            ax2.tick_params(axis='y', labelsize=AxisFontSize[1])
         if len(AnnotLst) > 0:
             if Inx in AnnotLst.keys():
                 for i, txt in enumerate(AnnotLst[Inx][0]):
@@ -1206,17 +1207,17 @@ def BuildMuliLineChart(df, YFields, FieldDescription=None, rollinWindow=1, First
     if NumOfLines > 1:
         ax2.set_ylabel(y_labels[1], color="blue", fontsize=LabelSizes[1])
 
-    colorsUsedList = colors[0:len(lines)] # List of all colors used
+    colorsUsedList = colors[0:len(lines)]  # List of all colors used
     # Building the markers for the legend
-    markers = [plt.Line2D([0,0],[0,0],color=color, marker='o', linestyle='') for color in colorsUsedList] 
+    markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o', linestyle='') for color in colorsUsedList]
     # LegendBboxCorr indicates where to move the legend by percentage of the  xaxis and yaxis of the figure
     # If it is None then it will put 
     if LegendBboxCorr is None:
-        fig.legend(markers,YFields,loc='upper right', numpoints=1, borderaxespad=0.1,
-                   title="Legend",shadow=True,fontsize=LegFontSize)
+        fig.legend(markers, YFields, loc='upper right', numpoints=1, borderaxespad=0.1,
+                   title="Legend", shadow=True, fontsize=LegFontSize)
     else:
-        fig.legend(markers,YFields, numpoints=1,bbox_to_anchor=LegendBboxCorr, shadow=True,fontsize=LegFontSize)
-        
+        fig.legend(markers, YFields, numpoints=1, bbox_to_anchor=LegendBboxCorr, shadow=True, fontsize=LegFontSize)
+
     fig.suptitle(title[0], fontsize=title[1])
     if not ReturnArtistOnly:
         plt.show()
@@ -1454,18 +1455,19 @@ def _Scoring(df, y_true, y_pred):
     return 'R-squared: ' + str(r2) + '   RMSE:' + str(rmse)
 
 
-
-
-def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False, markersize=40,
-            ShowOutliar=False, OutFont=8,figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20, XAxisLimit=None,
-            YAxisLimit=None, LegendFontSize=14, SizeBins=5, BasicSize=40, FindBoundries=False, BoundriesBins=20, Bound_SD_max=1,
-             Bound_SD_min=1, BoundryPolyLevel=3,BinsType='EqualPoints',ClrOrder=False,XlabelsRotation=0):
+def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equalAxis=False, ShowEqualLine=False,
+            markersize=40,
+            ShowOutliar=False, OutFont=8, figsize=(20, 7), DBSCAN_Parm={'eps': 5, 'min_samples': 3}, TitleFontSize=20,
+            XAxisLimit=None,
+            YAxisLimit=None, LegendFontSize=14, SizeBins=5, BasicSize=40, FindBoundries=False, BoundriesBins=20,
+            Bound_SD_max=1,
+            Bound_SD_min=1, BoundryPolyLevel=3, BinsType='EqualPoints', ClrOrder=False, XlabelsRotation=0):
     """
     Show a scatter chart from the dataframe that can also show outliers using the DBSCAN model and upper
     and lower boundaries.
     How does the boundaries algorithm work?
     It divides the x-axis into bins (BoundriesBins) and takes the mean x for every bin. The ymin and max are calculated
-    as the mean y of each bin plus or minus the SD (standard deviation)*factors
+    as the mean y of each bin plus or minus the SD (standard deviation) * factors
     factors=(Bound_SD_max for max line and Bound_SD_min for min line)
     Then using the points, we use curve fit to find the equation of each line. The polynomial level is determined by
     BoundryPolyLevel parameter (Maximum value is 5)
@@ -1498,8 +1500,8 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     Bound_SD_min     float. The factor to multiply the SD for the MIN boundary line
     BoundryPolyLevel int. The level of the polynomial that is used to curve fit the boundaries
     BinsType         string. When find bins for DBScan it can find it using 'EqualPoints' that means every bin will
-                      have the same amount of points. Or it can get 'Linear' which means that the boundries of each bin will
-                      have the same amount of range.
+                      have the same amount of points. Or it can get 'Linear' which means that the boundries of each bin
+                      will have the same amount of range.
     ClrOrder          bool. Changes the order of the colors per ClrSeries item.
     XlabelsRotation   int. Rotate the x labels by this amount
     return nothing if FindBoundries=False
@@ -1513,7 +1515,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     Example of how to use:
     Scatter(df,'weight','height','gender',ShowOutliar=True,DBSCAN_Parm = {'eps':2,'min_samples':5},markersize=40)
     """
-    df=dframe.copy()
+    df = dframe.copy()
     warnings.filterwarnings('ignore')
 
     ####### Build the COLORS series ###############
@@ -1524,16 +1526,16 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
             colorlist = list(colorConverter.colors.keys())
         else:
             colorlist = list(mcolors.TABLEAU_COLORS)  # This list contains only 10 colors with big contrast
-        colorDic = dict(zip(sorted(ClrSer.unique(),reverse=ClrOrder),
+        colorDic = dict(zip(sorted(ClrSer.unique(), reverse=ClrOrder),
                             colorlist[0:len(ClrSer.unique())]))  # create a dictionary with unique values and colors
         ColorInput = ClrSer.map(colorDic)
     else:
         ColorInput = None
     ########## Build the SIZE series ###############
     if not isinstance(SizeSeries, type(None)):
-        SizeSer = pd.Series(dframe[SizeSeries],index=dframe.index)
-        BinSize = (SizeSer.max()-SizeSer.min())/SizeBins
-        SizeSer = (((SizeSer-SizeSer.min())/BinSize).astype('int')+1)*BasicSize
+        SizeSer = pd.Series(dframe[SizeSeries], index=dframe.index)
+        BinSize = (SizeSer.max() - SizeSer.min()) / SizeBins
+        SizeSer = (((SizeSer - SizeSer.min()) / BinSize).astype('int') + 1) * BasicSize
     else:
         SizeSer = markersize
     ##### In case the user wants equal axis (x and y the same max and min)#########    
@@ -1558,7 +1560,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     ##### Plot diagonal line across the chart #####
     if ShowEqualLine:
         plt.plot([MinValue, MaxValue], [MinValue, MaxValue], 'k-', color='r')
-    
+
     ###### show values of outliers #######
     if ShowOutliar:
         dbs = DBSCAN(**DBSCAN_Parm)
@@ -1576,11 +1578,11 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     # Set x and y axes labels
     plt.ylabel(y)
     plt.xlabel(x)
-#     # Set x ticks - sorted (if string)
-#     if pd.api.types.is_string_dtype(dframe[x].dtype):
-#       plt.xticks(sorted(list(dframe[x].unique())),rotation=XlabelsRotation)
-#     else:
-#        plt.xticks(rotation=XlabelsRotation)
+    #     # Set x ticks - sorted (if string)
+    #     if pd.api.types.is_string_dtype(dframe[x].dtype):
+    #       plt.xticks(sorted(list(dframe[x].unique())),rotation=XlabelsRotation)
+    #     else:
+    #        plt.xticks(rotation=XlabelsRotation)
 
     ##### Add a diagonal line across the chart ###########
     if ShowEqualLine:
@@ -1599,31 +1601,31 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     ###### Plot boundries ###################
     if FindBoundries:
         BoundDF, EquationsDic = __findBoundries(df, x, y,
-                                                            BoundriesBins, DBSCAN_Parm,
-                                                            Bound_SD_max, Bound_SD_min, BoundryPolyLevel,BinsType)
-        minEquation=EquationsDic['Min']
-        maxEquation=EquationsDic['Max']
-        xBound = BoundDF['X_mean'].append(pd.Series(df[x].max())) # add the last point
+                                                BoundriesBins, DBSCAN_Parm,
+                                                Bound_SD_max, Bound_SD_min, BoundryPolyLevel, BinsType)
+        minEquation = EquationsDic['Min']
+        maxEquation = EquationsDic['Max']
+        xBound = BoundDF['X_mean'].append(pd.Series(df[x].max()))  # add the last point
         plt.plot(xBound, __CalibList(xBound, minEquation), color='red')
         plt.plot(xBound, __CalibList(xBound, maxEquation), color='red')
-        df['MinBound'] = df[x].apply(lambda w:  __CalibList(w, minEquation))
-        df['MaxBound'] = df[x].apply(lambda w:  __CalibList(w, maxEquation))
-        df['InBound'] = df[y].between(df['MinBound'],df['MaxBound'])
+        df['MinBound'] = df[x].apply(lambda w: __CalibList(w, minEquation))
+        df['MaxBound'] = df[x].apply(lambda w: __CalibList(w, maxEquation))
+        df['InBound'] = df[y].between(df['MinBound'], df['MaxBound'])
         OutOfBound = df[~df['InBound']]
-        if len(OutOfBound)>0:
+        if len(OutOfBound) > 0:
             # print('Points out of boundries:\n\n')
             # print(OutOfBound[[x,y,'MinBound','MaxBound','InBound']].reset_index().to_markdown(index=False,tablefmt="grid"))
-            plt.scatter(OutOfBound[x], OutOfBound[y],marker='o', s=markersize*4, facecolors='none', edgecolors='r')
+            plt.scatter(OutOfBound[x], OutOfBound[y], marker='o', s=markersize * 4, facecolors='none', edgecolors='r')
     plt.title(titlestr, fontsize=TitleFontSize)
 
     plt.show()
     if not isinstance(SizeSeries, type(None)):
-        print('Size series '+ SizeSeries+':'+str([BinSize*i for i in range(0,SizeBins)] ) ) 
+        print('Size series ' + SizeSeries + ':' + str([BinSize * i for i in range(0, SizeBins)]))
     if FindBoundries:
-        return BoundDF, EquationsDic,OutOfBound
+        return BoundDF, EquationsDic, OutOfBound
 
 
-def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD_min, BoundPolyLvl,BinsType):
+def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD_min, BoundPolyLvl, BinsType):
     """
     Gets dataframe and the x and y + numbers of bins and finds the maximum and minimum boundaries
     param: df:            dataframe. The dataframe that is the input
@@ -1645,39 +1647,39 @@ def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD
     # RelevPoints = df[cluster != -1]
     # notRelevantPoints=df[cluster == -1]
     # print(notRelevantPoints[[x,y]].to_markdown())
-    RelevPoints=df
+    RelevPoints = df
     # Find bins from max and min of the x-axis
-    TupleBins = FindBins(df,x,y,BoundriesBins,BinsType)
+    TupleBins = FindBins(df, x, y, BoundriesBins, BinsType)
     # Find min and max point for every bin
     OutDF = pd.DataFrame(columns=['Bin', 'Y_Min', 'Y_max', 'X_mean', 'Y_Mean_Less_x_SD', 'Y_Mean_plus_x_SD'])
-    
-    #initiate CurrDF so that prevDF can get a value
+
+    # initiate CurrDF so that prevDF can get a value
     if BinsType == 'Linear':
-        CurrDF=df[(df[x] >= TupleBins[0][0]) & (df[x] <= TupleBins[0][1])]
+        CurrDF = df[(df[x] >= TupleBins[0][0]) & (df[x] <= TupleBins[0][1])]
     else:
-        CurrDF=df.sort_values(by=x).reset_index().iloc[TupleBins[0][0]:TupleBins[0][1]]
-    
+        CurrDF = df.sort_values(by=x).reset_index().iloc[TupleBins[0][0]:TupleBins[0][1]]
+
     # Start moving accross all bins
     for bin in TupleBins:
-        prevDF=CurrDF
+        prevDF = CurrDF
         if BinsType == 'Linear':
             CurrDF = df[(df[x] >= bin[0]) & (df[x] <= bin[1])]
         else:
-            CurrDF=df.sort_values(by=x).reset_index().iloc[bin[0]:bin[1]]
+            CurrDF = df.sort_values(by=x).reset_index().iloc[bin[0]:bin[1]]
         if len(CurrDF) > 0:
             currYMax = CurrDF[y].max()
             currYMin = CurrDF[y].min()
             currXavg = CurrDF[x].mean()
             currYMean = CurrDF[y].mean()
             currYSd = CurrDF[y].std()
-            if  np.isnan(currYSd):
-                currYSd=prevDF[y].std()
+            if np.isnan(currYSd):
+                currYSd = prevDF[y].std()
             currYminWithSD = currYMean - Bound_SD_min * currYSd
             currYmaxWithSD = currYMean + Bound_SD_max * currYSd
             # Add the values to the dataframe
             NewRowDic = {'Bin': bin, 'Y_Min': currYMin, 'Y_max': currYMax, 'X_mean': currXavg,
-                                  'Y_Mean': currYMean, 'Y_Sd': currYSd, 'Y_Mean_Less_x_SD': currYminWithSD,
-                                  'Y_Mean_plus_x_SD': currYmaxWithSD}
+                         'Y_Mean': currYMean, 'Y_Sd': currYSd, 'Y_Mean_Less_x_SD': currYminWithSD,
+                         'Y_Mean_plus_x_SD': currYmaxWithSD}
             df_dictionary = pd.DataFrame([NewRowDic])
             OutDF = pd.concat([OutDF, df_dictionary], ignore_index=True)
     # Find the polynomials that fit
@@ -1687,34 +1689,36 @@ def __findBoundries(df, x, y, BoundriesBins, DBSCAN_Parm, Bound_SD_max, Bound_SD
     maxEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
     curves, curvesDic, BestOpt = PolyFitResults(OutDF['X_mean'], OutDF['Y_Mean'], showCharts=False)
     MeanEquation = __CompleteSet("", curvesDic['CF' + str(BoundPolyLvl)])
-    EquationsDic={'Max':maxEquation,'Min':minEquation,'Mean':MeanEquation}
-    
+    EquationsDic = {'Max': maxEquation, 'Min': minEquation, 'Mean': MeanEquation}
+
     return OutDF, EquationsDic
 
-def FindBins(df,x,y,BoundriesBins,BinsType):
-    df2=df.copy()
+
+def FindBins(df, x, y, BoundriesBins, BinsType):
+    df2 = df.copy()
     Bins = []
-    if BinsType=='Linear':
+    if BinsType == 'Linear':
         CurrVal = df2[x].min()
         while CurrVal <= df2[x].max():
             Bins.append(CurrVal)
             CurrVal += (df2[x].max() - df2[x].min()) / BoundriesBins
         Bins.append(df2[x].max())
         TupleBins = [(Bins[i], Bins[i + 1]) for i in range(0, len(Bins) - 1)]
-    elif BinsType=='EqualPoints':
-        df2 = df.sort_values(by=x).reset_index().drop(['index'],axis=1)
+    elif BinsType == 'EqualPoints':
+        df2 = df.sort_values(by=x).reset_index().drop(['index'], axis=1)
         NumberOfPoints = len(df2)
-        binSize= NumberOfPoints / BoundriesBins
+        binSize = NumberOfPoints / BoundriesBins
         df2['Group'] = (df2.index / binSize).astype(int)
         df2.reset_index(inplace=True)
-        df2 = df2.rename(columns = {'index':'counter'})
-        DF = df2.groupby(['Group']).counter.agg(['min','max']).reset_index()
-        Bins = list([(DF[DF['Group']==i]['min'].iloc[0],DF[DF['Group']==i]['max'].iloc[0]) for i in range(0,DF.Group.max()+1)])
+        df2 = df2.rename(columns={'index': 'counter'})
+        DF = df2.groupby(['Group']).counter.agg(['min', 'max']).reset_index()
+        Bins = list([(DF[DF['Group'] == i]['min'].iloc[0], DF[DF['Group'] == i]['max'].iloc[0]) for i in
+                     range(0, DF.Group.max() + 1)])
 
-        TupleBins=Bins
-    return  TupleBins  
+        TupleBins = Bins
+    return TupleBins
 
-    
+
 def __CalibList(x, CalbList, MustBePositive=False):
     """
     Gets alist of polynomial parameters (CalibList) that is used for calibration. Also gets the X value and
@@ -1734,7 +1738,7 @@ def __CalibList(x, CalbList, MustBePositive=False):
 def __CompleteSet(Title, ParamList):
     """
      This function takes a list of values and return a 6 values list putting
-     zeroes in "empty places. Also, if the title say "no_inter" then
+     zeroes in "empty places". Also, if the title say "no_inter" then
      it adds a zero at the beggining of the list.
      Input: Title string. - The title of the parameters list
             ParamList list. - The parameters list

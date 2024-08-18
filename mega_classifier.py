@@ -2,8 +2,8 @@
 
 """
 This module is used for creating a class that can run 5 classifiers using grid search with
-many defaults hyper parameters. Then the results can be analyzed in 7 different levels in order for finding
-the best model and best hyper parameters or combine all/some models to ensemble prediction.
+many defaults hyperparameters. Then the results can be analyzed in 7 different levels in order for finding
+the best model and best hyperparameters or combine all/some models to ensemble prediction.
 It allows different instances of the class (different notebooks) to run in parallel and then join back to 1 instance.
 It also allows the addition of new models that were not in the original models.
 
@@ -11,9 +11,9 @@ Available levels of output:
 1. Score for each model (according to the input function scoring) - method:ScoreSummery
 2. Detailed results: a dictionary with the following: model name, the y_pred (prediction),
                      best parameters found in grid search, the full cv_results from the grid search of the model
-3. Hyper parameters results: Analyze the change in hyper parameters per model. Shows a chart for every
-                             hyper parameter that the x-axis is the changing value of the hyper parameter and
-                             the y-axis is the average change in scoring.
+3. Hyperparameters results: Analyze the change in hyperparameters per model. Shows a chart for every
+                             hyperparameter that the x-axis is the changing value of the hyperparameter and
+                             the y-axis are the average change in scoring.
 4. A full classification report dataframe. Contains the precision, recall, f1-score and more of every model best
                                            parameters and for the combined models.
                                             method:GetClassificationReport
@@ -99,7 +99,7 @@ class MegaClassifier:
             hyperparameter has on the scoring.
             It returns a grid of charts for each parameter that shows the mean score (after cross-validation) and
             the standard deviation of the cross-validation
-    GetClassificationReport: Return a multi-model classification report in the form of a dataframe
+    GetClassificationReport: Return a multimodel classification report in the form of a dataframe
     GetSpecificLabelScore: Slice the classification dataframe (get it by GetClassificationReport methods) by
                            specific labels only and  specific score types only
     GetFeatureImportance: return a dataframe with the feature importance for every model that supports this attribute
@@ -108,7 +108,7 @@ class MegaClassifier:
 
     Explore ensemble of models:
     AddNewModel - Allow the user to add different model to the set of models. Model must be fitted and it must allow
-                  predict proba.
+                  to predict proba.
     CombineModelsToAnInstance - During the different fitting instances, can run other models. This method join
                                 all the different models back to one instance.
     PrePredict - Do a predict proba on all models. Then create all possible combinations and check the score of:
@@ -126,8 +126,8 @@ class MegaClassifier:
         ShortCrossValidParts = int. Number of cross validation parts in FAST time running models
         LongCrossValidParts = int. Number of cross validation parts in SLOW time running models
         Class_weight = dictionary. class weights for every model except XGBOOST (that does not support weights)
-        MultiClass = bool. Gets True if this is a multiclass problem. Multiclass can't use some of the hyper parameters
-        BigDataSet = bool. if it gets true then it runs less hyper parameters to avoid long fitting time
+        MultiClass = bool. Gets True if this is a multiclass problem. Multiclass can't use some of the hyperparameters
+        BigDataSet = bool. if it gets true then it runs fewer hyperparameters to avoid long fitting time
         PathForOutFile = string. Gets a path string if a result summery is needed for every model fit.
         verbose = int.  1 : the computation time for each fold and parameter candidate is displayed
                         2 : the score is also displayed
@@ -174,7 +174,7 @@ class MegaClassifier:
         # Dataframe that contains: precision,recall,f1-score and more per each label+model
         # Updated when using predict
         self.ClassReportDF = pd.DataFrame()
-        # True if there are less then 2 classes. Then don't allow: fir, predict and the rest
+        # True if there are less than 2 classes. Then don't allow: fir, predict and the rest
         self.NumOfClassesLessThen2 = False
         # Holds the models after fitting. Allow models that are not grid search to be added for a prediction and analyze
         self.ModelsAfterFit = {}
@@ -596,16 +596,20 @@ class MegaClassifier:
 
             # Add to dataframe
             CombName = '_'.join([str(elem) for elem in comb])
-            Rec1 = pd.DataFrame.from_dict({'Combination': CombName + '_Max','Score': Y_averageScore,'NumOfModels': len(comb),
-                                            'Param': ('Max', comb)})
-            Rec1.index = [self.BestCombResults.index.max() + 1]
-            Rec2 = pd.DataFrame.from_dict({'Combination': CombName + '_Avg','Score': Y_maxScore,'NumOfModels': len(comb),
-                                            'Param': ('Avg', comb)})
-            Rec2.index = [Rec1.index + 1]
-            Rec3 = pd.DataFrame.from_dict({'Combination': CombName + '_SPC','Score': Y_SPS_Score,'NumOfModels': len(comb),
-                                            'Param': ('SPS', comb)})
-            Rec3.index = [Rec2.index + 1]            
-            self.BestCombResults = pd.concat([self.BestCombResults, Rec1,Rec2,Rec3], axis=0)
+            Maxindex = self.BestCombResults.index.max()
+            Rec1 = pd.DataFrame.from_dict(
+                {'Combination': CombName + '_Max', 'Score': Y_averageScore, 'NumOfModels': len(comb),
+                 'Param': ('Max', comb)})
+            Rec1.index = [Maxindex + 1]
+            Rec2 = pd.DataFrame.from_dict(
+                {'Combination': CombName + '_Avg', 'Score': Y_maxScore, 'NumOfModels': len(comb),
+                 'Param': ('Avg', comb)})
+            Rec2.index = [Maxindex + 2]
+            Rec3 = pd.DataFrame.from_dict(
+                {'Combination': CombName + '_SPC', 'Score': Y_SPS_Score, 'NumOfModels': len(comb),
+                 'Param': ('SPS', comb)})
+            Rec3.index = [Maxindex + 3]
+            self.BestCombResults = pd.concat([self.BestCombResults, Rec1, Rec2, Rec3], axis=0)
 
         # Sort data frame according to score
         self.BestCombResults = self.BestCombResults.sort_values(by='Score', ascending=False)
@@ -664,7 +668,7 @@ class MegaClassifier:
                 CurrScore = self.OriginalScoring(y_true, res_df[col])
                 tempDf = pd.DataFrame.from_dict({'Name of combination': col, 'Scoring': CurrScore})
                 tempDf.index = [Summary_df.index.max() + 1]
-                Summary_df = pd.concat([Summary_df,tempDf], axis=0)
+                Summary_df = pd.concat([Summary_df, tempDf], axis=0)
         return res_df, Summary_df
 
     @staticmethod
@@ -672,7 +676,7 @@ class MegaClassifier:
         """
         In case that we are looking for a combination of more than 1 model then we aggregate the results by:
         Average, Maximum or sum of probabilities square.
-        This method gets a combination of models dictionary and return all of the aggregate results
+        This method gets a combination of models dictionary and return all the aggregate results
         :param Comb_dic: dictionary. Contains the y_pred for each model (that is already in the combination)
         :return: 3 arrays: y_pred for: sum of probabilities square, Average, Maximum
         """
@@ -701,9 +705,9 @@ class MegaClassifier:
 
     def ParamInsight(self, ModelName):
         """
-        Works on a specific model. Takes every hyper parameter and every value it gets and shows the score
-        it gets when we group by the parameter and value. It shows the effect each hyper parameter has on the scoring.
-        It returns a grid of charts for each parameters that shows the mean score (after cross validation) and
+        Works on a specific model. Takes every hyperparameter and every value it gets and shows the score
+        it gets when we group by the parameter and value. It shows the effect each hyperparameter has on the scoring.
+        It returns a grid of charts for each parameter that shows the mean score (after cross validation) and
         the standard deviation of the cross validation
         ModelName - string of the model needed
         """
@@ -730,7 +734,7 @@ class MegaClassifier:
         NumberOfParam = len(CurrParam)
 
         # Creates a subplots with the mean score and the mean of the standard deviation each parameter gets
-        # when we group by by that parameter.
+        # when we "group by" by that parameter.
 
         NumOfCol = 4  # number of columns in the row
         NumOfRows = 1 + (2 * NumberOfParam) // NumOfCol
@@ -768,9 +772,9 @@ class MegaClassifier:
 
     def SetGridHyperParameters(self, mdlName, HyperParamDic):
         """
-        Adjust the hyper parameters dictionary and initiate the grid search instance
+        Adjust the hyperparameters dictionary and initiate the grid search instance
         mdlName - string.The model name that need adjustment
-        HyperParamDic - Dictionary of grid search hyper parameters for the specific model
+        HyperParamDic - Dictionary of grid search hyperparameters for the specific model
         """
         self.Parameters[mdlName] = HyperParamDic
         self.GridClassifiers[mdlName] = GridSearchCV(self.classifiers[mdlName], self.Parameters[mdlName],
@@ -824,7 +828,7 @@ class MegaClassifier:
                 self.ClassReportDF = tempDF.copy()
                 FirstFlag = False
             else:
-                self.ClassReportDF = pd.concat([self.ClassReportDF,tempDF], axis=0)
+                self.ClassReportDF = pd.concat([self.ClassReportDF, tempDF], axis=0)
 
     def GetSpecificLabelScore(self, ListOfScoreTypes, ListOfLabels, ShowChart=False):
         """
@@ -832,7 +836,7 @@ class MegaClassifier:
         and  specific score types only
         :param ListOfScoreTypes: List. List of scores needed from classification dataframe
         :param ListOfLabels: List. List of labels needed from classification dataframe
-        :param ShowChart: Bool. If True then show a barchart of the result
+        :param ShowChart: Bool. If True then shows a barchart of the result
         :return: dataframe with the desired slice
         """
         if self.NumOfClassesLessThen2:
@@ -858,7 +862,7 @@ class MegaClassifier:
         Show the confusion matrix of all models.
 
         :param FigSize: tuple of 2 integers. Changing the figsize.
-        :param normalize: If True then normalize the by row
+        :param normalize: If True then normalize  by row
         :param RemoveColorBar: bool. If True then don't show the color bar
         :param precisionVal: Precision values (0.00 = 2)
         :
@@ -1166,7 +1170,7 @@ class MultiMegaClassifiers:
                 yPred_DF = CurrModel
                 Flag = False
             else:
-                yPred_DF =  pd.concat([yPred_DF,CurrModel], axis=0)
+                yPred_DF = pd.concat([yPred_DF, CurrModel], axis=0)
 
         yPred_DF = yPred_DF.reindex(X.index.tolist())
 
@@ -1200,13 +1204,13 @@ class MultiMegaClassifiers:
         if not isinstance(CurrScore, pd.DataFrame):
             return
         CurrScore['Slice'] = strName
-        self.ScoreDf4All = pd.concat([self.ScoreDf4All,CurrScore], axis=0)
+        self.ScoreDf4All = pd.concat([self.ScoreDf4All, CurrScore], axis=0)
         # Classification report
         CurrClassReport = MC_model.GetClassificationReport()
         CurrClassReport['Slice'] = strName
-        self.ClassReportAll = pd.concat([self.ClassReportAll,CurrClassReport], axis=0)
-        
+        self.ClassReportAll = pd.concat([self.ClassReportAll, CurrClassReport], axis=0)
+
         # Feature importance
         Curr_Feature = MC_model.GetFeatureImportance(ShowChart=False)
         Curr_Feature['Slice'] = strName
-        self.Feature_all = pd.concat([self.Feature_all,Curr_Feature], axis=0)
+        self.Feature_all = pd.concat([self.Feature_all, Curr_Feature], axis=0)

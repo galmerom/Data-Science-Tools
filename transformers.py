@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This modules contains mainly Pandas transformers. Get dataframe as input and returns dataframe
+Those modules contain mainly Pandas transformers. Get dataframe as input and returns dataframe
 Pandas transformers classes:
     PandasTransformer - General purpose transformer. Get as an input a regular sklearn transformer and returns
                         a dataframe.
@@ -104,7 +104,7 @@ class P_MaxAbsScaler(PandasTransformer):
 class P_MinMaxScaler(PandasTransformer):
     def __init__(self, columns=None):
         """
-        Like a MinMaxScaler but it returns  a dataframe
+        Like a MinMaxScaler, but it returns  a dataframe
         columns - list.list of columns names to apply the transformation on.If empty it will work on all numeric columns
         :return: DataFrame, with the transformed values in the wanted columns.
         """
@@ -118,7 +118,7 @@ class P_MinMaxScaler(PandasTransformer):
 class P_SimpleImputer(PandasTransformer):
     def __init__(self, columns=None, **kwargs):
         """
-    Like a SimpleImputer but it returns  a dataframe
+    Like a SimpleImputer, but it returns  a dataframe
     columns - list, list of columns names to apply the transformation on.If empty it will work on all numeric columns
     :return: DataFrame, with the transformed values in the wanted columns.
     """
@@ -132,7 +132,7 @@ class P_SimpleImputer(PandasTransformer):
 class P_SelectKBest(BaseEstimator, TransformerMixin):
     def __init__(self, score_func=f_classif, k=10, DealWithNegValues=0):
         """
-        Like a SelectKBest but it returns  a dataframe
+        Like a SelectKBest, but it returns  a dataframe
         score_func - callable, default = f_classif
                     Function taking two arrays X and y, and returning a pair of arrays (scores, pvalues) or a single
                      array with scores.
@@ -146,7 +146,7 @@ class P_SelectKBest(BaseEstimator, TransformerMixin):
         """
         self.score_func = score_func
         self.k = k
-        self.Transformer_model = SelectKBest(score_func =self.score_func, k=self.k)
+        self.Transformer_model = SelectKBest(score_func=self.score_func, k=self.k)
         self.NegValueProcess = DealWithNegValues
 
     def fit(self, X, y=None, **kwargs):
@@ -188,6 +188,7 @@ class P_LabelEncoder:
     """
     A dataframe LabelEncoder can get columns that shouldn't be transformed
     """
+
     def __init__(self, ListOfColNotToTransformed=None):
         """
 
@@ -242,16 +243,16 @@ class P_LabelEncoder:
 
 class BinaryDownSizeTransformer(BaseEstimator, TransformerMixin):
     """
-  This transformer reduce a dataframe so we will get a predefined proportional
-  between the "positive value" that we seeks and the rest.
-  For example: if we have only 10% people that have "yes" in the BUY column and we want 
+  This transformer reduce a dataframe, so we will get a predefined proportional
+  between the "positive value" that we seek and the rest.
+  For example: if we have only 10% people that have "yes" in the BUY column, and we want
   the dataframe to contain 25% people who bought then the positiveLabel will be "yes"
   and the TargetCol will be BUY the proportion will be 0.25
   
   PropDesiredOfPos = The proportional of the positive value (number between 0 and 1)
   positiveLabel = What value is considered "positive"
   TargetCol = What is the column to search for the positiveLabel
-  Direction = if value is 1 then the records of the non positive will be removed from the end of
+  Direction = if value is 1 then the records of the non-positive will be removed from the end of
               the dataframe records toward the beginning (meaning the last records).
               If the value 2 is given then use random.
               if value is 0 : Remove the first records (good for time series)

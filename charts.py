@@ -1605,7 +1605,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
                                                 Bound_SD_max, Bound_SD_min, BoundryPolyLevel, BinsType)
         minEquation = EquationsDic['Min']
         maxEquation = EquationsDic['Max']
-        xBound = BoundDF['X_mean'].append(pd.Series(df[x].max()))  # add the last point
+        xBound = pd.concat([BoundDF['X_mean'], pd.Series(df[x].max())])  # add the last point
         plt.plot(xBound, __CalibList(xBound, minEquation), color='red')
         plt.plot(xBound, __CalibList(xBound, maxEquation), color='red')
         df['MinBound'] = df[x].apply(lambda w: __CalibList(w, minEquation))

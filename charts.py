@@ -1532,10 +1532,13 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     else:
         ColorInput = None
     ########## Build the SIZE series ###############
-    if not isinstance(SizeSeries, type(None)) and SizeSer.max() != SizeSer.min():
+    if not isinstance(SizeSeries, type(None)):
         SizeSer = pd.Series(dframe[SizeSeries], index=dframe.index)
         BinSize = (SizeSer.max() - SizeSer.min()) / SizeBins
-        SizeSer = (((SizeSer - SizeSer.min()) / BinSize).astype('int') + 1) * BasicSize
+        if SizeSer.max() != SizeSer.min():
+            SizeSer = (((SizeSer - SizeSer.min()) / BinSize).astype('int') + 1) * BasicSize
+        else:
+            SizeSer = markersize
     else:
         SizeSer = markersize
     ##### In case the user wants equal axis (x and y the same max and min)#########    

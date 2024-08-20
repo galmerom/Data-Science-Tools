@@ -1532,7 +1532,7 @@ def Scatter(dframe, x, y, ClrSeries=None, SizeSeries=None, Title='Default', equa
     else:
         ColorInput = None
     ########## Build the SIZE series ###############
-    if not isinstance(SizeSeries, type(None)):
+    if not isinstance(SizeSeries, type(None)) and SizeSer.max() != SizeSer.min():
         SizeSer = pd.Series(dframe[SizeSeries], index=dframe.index)
         BinSize = (SizeSer.max() - SizeSer.min()) / SizeBins
         SizeSer = (((SizeSer - SizeSer.min()) / BinSize).astype('int') + 1) * BasicSize
